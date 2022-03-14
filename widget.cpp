@@ -16,20 +16,20 @@ Widget::Widget(QWidget *parent)
     QPalette palatte;
     palatte.setBrush(QPalette::Window, bkgnd);
     this->setPalette(palatte);
-    marble = new Marble(this);
+    chessBoard = new ChessBoard(this,2);
 }
 
 Widget::~Widget()
 {
     delete ui;
-    delete marble;
+    delete chessBoard;
 }
 
 void Widget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.setPen(QColor(Qt::black));
-//    painter.setBrush(QBrush(Qt::yellow));
+    //    painter.setBrush(QBrush(Qt::yellow));
     int x=693,y=190,r=12;
     painter.drawEllipse(249-r,y-r,2*r,2*r);
     painter.drawEllipse(x-r,y-r,2*r,2*r);

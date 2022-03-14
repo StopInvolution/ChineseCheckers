@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QPen>
 #include "marble.h"
+#include "chessboard.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -18,7 +19,7 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
     void paintEvent(QPaintEvent *);
-    Marble *marble;
+    ChessBoard *chessBoard;
 
 private:
     Ui::Widget *ui;

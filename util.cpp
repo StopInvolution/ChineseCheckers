@@ -1,6 +1,4 @@
-#include <utility>
-#include "settings.h"
-#include <QString>
+#include "util.h"
 
 ChessPostion boardTransform(ChessPostion var){
     double x=var.first,y=var.second;
