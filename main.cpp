@@ -5,9 +5,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QWidget w;
-    w.setObjectName("mainWindow");
-    w.setStyleSheet("#mainWindow{border-image: url(:/images/background.png);}");
+    Widget w;
     w.show();
     return a.exec();
 }

@@ -10,9 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
+    marble.cpp \
+    util.cpp \
     widget.cpp
 
 HEADERS += \
+    marble.h \
+    settings.h \
     widget.h
 
 FORMS += \

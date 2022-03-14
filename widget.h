@@ -2,6 +2,9 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QPainter>
+#include <QPen>
+#include "marble.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -14,6 +17,8 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
+    void paintEvent(QPaintEvent *);
+    Marble *marble;
 
 private:
     Ui::Widget *ui;
