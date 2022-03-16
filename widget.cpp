@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include "chessboard.h"
 #include <QPixmap>
 #include <QPalette>
 

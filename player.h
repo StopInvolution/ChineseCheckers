@@ -5,7 +5,6 @@
 #include "chessboard.h"
 #include <QString>
 
-class Player;
 class ChessBoard;
 class Player
 {
