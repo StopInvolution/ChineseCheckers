@@ -4,6 +4,7 @@
 
 #include "chessboard.h"
 #include <QString>
+#include <vector>
 
 class ChessBoard;
 class Player
@@ -15,7 +16,7 @@ public:
     int chessNum, color, spawn, target;
     bool activated;
     QString name;
-    Marble* chess[10];
+    std::vector<Marble*> chess;
     void addTo(ChessBoard *_parentChessBoard=0);
     void setActivated(bool flag);
 };

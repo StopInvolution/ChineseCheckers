@@ -14,13 +14,19 @@ public:
     Player *parentPlayer;
     int chessX,chessY,chessColor;
     ChessPostion chessPosition;
-    void moveTo(int _x,int _y);
-    bool isInEdge();
     void addTo(Player *_parentPlayer);
-    bool isCollinearWith(const Marble &rhs)const{
-        int a(chessX),b(chessY),c(rhs.chessX),d(rhs.chessX);
-        return a==c || b==d || b-a==d-c;
-    }
+
+    // 通过棋盘坐标移动，同时计算屏幕坐标并刷新显示
+    void moveTo(int _x=0,int _y=0);
+
+    // 是否在棋盘内
+    bool isWithinBoundary_();
+
+    // 棋子是否共线
+    bool isCollinearWith(const Marble &rhs)const;
+
+public slots:
+//    void On_ClickButton();
 };
 
 #endif // MARBLE_H
