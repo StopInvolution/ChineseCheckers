@@ -2,13 +2,15 @@
 #define CHESSBOARD_H
 
 #include <QWidget>
-#include "marble.h"
-#include "player.h"
 
+
+class Player;
+class Marble;
 class ChessBoard
 {
 public:
     ChessBoard(QWidget *_parentWindow = 0, int _player_num=6);
+    ~ChessBoard();
     QWidget *parentWindow;
     int player_num;
     Marble *selectChess;

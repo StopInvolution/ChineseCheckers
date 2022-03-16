@@ -72,3 +72,4 @@ Thumbs.db
 *.exe
 
 .py
+test*
