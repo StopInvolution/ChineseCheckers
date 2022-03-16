@@ -6,7 +6,7 @@
 typedef std::pair<double,double> ChessPostion;
 
 
-namespace Color{
+namespace color{
     const int hint = 0;
     const int red = 1;
     const int blue = 2;
@@ -18,12 +18,12 @@ namespace Color{
 }//namesapce Color
 
 
-namespace MarbleInfo{
+namespace marbleinfo{
     const int r=10;
 }//namespace Marble
 
 
-namespace Board{
+namespace board{
     const int spacing = 37;
     const double iHatX = 1*spacing;
     const double iHatY = 0*spacing;

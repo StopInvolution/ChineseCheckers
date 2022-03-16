@@ -2,11 +2,11 @@
 
 ChessPostion boardTransform(ChessPostion var){
     double x=var.first,y=var.second;
-    return ChessPostion(x*Board::iHatX+y*Board::jHatX+Board::OriginX,x*Board::iHatY+y*Board::jHatY+Board::OriginY);
+    return ChessPostion(x*board::iHatX+y*board::jHatX+board::OriginX,x*board::iHatY+y*board::jHatY+board::OriginY);
 }
 
 ChessPostion boardTransform(double x,double y){
-    return ChessPostion(x*Board::iHatX+y*Board::jHatX+Board::OriginX,x*Board::iHatY+y*Board::jHatY+Board::OriginY);
+    return ChessPostion(x*board::iHatX+y*board::jHatX+board::OriginX,x*board::iHatY+y*board::jHatY+board::OriginY);
 }
 
 QString getColorName(int color){

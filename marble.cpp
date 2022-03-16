@@ -17,8 +17,8 @@ void Marble::moveTo(int _x, int _y)
 
 bool Marble::isInEdge()
 {
-    return (chessX<=Board::boundary && chessY>=-Board::boundary && chessY<=chessX+Board::boundary) ||
-            (chessX>=-Board::boundary && chessY<=Board::boundary && chessY>=chessX-Board::boundary);
+    return (chessX<=board::boundary && chessY>=-board::boundary && chessY<=chessX+board::boundary) ||
+            (chessX>=-board::boundary && chessY<=board::boundary && chessY>=chessX-board::boundary);
 }
 
 void Marble::addTo(ChessBoard* _parentChessBoard)
@@ -26,7 +26,6 @@ void Marble::addTo(ChessBoard* _parentChessBoard)
     ChessPostion transformedPosition = boardTransform(chessX,chessY);
     int transformedX=transformedPosition.first, transformedY=transformedPosition.second;
     parentChessBoard = _parentChessBoard;
-    setGeometry(transformedX-MarbleInfo::r,transformedY-MarbleInfo::r,2*MarbleInfo::r,2*MarbleInfo::r);
+    setGeometry(transformedX-marbleinfo::r,transformedY-marbleinfo::r,2*marbleinfo::r,2*marbleinfo::r);
     setText(getColorName(chessColor));
-    setCursor(Qt::PointingHandCursor);
 }
