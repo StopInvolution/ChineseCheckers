@@ -1,5 +1,5 @@
 #include "util.h"
-//#include <iostream>
+#include <iostream>
 
 ChessPostion boardTransform(ChessPostion var){
     double x=var.first,y=var.second;
@@ -26,7 +26,7 @@ QString getColorName(int color){
         colorName="yellow";
         break;
     case 4:
-        colorName="white";
+        colorName="orange";
         break;
     case 5:
         colorName="pink";
@@ -61,6 +61,40 @@ ChessPostion jumpOver(const ChessPostion &arg1, const ChessPostion &arg2){
     return ChessPostion(2*arg2.first-arg1.first,2*arg2.second-arg1.second);
 }
 
-//void outChessPostion(ChessPostion p){
-//    std::cerr<<p.first<<" "<<p.second<<std::endl;
-//}
+void outChessPostion(ChessPostion p){
+    std::cout<<p.first<<" "<<p.second<<std::endl;
+}
+
+QString getQColor(int color)
+{
+    switch(color){
+    case 0:
+        // hint
+        return QString("color:#202020;");
+        break;
+    case 1:
+        // red
+        return QString("color:#e41524;");
+        break;
+    case 2:
+        // blue
+        return QString("color:#0f0eca;");
+        break;
+    case 3:
+        // yellow
+        return QString("color:#15e815;");
+        break;
+    case 4:
+        // orange
+        return QString("color:#e8a915;");
+        break;
+    case 5:
+        // pink
+        return QString("color:#e11583;");
+        break;
+    case 6:
+        return QString("color:#972398;");
+        break;
+    }
+    return QString("color:#000000;");
+}

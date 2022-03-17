@@ -11,7 +11,7 @@ namespace color{
     const int red = 1;
     const int blue = 2;
     const int yellow = 3;
-    const int white = 4;
+    const int orange = 4;
     const int pink = 5;
     const int purple = 6;
 

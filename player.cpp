@@ -5,13 +5,13 @@
 #include "chessboard.h"
 #include <QString>
 
-Player::Player(int _color, int _spawn, int _target, QString _name):chessNum(10),color(_color),spawn(_spawn),target(_target),name(_name)
+Player::Player(int _color, int _spawn, int _target, QString _name,int _chessNum):chessNum(_chessNum),color(_color),spawn(_spawn),target(_target),activated(false),name(_name)
 {
 }
 
 Player::~Player()
 {
-    for(auto obj:this->chess){
+    for(auto obj:this->chesses){
         delete obj;
     }
 }
@@ -20,23 +20,36 @@ void Player::addTo(ChessBoard *_parentChessBoard)
 {
     parentChessBoard = _parentChessBoard;
     for(int i=0;i<chessNum;i++){
-        chess.push_back(new Marble(parentChessBoard->parentWindow,board::spawnPst[color][i*2],board::spawnPst[color][i*2+1],color));
-        chess.back()->addTo(this);
-        chess.back()->setText(QString::number(i));
+        chesses.push_back(new Marble(parentChessBoard->parentWindow,board::spawnPst[color][i*2],board::spawnPst[color][i*2+1],color));
+        chesses.back()->addTo(this);
+//        chesses.back()->setText(QString::number(i));
     }
 }
 
 void Player::setActivated(bool flag)
 {
     activated=flag;
-    if(flag){
-        for(auto che:this->chess){
-            che->setCursor(Qt::PointingHandCursor);
+    if(activated){
+        if(!this->chesses.empty()){
+            for(auto chess:this->chesses){
+                chess->setCursor(Qt::PointingHandCursor);
+            }
         }
     }
     else{
-        for(auto che:this->chess){
-            che->setCursor(Qt::ArrowCursor);
+        if(!this->chesses.empty()){
+            for(auto chess:this->chesses){
+                chess->setCursor(Qt::ArrowCursor);
+            }
         }
     }
+}
+
+void Player::clear()
+{
+    for(auto chess:this->chesses){
+        delete chess;
+    }
+    this->chesses.clear();
+    this->setActivated(false);
 }

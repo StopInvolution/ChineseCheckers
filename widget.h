@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPen>
+#include <QTimer>
+#include <QPushButton>
 #include "marble.h"
 
 QT_BEGIN_NAMESPACE
@@ -20,8 +22,12 @@ public:
     ~Widget();
     void paintEvent(QPaintEvent *);
     ChessBoard *chessBoard;
-
+    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv;
 //private:
     Ui::Widget *ui;
+    QTimer* timer;
+    void on_btnRandomMove_clicked();
+    void on_btnAutoMv_clicked();
+    void on_btnStopAutoMv_clicked();
 };
 #endif // WIDGET_H

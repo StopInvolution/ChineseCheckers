@@ -11,6 +11,8 @@ ChessPostion boardTransform(int x,int y);
 
 QString getColorName(int color);
 
+QString getQColor(int color);
+
 bool isCollinear(const ChessPostion &arg1,const ChessPostion &arg2);
 
 // 返回 arg1 arg2 arg3 是否按顺序共线

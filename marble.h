@@ -18,6 +18,7 @@ public:
 
     // 通过棋盘坐标移动，同时计算屏幕坐标并刷新显示
     void moveTo(int _x=0,int _y=0);
+    void moveTo(ChessPostion pst);
 
     // 是否在棋盘内
     bool isWithinBoundary_();
@@ -26,7 +27,12 @@ public:
     bool isCollinearWith(const Marble &rhs)const;
 
 public slots:
-//    void On_ClickButton();
+    void On_Clicked();
+
+signals:
+        void clicked();
+protected:
+        void mousePressEvent(QMouseEvent* event);
 };
 
 #endif // MARBLE_H
