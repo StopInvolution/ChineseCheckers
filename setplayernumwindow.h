@@ -15,9 +15,6 @@ public:
     explicit SetPlayerNumWindow(QWidget *parent = nullptr);
     ~SetPlayerNumWindow();
 
-private slots:
-    void on_buttonBox_accepted();
-
 private:
     Ui::SetPlayerNumWindow *ui;
 };

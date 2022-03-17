@@ -12,3 +12,4 @@ SetPlayerNumWindow::~SetPlayerNumWindow()
 {
     delete ui;
 }
+
