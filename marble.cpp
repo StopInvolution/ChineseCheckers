@@ -13,6 +13,11 @@ Marble::Marble(Widget* _parentWindow, int _x, int _y, int _color):QLabel(_parent
     setStyleSheet(getQColor(chessColor));
 }
 
+Marble::~Marble()
+{
+    qDebug()<<"test";
+}
+
 void Marble::moveTo(int _x, int _y)
 {
     if(this->chessColor!=color::hint){

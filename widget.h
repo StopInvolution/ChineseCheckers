@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QPushButton>
 #include "marble.h"
+#include "setplayernumwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -20,14 +21,17 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
+
+    // 试验坐标，没有实际用处
     void paintEvent(QPaintEvent *);
+
+    int playerNum;
     ChessBoard *chessBoard;
-    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv;
+
+    QPushButton *btnSetPlayerNum;
+    void on_btnSetPlayerNum_clicked();
+
 //private:
     Ui::Widget *ui;
-    QTimer* timer;
-    void on_btnRandomMove_clicked();
-    void on_btnAutoMv_clicked();
-    void on_btnStopAutoMv_clicked();
 };
 #endif // WIDGET_H

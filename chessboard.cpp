@@ -11,19 +11,46 @@
 ChessBoard::ChessBoard(Widget *_parentWindow, int _player_num):parentWindow(_parentWindow),playerNum(_player_num),stepNum(0),selectedChess(0)
 {
     srand(time(0));
+
     memset(this->occupiedPst,0,sizeof(this->occupiedPst));
+
     for(int i=0;i<playerNum;i++){
         players.push_back(new Player(board::playerSpawn[playerNum][i],board::playerSpawn[playerNum][i],board::playerTarget[playerNum][i]));
         players.back()->addTo(this);
     }
+
     hintPlayer = new Player(color::hint,-1,-1,"hint",0);
     hintPlayer->addTo(this);
+
     labelInfo=new QLabel(this->parentWindow);
     labelInfo->setGeometry(10,10,200,80);
     labelInfo->setFont(QFont("华光中圆_CNKI",16));
+
     setActivatedPlayer(this->players.front());
     this->activatedPlayerID=0;
+
     updateLabelInfo();
+
+    btnRandomMove = new QPushButton(this->parentWindow);
+    btnRandomMove->setGeometry(30,210,100,30);
+    btnRandomMove->setText("RandomMove");
+    btnRandomMove->setCursor(Qt::PointingHandCursor);
+    connect(this->btnRandomMove,&QPushButton::clicked,this,&ChessBoard::on_btnRandomMove_clicked);
+
+    timer = new QTimer();
+    connect(timer,&QTimer::timeout,this,[&](){this->randomMove();});
+
+    btnAutoMv = new QPushButton(this->parentWindow);
+    btnAutoMv->setGeometry(30,260,100,30);
+    btnAutoMv->setText("AutoMv");
+    btnAutoMv->setCursor(Qt::PointingHandCursor);
+    connect(this->btnAutoMv,&QPushButton::clicked,this,&ChessBoard::on_btnAutoMv_clicked);
+
+    btnStopAutoMv = new QPushButton(this->parentWindow);
+    btnStopAutoMv->setGeometry(30,310,100,30);
+    btnStopAutoMv->setText("StopAutoMv");
+    btnStopAutoMv->setCursor(Qt::PointingHandCursor);
+    connect(this->btnRandomMove,&QPushButton::clicked,this,&ChessBoard::on_btnStopAutoMv_clicked);
 }
 
 ChessBoard::~ChessBoard()
@@ -33,6 +60,9 @@ ChessBoard::~ChessBoard()
     }
     delete hintPlayer;
     delete labelInfo;
+    delete this->btnStopAutoMv;
+    delete this->btnAutoMv;
+    delete this->btnRandomMove;
 }
 
 void ChessBoard::setActivatedPlayer(Player *_activatedPlayer)
@@ -102,7 +132,7 @@ void ChessBoard::getHint()
     }
     this->hintPlayer->chessNum=this->hintPlayer->chesses.size();
 
-    // 添加完 hint->chesses 再设置
+    // 必须添加完 hint->chesses 再设置
     this->hintPlayer->setActivated(true);
     //    this->activatedPlayer->setActivated(false);
 }
@@ -150,11 +180,20 @@ void ChessBoard::randomMove()
 
 void ChessBoard::updateLabelInfo()
 {
-//    labelInfo->setText("213");
-//    qDebug()<<activatedPlayer;
-//    qDebug()<<getColorName(activatedPlayer->color);
-//    qDebug()<<activatedPlayer->color;
     labelInfo->setText(QString("当前行棋方为 ")+getColorName(activatedPlayer->color)+QString("\n已走步数 ")+QString::number(this->stepNum));
+}
+
+void ChessBoard::show()
+{
+    labelInfo->show();
+    for(auto player:players){
+        for(auto chess:player->chesses){
+            chess->show();
+        }
+    }
+    btnAutoMv->show();
+    btnStopAutoMv->show();
+    btnRandomMove->show();
 }
 
 bool isAnyChessBetween(ChessBoard *chessBoard, ChessPostion u, ChessPostion mid, ChessPostion v)
@@ -168,3 +207,20 @@ bool isAnyChessBetween(ChessBoard *chessBoard, ChessPostion u, ChessPostion mid,
     }
     return false;
 }
+
+void ChessBoard::on_btnRandomMove_clicked()
+{
+    this->randomMove();
+}
+
+void ChessBoard::on_btnAutoMv_clicked()
+{
+    this->timer->start(200);
+}
+
+void ChessBoard::on_btnStopAutoMv_clicked()
+{
+    this->timer->stop();
+}
+
+

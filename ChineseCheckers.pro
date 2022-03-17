@@ -13,6 +13,7 @@ SOURCES += \
     main.cpp \
     marble.cpp \
     player.cpp \
+    setplayernumwindow.cpp \
     util.cpp \
     widget.cpp
 
@@ -20,11 +21,13 @@ HEADERS += \
     chessboard.h \
     marble.h \
     player.h \
+    setplayernumwindow.h \
     settings.h \
     util.h \
     widget.h
 
 FORMS += \
+    setplayernumwindow.ui \
     widget.ui
 
 # Default rules for deployment.

@@ -11,12 +11,13 @@ class Marble: public QLabel
     Q_OBJECT
 public:
     Marble(Widget *_parentWindow=0,  int _x=0, int _y=0, int _color=1);
+    ~Marble();
     Player *parentPlayer;
     int chessX,chessY,chessColor;
     ChessPostion chessPosition;
     void addTo(Player *_parentPlayer);
 
-    // 通过棋盘坐标移动，同时计算屏幕坐标并刷新显示
+    // 在棋盘坐标系内移动，同时计算屏幕坐标并刷新显示
     void moveTo(int _x=0,int _y=0);
     void moveTo(ChessPostion pst);
 
