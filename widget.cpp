@@ -11,6 +11,7 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
     ui->label->setVisible(false);
+    setWindowTitle("中国跳棋 By panjd123");
     this->setMinimumSize(QSize(800, 625));
     this->setMaximumSize(QSize(800, 625));
     QPixmap bkgnd(":/images/background.png");
@@ -20,11 +21,23 @@ Widget::Widget(QWidget *parent)
     this->setPalette(palatte);
 
     chessBoard = new ChessBoard(this,playerNum);
+
     btnSetPlayerNum = new QPushButton(this);
     btnSetPlayerNum->setGeometry(30,360,100,30);
     btnSetPlayerNum->setText("SetPlayerNum");
     btnSetPlayerNum->setCursor(Qt::PointingHandCursor);
     connect(this->btnSetPlayerNum,&QPushButton::clicked,this,&Widget::on_btnSetPlayerNum_clicked);
+
+    labelPlayerNum = new QLabel(this);
+    labelPlayerNum->setGeometry(30,410,30,30);
+    labelPlayerNum->setText("人数:");
+
+    editPlayerNum = new QLineEdit(this);
+    editPlayerNum->setGeometry(60,410,70,30);
+//    editPlayerNum->setText("2");
+    editPlayerNum->setAlignment(Qt::AlignHCenter);
+    editPlayerNum->setClearButtonEnabled(true);
+    editPlayerNum->setPlaceholderText("1,2,3,4,6");
 }
 
 Widget::~Widget()
@@ -54,6 +67,9 @@ void Widget::on_btnSetPlayerNum_clicked()
     }
 //    SetPlayerNumWindow wi=SetPlayerNumWindow();
 //    wi.show();
+    if(editPlayerNum->text().toInt()){
+        playerNum = editPlayerNum->text().toInt();
+    }
     chessBoard = new ChessBoard(this,playerNum);
     chessBoard->show();
     qDebug()<<chessBoard;

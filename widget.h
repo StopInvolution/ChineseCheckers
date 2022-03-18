@@ -6,6 +6,7 @@
 #include <QPen>
 #include <QTimer>
 #include <QPushButton>
+#include <QLineEdit>
 #include "marble.h"
 #include "setplayernumwindow.h"
 
@@ -29,6 +30,9 @@ public:
     ChessBoard *chessBoard;
 
     QPushButton *btnSetPlayerNum;
+    QLineEdit *editPlayerNum;
+    QLabel *labelPlayerNum;
+
     void on_btnSetPlayerNum_clicked();
 
 //private:
