@@ -7,7 +7,7 @@
 #include <vector>
 
 class ChessBoard;
-class Player
+class Player:public QObject
 {
 public:
     Player(int _color=1, int _spawn=0, int _target=3, QString _name="张三",int _chessNum=10);

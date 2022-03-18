@@ -20,7 +20,6 @@ Widget::Widget(QWidget *parent)
     this->setPalette(palatte);
 
     chessBoard = new ChessBoard(this,playerNum);
-
     btnSetPlayerNum = new QPushButton(this);
     btnSetPlayerNum->setGeometry(30,360,100,30);
     btnSetPlayerNum->setText("SetPlayerNum");
@@ -48,12 +47,14 @@ void Widget::paintEvent(QPaintEvent *)
 
 void Widget::on_btnSetPlayerNum_clicked()
 {
-    if(this->chessBoard){
+    qDebug()<<chessBoard;
+    if(this->chessBoard!=NULL){
         delete this->chessBoard;
         this->chessBoard=NULL;
     }
 //    SetPlayerNumWindow wi=SetPlayerNumWindow();
 //    wi.show();
-//    chessBoard = new ChessBoard(this,playerNum);
-//    chessBoard->show();
+    chessBoard = new ChessBoard(this,playerNum);
+    chessBoard->show();
+    qDebug()<<chessBoard;
 }

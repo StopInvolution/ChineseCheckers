@@ -8,7 +8,7 @@
 #include <ctime>
 #include <queue>
 
-ChessBoard::ChessBoard(Widget *_parentWindow, int _player_num):parentWindow(_parentWindow),playerNum(_player_num),stepNum(0),selectedChess(0)
+ChessBoard::ChessBoard(Widget *_parentWindow, int _player_num):parentWindow(_parentWindow),playerNum(_player_num),stepNum(0),activatedPlayer(NULL),selectedChess(0)
 {
     srand(time(0));
 
@@ -50,7 +50,7 @@ ChessBoard::ChessBoard(Widget *_parentWindow, int _player_num):parentWindow(_par
     btnStopAutoMv->setGeometry(30,310,100,30);
     btnStopAutoMv->setText("StopAutoMv");
     btnStopAutoMv->setCursor(Qt::PointingHandCursor);
-    connect(this->btnRandomMove,&QPushButton::clicked,this,&ChessBoard::on_btnStopAutoMv_clicked);
+    connect(this->btnStopAutoMv,&QPushButton::clicked,this,&ChessBoard::on_btnStopAutoMv_clicked);
 }
 
 ChessBoard::~ChessBoard()
