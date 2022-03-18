@@ -12,6 +12,7 @@ SOURCES += \
     chessboard.cpp \
     main.cpp \
     marble.cpp \
+    pathnode.cpp \
     player.cpp \
     setplayernumwindow.cpp \
     util.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 HEADERS += \
     chessboard.h \
     marble.h \
+    pathnode.h \
     player.h \
     setplayernumwindow.h \
     settings.h \

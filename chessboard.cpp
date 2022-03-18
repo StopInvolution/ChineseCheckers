@@ -7,6 +7,7 @@
 #include <random>
 #include <ctime>
 #include <queue>
+#include <stack>
 
 ChessBoard::ChessBoard(Widget *_parentWindow, int _player_num):parentWindow(_parentWindow),playerNum(_player_num),stepNum(0),activatedPlayer(NULL),selectedChess(0)
 {
@@ -83,31 +84,33 @@ void ChessBoard::setNextActivatedPlayer()
 
 void ChessBoard::getHint()
 {
-    std::queue<ChessPostion> Q;
+    qDebug()<<"\n\n";
+    std::queue<Marble*> Q;
     bool vis[2*board::indexBoundary+1][2*board::indexBoundary+1];
     memset(vis,0,sizeof(vis));
-    Q.push(this->selectedChess->chessPosition);
+    Q.push(this->selectedChess);
     while(!Q.empty()){
-        ChessPostion u=Q.front();
+        Marble *u=Q.front();
         Q.pop();
         for(auto player:this->players){
             for(auto chess:player->chesses){
-                ChessPostion mid=chess->chessPosition;
-                if(isCollinear(u,mid) && mid!=this->selectedChess->chessPosition){
-                    ChessPostion dest=jumpOver(u,mid);
+                ChessPostion midPst=chess->chessPosition;
+                if(isCollinear(u->chessPosition,midPst) && midPst!=this->selectedChess->chessPosition){
+                    ChessPostion dest=jumpOver(u->chessPosition,midPst);
                     int dDestX=dest.first+board::indexBoundary,dDestY=dest.second+board::indexBoundary;
 //                    qDebug()<<"--------------bg";
-//                    outChessPostion(u);
+//                    outChessPostion(u->chessPosition);
 //                    outChessPostion(dest);
-//                    qDebug()<<isAnyChessBetween(this,u,mid,dest);
+//                    qDebug()<<isAnyChessBetween(this,u->chessPosition,midPst,dest);
 //                    qDebug()<<"--------------ed";
-                    // 没有棋子在中间，宽搜没搜过，没有棋子占用，在边界内
-                    if(!isAnyChessBetween(this,u,mid,dest) && !vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)){
+//                     没有棋子在中间，宽搜没搜过，没有棋子占用，在边界内
+                    if(!isAnyChessBetween(this,u->chessPosition,midPst,dest) && !vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)){
                         vis[dDestX][dDestY]=true;
-                        Q.push(dest);
                         this->hintPlayer->chesses.push_back(new Marble(this->parentWindow,dest.first,dest.second,color::hint));
                         this->hintPlayer->chesses.back()->addTo(hintPlayer);
                         this->hintPlayer->chesses.back()->setCursor(Qt::PointingHandCursor);
+                        this->hintPlayer->chesses.back()->from=u;
+                        Q.push(this->hintPlayer->chesses.back());
 //                        this->hintPlayer->chesses.back()->show();
                         this->hintPlayer->chessNum++;
                     }
@@ -122,10 +125,11 @@ void ChessBoard::getHint()
 //        outChessPostion(dest);
         if(!vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)){
             vis[dDestX][dDestY]=true;
-            Q.push(dest);
             this->hintPlayer->chesses.push_back(new Marble(this->parentWindow,dest.first,dest.second,color::hint));
             this->hintPlayer->chesses.back()->addTo(hintPlayer);
             this->hintPlayer->chesses.back()->setCursor(Qt::PointingHandCursor);
+            this->hintPlayer->chesses.back()->from=this->selectedChess;
+            Q.push(this->hintPlayer->chesses.back());
 //            this->hintPlayer->chesses.back()->show();
             this->hintPlayer->chessNum++;
         }
@@ -140,14 +144,23 @@ void ChessBoard::getHint()
 void ChessBoard::showHint()
 {
     for(auto chess:hintPlayer->chesses){
+        chess->setHidden(false);
         chess->show();
     }
 }
 
-void ChessBoard::moveChess(ChessPostion pst)
+void ChessBoard::unshowHint()
 {
+    for(auto chess:hintPlayer->chesses){
+        chess->setHidden(true);
+    }
+}
+
+void ChessBoard::moveChess(Marble *dest)
+{
+    unshowHint();
     this->stepNum++;
-    selectedChess->moveTo(pst);
+    selectedChess->moveToWithPath(dest);
     nextTurn();
     updateLabelInfo();
 }
@@ -173,7 +186,7 @@ void ChessBoard::randomMove()
         selectedChess=activatedPlayer->chesses[rand()%activatedPlayer->chessNum];
         getHint();
     }while(hintPlayer->chesses.empty());
-    moveChess(hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition);
+    moveChess(hintPlayer->chesses[rand()%hintPlayer->chessNum]);
 //    ChessPostion pst=hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition;
 //    moveChess(pst);
 }
@@ -222,5 +235,3 @@ void ChessBoard::on_btnStopAutoMv_clicked()
 {
     this->timer->stop();
 }
-
-

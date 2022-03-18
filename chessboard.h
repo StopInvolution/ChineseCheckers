@@ -45,9 +45,10 @@ public:
     // 计算和显示 selectedChess 可落子的位置(hintChess)
     void getHint();
     void showHint();
+    void unshowHint();
 
     // 棋子被点击时的回调函数
-    void moveChess(ChessPostion pst);
+    void moveChess(Marble *dest);
     // 落点(hint)被点击时的回调函数
     void chooseChess (Marble *chess);
 
