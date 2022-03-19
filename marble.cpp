@@ -91,7 +91,7 @@ bool Marble::isCollinearWith(const Marble &rhs) const
 void Marble::On_Clicked()
 {
     if(this->parentPlayer->activated){
-        qDebug()<<"I'm clicked";
+//        qDebug()<<"I'm clicked";
         if(chessColor==color::hint){
             this->parentPlayer->parentChessBoard->moveChess(this);
         }

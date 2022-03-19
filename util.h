@@ -25,4 +25,7 @@ ChessPostion jumpOver(const ChessPostion &arg1, const ChessPostion &arg2);
 
 // 输出 ChessPosition 类
 void outChessPostion(ChessPostion p);
+
+// 判断是否在某个大本营内，中间返回0，否则返回对应序号
+int getZone(ChessPostion pst);
 #endif // UTIL_H

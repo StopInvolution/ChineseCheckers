@@ -98,3 +98,29 @@ QString getQColor(int color)
     }
     return QString("color:#000000;");
 }
+
+int getZone(ChessPostion pst)
+{
+    int x=pst.first,y=pst.second;
+    if(y<-board::boundary){
+        return 1;
+    }
+    else if(y<x-board::boundary){
+        return 2;
+    }
+    else if(x>board::boundary){
+        return 3;
+    }
+    else if(y>board::boundary){
+        return 4;
+    }
+    else if(y>x+board::boundary){
+        return 5;
+    }
+    else if(x<-board::boundary){
+        return 6;
+    }
+    else{
+        return 0;
+    }
+}
