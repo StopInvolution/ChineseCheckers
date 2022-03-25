@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "utility": "cpp",
+        "atomic": "cpp",
+        "deque": "cpp",
+        "ios": "cpp",
+        "istream": "cpp",
+        "random": "cpp",
+        "streambuf": "cpp",
+        "system_error": "cpp",
+        "vector": "cpp",
+        "xiosbase": "cpp",
+        "xstring": "cpp"
+    }
+}
