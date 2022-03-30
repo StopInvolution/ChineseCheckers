@@ -54,7 +54,9 @@ bool isWithinBoundary(const ChessPostion& arg) {
            (arg.first >= -board::boundary && arg.second <= board::boundary && arg.second >= arg.first - board::boundary);
 }
 
-bool isNeighbor(const ChessPostion& arg1, const ChessPostion& arg2);
+bool isNeighbor(const ChessPostion& arg1, const ChessPostion& arg2) {
+    return std::max(abs(arg1.first - arg2.first), abs(arg1.second - arg2.second)) <= 1;
+}
 
 ChessPostion jumpOver(const ChessPostion& arg1, const ChessPostion& arg2) {
     return ChessPostion(2 * arg2.first - arg1.first, 2 * arg2.second - arg1.second);

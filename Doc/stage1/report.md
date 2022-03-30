@@ -1,8 +1,7 @@
-# 实验报告
-[toc]
+# 第一阶段总结
 
 # 1.功能分析
-## 1.1 StopInvolution程设跳棋游戏的基本功能
+## 1.1 跳棋游戏的基本功能
 - 友好的图形界面
 - 支持 1,2,3,4,6 人游戏
 - 支持 AI 托管
@@ -31,10 +30,12 @@
 1. 玩家选择棋子后可以获得合法落子位置提示 
 2. 玩家可以随时启用托管或获得托管的建议行棋方式
 3. 托管的智能程度可通过设置定义
-# 3. 分工
-- 潘俊达:跳棋基本界面实现+跳棋底层逻辑实现
-- 贾昊霖:网络接口接入+多人交互界面功能实现
-- 程云飞:托管AI实现
+
+
+> 涉及机器人和多人的部分还在实现中
+
+# 3. 效果展示
+![](image/MainWindow.png)
 # 4. 实现细节
 ## 4.1 跳棋底层逻辑
 ### 4.1.1 跳棋坐标
@@ -46,7 +47,8 @@ $$
 $$
 为基底建系，则棋子可以有唯一的整坐标，通过 $[i,j]$ 矩阵可以方便地实现像素坐标和棋盘坐标的互转
 
-![](image/README/1648206802179.png)![](image/README/1648206874945.png)
+![](image/1648206802179.png)
+![](image/1648206874945.png)
 
 ### 4.1.2 合法落子位置搜索
 #### 4.1.2.1 间隔跳版本
@@ -69,19 +71,19 @@ $$
 
 ## 4.2 跳棋棋盘交互界面(即不涉及多人的部分)
 ### 4.2.2 模块层次
-Marble : 棋子/提示
+`Marble` : 棋子/提示
 
-Player ：玩家
+`Player` ：玩家
 
-ChessBoard：棋盘
+`ChessBoard`：棋盘
 
-成员的包含关系： ChessBoard->Player->Marble
+成员的包含关系： `ChessBoard`->`Player`->`Marble`
 ### 4.2.2 Marble
-Marble 继承了QLabel，以实现
-- 点击事件：当且仅当棋子的父对象即玩家当轮处于激活态时 clickable=True。回调 ChessBoard 层面的函数，以选择棋子（当棋子被点击时）或选择落点（当提示位置被点击时）
-- 图标显示(棋子/提示虚线框)：使用 QPixmap 实现
+`Marble` 继承了 `QLabel`，以实现
+- 点击事件：当且仅当棋子的父对象即玩家当轮处于激活态时 `clickable=True`。回调 `ChessBoard` 层面的函数，以选择棋子（当棋子被点击时）或选择落点（当提示位置被点击时）
+- 图标显示(棋子/提示虚线框)：使用 `QPixmap` 实现
 - 位置移动：略
-- 移动动画：使用 Qt 封装的动画库 QSequentialAnimationGroup 和 QPropertyAnimation 实现。事实上为了更好的显示效果，我们在合法落子位置搜索那里保存了跳跃路径，所以此处的移动动画将会重现棋子的跳跃过程
+- 移动动画：使用 `Qt` 封装的动画库 `QSequentialAnimationGroup` 和 `QPropertyAnimation` 实现。事实上为了更好的显示效果，我们在合法落子位置搜索那里保存了跳跃路径，所以此处的移动动画将会重现棋子的跳跃过程
 
 ### 4.2.3 Player
 值得一提的是为了实现上的方便，我们抽象出了一个提示玩家，它负责管理提示棋子(显示为虚线框)
@@ -94,22 +96,22 @@ Marble 继承了QLabel，以实现
 
 ## 4.3 游戏程序流程简述
 ### 4.3.1 初始化阶段
-棋盘创建按钮，标签和玩家对象(包括抽象出来的hintPlayer)，玩家创建棋子对象(hintPlayer初始时不拥有棋子)。
+棋盘创建按钮，标签和玩家对象(包括抽象出来的`hintPlayer`)，玩家创建棋子对象(`hintPlayer`初始时不拥有棋子)。
 
-此时 ChessBoard 保存的 activatedPlayer 指向 玩家0，selectedChess 指向 nullptr
+此时 `ChessBoard` 保存的 `activatedPlayer` 指向 `player[0]`，`selectedChess` 指向 `nullptr`
 
 ### 4.3.2 游戏阶段
-玩家可以点击棋盘上的棋子，此时只有 activatedPlayer 对它自己的棋子的点击会触发回调，点击后会传递所点击棋子的地址给 ChessBoard，此时 ChessBoard 的 selectedChess 就指向所点棋子。
+玩家可以点击棋盘上的棋子，此时只有 `activatedPlayer` 对它自己的棋子的点击会触发回调，点击后会传递所点击棋子的地址给 `ChessBoard`，此时 `ChessBoard` 的 `selectedChess` 就指向所点棋子。
 
-紧接着 ChessBoard 会调用 getHint 来对这个棋子计算合法落子，并动态地将合法落子抽象成一个棋子加入到hintPlayer。getHint 结束后调用 showHint 显示提示棋子。
+紧接着 `ChessBoard` 会调用 `getHint()` 来对这个棋子计算合法落子，并动态地将合法落子抽象成一个棋子加入到`hintPlayer`。`getHint()` 结束后调用 `showHint()` 显示提示棋子。
 
-此时若玩家继续点击正常棋子，hintPlayer 的棋子会被删除。若重新点击的是刚才的 selectedChess 则 selectedChess 会重新指向 nullptr , 若改变主意点其他棋子，则会重新计算并显示 hint。
+此时若玩家继续点击正常棋子，`hintPlayer` 的棋子会被删除。若重新点击的是刚才的 `selectedChess` 则 `selectedChess` 会重新指向 `nullptr` , 若改变主意点其他棋子，则会重新计算并显示 `hint`。
 
-若玩家想行棋，则它应该点击 hintPlayer 拥有的棋子 $v$，点击后会触发回调，ChessBoard 层面会把这个棋子 $v$ 作为参数传给 selectedChess 这个棋子的成员函数 moveToWithPath。值得注意的是 getHint 时创建的每个 hint 棋子保存了它从 selectedChess 到最终点时经过的路径，所以传递 hint 棋子就可以让玩家棋子实现路径移动。
+若玩家想行棋，则它应该点击 `hintPlayer` 拥有的棋子 $v$，点击后会触发回调，`ChessBoard` 层面会把这个棋子 $v$ 作为参数传给 selectedChess 这个棋子的成员函数 `moveToWithPath()`。值得注意的是 `getHint()` 时创建的每个 `hint` 棋子保存了它从 `selectedChess` 到最终点时经过的路径，所以传递 `hint` 棋子就可以让玩家棋子实现路径移动。
 
 移动结束后会判断该玩家是否已经完赛
 
-判断结束后调用 nextTurn() 和 updateLabelInfo()。进入下一个玩家的轮次
+判断结束后调用 `nextTurn()` 和 `updateLabelInfo()`。进入下一个玩家的轮次
 
 # 5.实现难点分析
 ## 5.1 回调 or connect or addTo()

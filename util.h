@@ -24,13 +24,12 @@ bool isCollinear(const ChessPostion& arg1, const ChessPostion& arg2, const Chess
 bool isWithinBoundary(const ChessPostion& arg);
 
 // 是否相邻
-bool isNeighbor(const ChessPostion& arg1, const ChessPostion& arg2) {
-    return max(abs(arg1.first - arg2.first), abs(arg1.second - arg2.second)) <= 1;
-}
+bool isNeighbor(const ChessPostion& arg1, const ChessPostion& arg2);
 
 // 返回 arg1 到 arg2 倍长线的终点
 ChessPostion jumpOver(const ChessPostion& arg1, const ChessPostion& arg2);
 
 // 输出 ChessPosition 类
 void outChessPostion(ChessPostion p);
+
 #endif  // UTIL_H
