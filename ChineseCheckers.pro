@@ -14,24 +14,19 @@ SOURCES += \
     chessboard.cpp \
     main.cpp \
     marble.cpp \
-    pathnode.cpp \
     player.cpp \
-    setplayernumwindow.cpp \
     util.cpp \
     widget.cpp
 
 HEADERS += \
     chessboard.h \
     marble.h \
-    pathnode.h \
     player.h \
-    setplayernumwindow.h \
     settings.h \
     util.h \
     widget.h
 
 FORMS += \
-    setplayernumwindow.ui \
     widget.ui
 
 # Default rules for deployment.

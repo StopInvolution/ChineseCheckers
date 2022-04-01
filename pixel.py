@@ -37,14 +37,15 @@ for x, y in zip(chessX[arg], chessY[arg]):
     elif x < -boundary:
         spawn[5].append((x, y))
 print(cnt)
-# for sp in spawn:
-#     x, y = np.array(sp).T
-#     for s, t in zip(x, y):
-#         print(f',{s},{t}', end="")
-#     print("")
-# u = np.array([1, 0])
-# v = np.array([-0.5, np.sqrt(3)/2])
-# x, y = np.dot(np.c_[u, v], np.c_[chessX, chessY].T)
-# # print(x, y)
-# plt.scatter(x[arg], y[arg])
-# plt.show()
+for sp in spawn:
+    x, y = np.array(sp).T
+    for s, t in zip(x, y):
+        print(f',{s},{t}', end="")
+    print("")
+u = np.array([1, 0])
+v = np.array([-0.5, np.sqrt(3)/2])
+x, y = np.dot(np.c_[u, v], np.c_[chessX, chessY].T)
+print(x, y)
+plt.scatter(x[arg], y[arg])
+# plt.scatter(chessX[arg], chessY[arg])
+plt.show()

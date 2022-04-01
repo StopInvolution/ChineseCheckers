@@ -1,62 +1,61 @@
 #include "chessboard.h"
-#include "player.h"
-#include "marble.h"
-#include "settings.h"
-#include "widget.h"
-#include "util.h"
-#include <random>
 #include <ctime>
 #include <queue>
+#include <random>
 #include <stack>
+#include "marble.h"
+#include "player.h"
+#include "settings.h"
+#include "util.h"
+#include "widget.h"
 
-ChessBoard::ChessBoard(Widget *_parentWindow, int _player_num):parentWindow(_parentWindow),playerNum(_player_num),stepNum(0),activatedPlayer(NULL),selectedChess(0)
-{
+ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
+    : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), activatedPlayer(nullptr), selectedChess(nullptr) {
     srand(time(0));
 
-    memset(this->occupiedPst,0,sizeof(this->occupiedPst));
+    memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
 
-    for(int i=0;i<playerNum;i++){
-        players.push_back(new Player(board::playerSpawn[playerNum][i],board::playerSpawn[playerNum][i],board::playerTarget[playerNum][i]));
+    for (int i = 0; i < playerNum; i++) {
+        players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
         players.back()->addTo(this);
     }
 
-    hintPlayer = new Player(color::hint,-1,-1,"hint",0);
+    hintPlayer = new Player(color::hint, -1, -1, "hint", 0);
     hintPlayer->addTo(this);
 
-    labelInfo=new QLabel(this->parentWindow);
-    labelInfo->setGeometry(10,10,200,80);
-    labelInfo->setFont(QFont("华光中圆_CNKI",16));
+    labelInfo = new QLabel(this->parentWindow);
+    labelInfo->setGeometry(10, 10, 200, 80);
+    labelInfo->setFont(QFont("华光中圆_CNKI", 16));
 
     setActivatedPlayer(this->players.front());
-    this->activatedPlayerID=0;
+    this->activatedPlayerID = 0;
 
     updateLabelInfo();
 
     btnRandomMove = new QPushButton(this->parentWindow);
-    btnRandomMove->setGeometry(30,210,100,30);
+    btnRandomMove->setGeometry(30, 210, 100, 30);
     btnRandomMove->setText("RandomMove");
     btnRandomMove->setCursor(Qt::PointingHandCursor);
-    connect(this->btnRandomMove,&QPushButton::clicked,this,&ChessBoard::on_btnRandomMove_clicked);
+    connect(this->btnRandomMove, &QPushButton::clicked, this, &ChessBoard::on_btnRandomMove_clicked);
 
     timer = new QTimer();
-    connect(timer,&QTimer::timeout,this,[&](){this->randomMove();});
+    connect(timer, &QTimer::timeout, this, [&]() { this->randomMove(); });
 
     btnAutoMv = new QPushButton(this->parentWindow);
-    btnAutoMv->setGeometry(30,260,100,30);
+    btnAutoMv->setGeometry(30, 260, 100, 30);
     btnAutoMv->setText("AutoMv");
     btnAutoMv->setCursor(Qt::PointingHandCursor);
-    connect(this->btnAutoMv,&QPushButton::clicked,this,&ChessBoard::on_btnAutoMv_clicked);
+    connect(this->btnAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnAutoMv_clicked);
 
     btnStopAutoMv = new QPushButton(this->parentWindow);
-    btnStopAutoMv->setGeometry(30,310,100,30);
+    btnStopAutoMv->setGeometry(30, 310, 100, 30);
     btnStopAutoMv->setText("StopAutoMv");
     btnStopAutoMv->setCursor(Qt::PointingHandCursor);
-    connect(this->btnStopAutoMv,&QPushButton::clicked,this,&ChessBoard::on_btnStopAutoMv_clicked);
+    connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
 }
 
-ChessBoard::~ChessBoard()
-{
-    for(auto obj:this->players){
+ChessBoard::~ChessBoard() {
+    for (auto obj : this->players) {
         delete obj;
     }
     delete hintPlayer;
@@ -66,141 +65,141 @@ ChessBoard::~ChessBoard()
     delete this->btnRandomMove;
 }
 
-void ChessBoard::setActivatedPlayer(Player *_activatedPlayer)
-{
-    if(activatedPlayer!=NULL){
+void ChessBoard::setActivatedPlayer(Player* _activatedPlayer) {
+    // 无效化上一个玩家
+    if (activatedPlayer != nullptr) {
         activatedPlayer->setActivated(false);
     }
-    activatedPlayer=_activatedPlayer;
+    activatedPlayer = _activatedPlayer;
     activatedPlayer->setActivated(true);
 }
 
-void ChessBoard::setNextActivatedPlayer()
-{
+void ChessBoard::setNextActivatedPlayer() {
+    // 这里加完完赛判断后要改成一个while，让他跳过已经完赛的玩家
     activatedPlayerID++;
-    if(activatedPlayerID>=playerNum) activatedPlayerID=0;
+    if (activatedPlayerID >= playerNum)
+        activatedPlayerID = 0;
     setActivatedPlayer(this->players[activatedPlayerID]);
 }
 
-void ChessBoard::getHint()
-{
-    qDebug()<<"\n\n";
+void ChessBoard::getHint() {
     std::queue<Marble*> Q;
-    bool vis[2*board::indexBoundary+1][2*board::indexBoundary+1];
-    memset(vis,0,sizeof(vis));
+    bool vis[2 * board::indexBoundary + 1][2 * board::indexBoundary + 1];
+    memset(vis, 0, sizeof(vis));
     Q.push(this->selectedChess);
-    while(!Q.empty()){
-        Marble *u=Q.front();
+    // 相邻跳跃
+    while (!Q.empty()) {
+        Marble* u = Q.front();
         Q.pop();
-        for(auto player:this->players){
-            for(auto chess:player->chesses){
-                ChessPostion midPst=chess->chessPosition;
-                if(isCollinear(u->chessPosition,midPst) && midPst!=this->selectedChess->chessPosition){
-                    ChessPostion dest=jumpOver(u->chessPosition,midPst);
-                    int dDestX=dest.first+board::indexBoundary,dDestY=dest.second+board::indexBoundary;
-//                    qDebug()<<"--------------bg";
-//                    outChessPostion(u->chessPosition);
-//                    outChessPostion(dest);
-//                    qDebug()<<isAnyChessBetween(this,u->chessPosition,midPst,dest);
-//                    qDebug()<<"--------------ed";
-//                     没有棋子在中间，宽搜没搜过，没有棋子占用，在边界内
-                    if(!isAnyChessBetween(this,u->chessPosition,midPst,dest) && !vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)){
-                        vis[dDestX][dDestY]=true;
-                        this->hintPlayer->chesses.push_back(new Marble(this->parentWindow,dest.first,dest.second,color::hint));
+        for (auto player : this->players) {
+            for (auto chess : player->chesses) {
+                ChessPostion midPst = chess->chessPosition;
+                // 1.共线 2.mid 和 u 不是同一个棋子 3.相邻
+                if (isCollinear(u->chessPosition, midPst) && midPst != this->selectedChess->chessPosition && isNeighbor(u->chessPosition, midPst)) {
+                    ChessPostion dest = jumpOver(u->chessPosition, midPst);
+                    int dDestX = dest.first + board::indexBoundary, dDestY = dest.second + board::indexBoundary;
+                    //                    qDebug()<<"--------------bg";
+                    //                    outChessPostion(u->chessPosition);
+                    //                    outChessPostion(dest);
+                    //                    qDebug()<<isAnyChessBetween(this,u->chessPosition,midPst,dest);
+                    //                    qDebug()<<"--------------ed";
+                    // 1.没有棋子在中间 2.宽搜没搜过 3.没有棋子占用 4.在边界内
+                    if (!isAnyChessBetween(this, u->chessPosition, midPst, dest) && !vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)) {
+                        vis[dDestX][dDestY] = true;
+                        this->hintPlayer->chesses.push_back(new Marble(this->parentWindow, dest.first, dest.second, color::hint));
                         this->hintPlayer->chesses.back()->addTo(hintPlayer);
                         this->hintPlayer->chesses.back()->setCursor(Qt::PointingHandCursor);
-                        this->hintPlayer->chesses.back()->from=u;
+                        this->hintPlayer->chesses.back()->from = u;
                         Q.push(this->hintPlayer->chesses.back());
-//                        this->hintPlayer->chesses.back()->show();
+                        // this->hintPlayer->chesses.back()->show();
                         this->hintPlayer->chessNum++;
                     }
                 }
             }
         }
     }
-    for(int k=0;k<6;k++){
-        ChessPostion dest(this->selectedChess->chessX+board::dx[k],this->selectedChess->chessY+board::dy[k]);
-        int dDestX=dest.first+board::indexBoundary,dDestY=dest.second+board::indexBoundary;
-//        outChessPostion(this->selectedChess->chessPosition);
-//        outChessPostion(dest);
-        if(!vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)){
-            vis[dDestX][dDestY]=true;
-            this->hintPlayer->chesses.push_back(new Marble(this->parentWindow,dest.first,dest.second,color::hint));
+    // 相邻移动
+    for (int k = 0; k < 6; k++) {
+        ChessPostion dest(this->selectedChess->chessX + board::dx[k], this->selectedChess->chessY + board::dy[k]);
+        int dDestX = dest.first + board::indexBoundary, dDestY = dest.second + board::indexBoundary;
+        //        outChessPostion(this->selectedChess->chessPosition);
+        //        outChessPostion(dest);
+        if (!vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)) {
+            vis[dDestX][dDestY] = true;
+            this->hintPlayer->chesses.push_back(new Marble(this->parentWindow, dest.first, dest.second, color::hint));
             this->hintPlayer->chesses.back()->addTo(hintPlayer);
             this->hintPlayer->chesses.back()->setCursor(Qt::PointingHandCursor);
-            this->hintPlayer->chesses.back()->from=this->selectedChess;
+            this->hintPlayer->chesses.back()->from = this->selectedChess;
             Q.push(this->hintPlayer->chesses.back());
-//            this->hintPlayer->chesses.back()->show();
+            //            this->hintPlayer->chesses.back()->show();
             this->hintPlayer->chessNum++;
         }
     }
-    this->hintPlayer->chessNum=this->hintPlayer->chesses.size();
+    this->hintPlayer->chessNum = this->hintPlayer->chesses.size();
 
-    // 必须添加完 hint->chesses 再设置
+    // 必须添加完 hint->chesses 再设置，因为这个函数还完成了修改鼠标手势的工作，必须保证棋子已经创建好
     this->hintPlayer->setActivated(true);
     //    this->activatedPlayer->setActivated(false);
 }
 
-void ChessBoard::showHint()
-{
-    for(auto chess:hintPlayer->chesses){
+void ChessBoard::showHint() {
+    for (auto chess : hintPlayer->chesses) {
         chess->setHidden(false);
+        // 小知识：不在构造函数中创建的控件是不会自动显示的，必须显式调用show()
         chess->show();
     }
 }
 
-void ChessBoard::unshowHint()
-{
-    for(auto chess:hintPlayer->chesses){
+void ChessBoard::unshowHint() {
+    for (auto chess : hintPlayer->chesses) {
         chess->setHidden(true);
     }
 }
 
-void ChessBoard::moveChess(Marble *dest)
-{
+void ChessBoard::moveChess(Marble* dest) {
     unshowHint();
     this->stepNum++;
     selectedChess->moveToWithPath(dest);
+    selectedChess = nullptr;
     nextTurn();
     updateLabelInfo();
 }
 
-void ChessBoard::chooseChess(Marble *chess)
-{
+void ChessBoard::chooseChess(Marble* chess) {
     hintPlayer->clear();
-    selectedChess=chess;
+    if (selectedChess) {
+        selectedChess = nullptr;
+        return;
+    }
+    selectedChess = chess;
     getHint();
     showHint();
 }
 
-void ChessBoard::nextTurn()
-{
+void ChessBoard::nextTurn() {
     hintPlayer->clear();
     this->setNextActivatedPlayer();
 }
 
-void ChessBoard::randomMove()
-{
-    do{
+void ChessBoard::randomMove() {
+    do {
         hintPlayer->clear();
-        selectedChess=activatedPlayer->chesses[rand()%activatedPlayer->chessNum];
+        selectedChess = activatedPlayer->chesses[rand() % activatedPlayer->chessNum];
         getHint();
-    }while(hintPlayer->chesses.empty());
-    moveChess(hintPlayer->chesses[rand()%hintPlayer->chessNum]);
-//    ChessPostion pst=hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition;
-//    moveChess(pst);
+    } while (hintPlayer->chesses.empty());
+    moveChess(hintPlayer->chesses[rand() % hintPlayer->chessNum]);
+    //    ChessPostion pst=hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition;
+    //    moveChess(pst);
 }
 
-void ChessBoard::updateLabelInfo()
-{
-    labelInfo->setText(QString("当前行棋方为 ")+getColorName(activatedPlayer->color)+QString("\n已走步数 ")+QString::number(this->stepNum));
+void ChessBoard::updateLabelInfo() {
+    labelInfo->setText(QString("当前行棋方为 ") + getColorName(activatedPlayer->color) + QString("\n已走步数 ") + QString::number(this->stepNum));
 }
 
-void ChessBoard::show()
-{
+void ChessBoard::show() {
     labelInfo->show();
-    for(auto player:players){
-        for(auto chess:player->chesses){
+    for (auto player : players) {
+        for (auto chess : player->chesses) {
             chess->show();
         }
     }
@@ -209,11 +208,10 @@ void ChessBoard::show()
     btnRandomMove->show();
 }
 
-bool isAnyChessBetween(ChessBoard *chessBoard, ChessPostion u, ChessPostion mid, ChessPostion v)
-{
-    for(auto player:chessBoard->players){
-        for(auto chess:player->chesses){
-            if(u!=chess->chessPosition && v!=chess->chessPosition && mid!=chess->chessPosition && isCollinear(u,chess->chessPosition,v)){
+bool isAnyChessBetween(ChessBoard* chessBoard, ChessPostion u, ChessPostion mid, ChessPostion v) {
+    for (auto player : chessBoard->players) {
+        for (auto chess : player->chesses) {
+            if (u != chess->chessPosition && v != chess->chessPosition && mid != chess->chessPosition && isCollinear(u, chess->chessPosition, v)) {
                 return true;
             }
         }
@@ -221,17 +219,14 @@ bool isAnyChessBetween(ChessBoard *chessBoard, ChessPostion u, ChessPostion mid,
     return false;
 }
 
-void ChessBoard::on_btnRandomMove_clicked()
-{
+void ChessBoard::on_btnRandomMove_clicked() {
     this->randomMove();
 }
 
-void ChessBoard::on_btnAutoMv_clicked()
-{
+void ChessBoard::on_btnAutoMv_clicked() {
     this->timer->start(200);
 }
 
-void ChessBoard::on_btnStopAutoMv_clicked()
-{
+void ChessBoard::on_btnStopAutoMv_clicked() {
     this->timer->stop();
 }

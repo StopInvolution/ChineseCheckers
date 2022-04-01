@@ -11,7 +11,7 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
     ui->label->setVisible(false);
-    setWindowTitle("中国跳棋 By panjd123");
+    setWindowTitle("中国跳棋 By Team9");
     this->setMinimumSize(QSize(800, 625));
     this->setMaximumSize(QSize(800, 625));
     QPixmap bkgnd(":/images/background.png");
