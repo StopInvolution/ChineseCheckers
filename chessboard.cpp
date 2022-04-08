@@ -23,6 +23,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
     hintPlayer = new Player(color::hint, -1, -1, "hint", 0);
     hintPlayer->addTo(this);
 
+    // 标签
     labelInfo = new QLabel(this->parentWindow);
     labelInfo->setGeometry(10, 10, 200, 80);
     labelInfo->setFont(QFont("华光中圆_CNKI", 16));
@@ -32,12 +33,14 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
 
     updateLabelInfo();
 
+    // 创建三个随机移动相关按钮
     btnRandomMove = new QPushButton(this->parentWindow);
     btnRandomMove->setGeometry(30, 210, 100, 30);
     btnRandomMove->setText("RandomMove");
     btnRandomMove->setCursor(Qt::PointingHandCursor);
     connect(this->btnRandomMove, &QPushButton::clicked, this, &ChessBoard::on_btnRandomMove_clicked);
 
+    // 给随机移动创建一个计时器
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, [&]() { this->randomMove(); });
 
@@ -224,6 +227,7 @@ void ChessBoard::on_btnRandomMove_clicked() {
 }
 
 void ChessBoard::on_btnAutoMv_clicked() {
+    // 每200ms移动一次
     this->timer->start(200);
 }
 
