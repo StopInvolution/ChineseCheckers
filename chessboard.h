@@ -47,9 +47,9 @@ public:
     void showHint();
     void unshowHint();
 
-    // 棋子被点击时的回调函数
+    // 落点(hint)被点击时的回调函数，用于移动选择的普通棋子到该棋子的位置
     void moveChess(Marble *dest);
-    // 落点(hint)被点击时的回调函数
+    // 棋子被点击时的回调函数，用于选择待移动的普通棋子
     void chooseChess (Marble *chess);
 
     // 落子后切换到下一个人

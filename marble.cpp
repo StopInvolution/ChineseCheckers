@@ -62,7 +62,7 @@ void Marble::moveToWithPath(Marble* dest) {
     // 注意这里移动是真的会慢慢改参数，而不是仅仅显示上，所以创建移动动画后不需要再调用一次改变位置的函数
     // 但这样的问题就是如果你连续创建动画的话你必须提前告诉它上一次移动的终点为起点，而不能让他自己去获取
     // 我不知道 Qt 支不支持线程阻塞，如果支持的话就可以用阻塞来实现，似乎会更优雅。
-    // 目前非阻塞会有一个小 Bug 就是在 AI 看来棋子已经移动结束了，所以开托管后人看起来就是棋盘山同时有很多棋子的移动，因为上一次的动画还没播完
+    // 目前非阻塞会有一个小 Bug 就是在 AI 看来棋子已经移动结束了，所以开托管后人看起来就是棋盘上同时有很多棋子的移动，因为上一次的动画还没播完
 
     QSequentialAnimationGroup* sequGroup = new QSequentialAnimationGroup;
     QPoint lstPst = this->pos();
@@ -77,7 +77,7 @@ void Marble::moveToWithPath(Marble* dest) {
         S.pop();
     }
 
-    // 突然发现一个问题，这个对象会不会自动 delete 自己啊，好像是自动结束后自我销毁的，这个需要确认
+    // 这个对象在结束后会自动删除自己
     sequGroup->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
