@@ -19,7 +19,7 @@ namespace color{
 
 
 namespace marbleinfo{
-    const int r=10;
+    const int r=15;
 }//namespace Marble
 
 

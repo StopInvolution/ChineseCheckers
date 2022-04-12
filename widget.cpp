@@ -1,8 +1,10 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "chessboard.h"
+#include "util.h"
 #include <QPixmap>
 #include <QPalette>
+#include <QDebug>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)

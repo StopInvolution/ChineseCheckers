@@ -3,6 +3,8 @@
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 #include <QString>
+#include <QPixmap>
+#include <QtCore>
 #include <stack>
 #include "chessboard.h"
 #include "player.h"
@@ -13,8 +15,11 @@
 Marble::Marble(Widget* _parentWindow, int _x, int _y, int _color)
     : QLabel(_parentWindow), chessX(_x), chessY(_y), chessColor(_color), chessPosition(_x, _y) {
     connect(this, SIGNAL(clicked()), this, SLOT(On_Clicked()));
-    setText(getColorName(chessColor));
-    setStyleSheet(getQColor(chessColor));
+    QPixmap pix = QPixmap(QString(":/images/")+getColorName(chessColor)+QString("_marble.png"));
+    setPixmap(pix);
+    setScaledContents(true);
+//    setText(getColorName(chessColor));
+//    setStyleSheet(getQColor(chessColor));
 }
 
 Marble::~Marble() {

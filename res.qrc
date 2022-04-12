@@ -2,5 +2,13 @@
     <qresource prefix="/images">
         <file>background.png</file>
         <file>marble.png</file>
+        <file>blue_marble.png</file>
+        <file>green_marble.png</file>
+        <file>orange_marble.png</file>
+        <file>pink_marble.png</file>
+        <file>purple_marble.png</file>
+        <file>red_marble.png</file>
+        <file>yellow_marble.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>
