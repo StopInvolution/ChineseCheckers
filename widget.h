@@ -32,6 +32,11 @@ public:
     QLineEdit *editPlayerNum;
     QLabel *labelPlayerNum;
 
+public slots:
+    void initChessBoard(int newPlayerNum=2);
+
+public:
+    void setChessBoard(int newPlayerNum=2);
     void on_btnSetPlayerNum_clicked();
 
 //private:

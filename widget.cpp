@@ -12,7 +12,7 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    ui->label->setVisible(false);
+//    ui->label->setVisible(false);
     setWindowTitle("中国跳棋 By Team9");
     this->setMinimumSize(QSize(800, 625));
     this->setMaximumSize(QSize(800, 625));
@@ -60,19 +60,28 @@ void Widget::paintEvent(QPaintEvent *)
     painter.drawEllipse(471-r,312-r,2*r,2*r);
 }
 
-void Widget::on_btnSetPlayerNum_clicked()
+void Widget::initChessBoard(int newPlayerNum)
 {
-    qDebug()<<chessBoard;
+    this->setChessBoard(newPlayerNum);
+    this->show();
+    qDebug()<<"???";
+}
+
+void Widget::setChessBoard(int newPlayerNum)
+{
     if(this->chessBoard!=NULL){
         delete this->chessBoard;
         this->chessBoard=NULL;
     }
-//    SetPlayerNumWindow wi=SetPlayerNumWindow();
-//    wi.show();
-    if(editPlayerNum->text().toInt()){
-        playerNum = editPlayerNum->text().toInt();
-    }
+    playerNum = newPlayerNum;
     chessBoard = new ChessBoard(this,playerNum);
     chessBoard->show();
-    qDebug()<<chessBoard;
+}
+
+void Widget::on_btnSetPlayerNum_clicked()
+{
+    if(editPlayerNum->text().toInt()){
+        setChessBoard(editPlayerNum->text().toInt());
+    }
+
 }

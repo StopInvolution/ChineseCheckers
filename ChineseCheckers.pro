@@ -12,6 +12,7 @@ RC_ICONS = logo.ico
 
 SOURCES += \
     chessboard.cpp \
+    initwidget.cpp \
     main.cpp \
     marble.cpp \
     player.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     chessboard.h \
+    initwidget.h \
     marble.h \
     player.h \
     settings.h \
@@ -27,6 +29,7 @@ HEADERS += \
     widget.h
 
 FORMS += \
+    initwidget.ui \
     widget.ui
 
 # Default rules for deployment.
