@@ -17,11 +17,14 @@ public:
 
     signals:
     void start(int playerNum);
+    void startOnline(int playerNum);
 
 private slots:
     void on_pushButton_clicked();
+    void on_onlinepushButton_clicked(); //start online playing.
 
 private:
+    bool valid_check(int); //check if the number of players is valid.
     Ui::initWidget *ui;
 };
 
