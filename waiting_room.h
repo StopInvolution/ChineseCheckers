@@ -22,6 +22,7 @@ public slots:
 
 private slots:
     void spinBoxRecheck(int val);
+
 };
 
 #endif // WAITING_ROOM_H

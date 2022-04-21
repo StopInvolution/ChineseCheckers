@@ -5,23 +5,26 @@ WaitingRoom::WaitingRoom(QWidget *parent):
     QWidget(parent), ui(new Ui::WaitingRoom)
 {
     setWindowTitle("准备房间");
+    ui->setupUi(this);
     spinBoxVal = 0; //uninitalized!!
-
+    connect(this->ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxRecheck(int)));
 }
 
 void WaitingRoom::initWindow(int playerNum) {
-    show();
-    int k = ui->spinBox->value();
-    qDebug() << k;
     spinBoxVal = playerNum;
+    ui->spinBox->setValue(playerNum);
+    show();
 }
 
 void WaitingRoom::spinBoxRecheck(int val)
 {
-    qDebug() << val;
-    ui->spinBox->setValue(3);
-//    if(val == 5) ui->spinBox->setValue(2^spinBoxVal);  //if it's initally 4 it will turn into 6.The opposite works as well.
-//    spinBoxVal = ui->spinBox->value();
+    auto target = ui->spinBox;
+    if(val == 5) {
+        target->blockSignals(1);
+        target->setValue(spinBoxVal^2);
+        target->blockSignals(0);
+    }
+    spinBoxVal = target->value();
 }
 
 WaitingRoom::~WaitingRoom()
