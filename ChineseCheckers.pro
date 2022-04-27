@@ -17,6 +17,7 @@ SOURCES += \
     marble.cpp \
     player.cpp \
     util.cpp \
+    waiting_room.cpp \
     widget.cpp
 
 HEADERS += \
@@ -26,10 +27,12 @@ HEADERS += \
     player.h \
     settings.h \
     util.h \
+    waiting_room.h \
     widget.h
 
 FORMS += \
     initwidget.ui \
+    waiting_room.ui \
     widget.ui
 
 # Default rules for deployment.

@@ -11,6 +11,7 @@
         <file>yellow_marble.png</file>
         <file>hint_marble.png</file>
         <file>init_background.jpeg</file>
+        <file>logo.ico</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
