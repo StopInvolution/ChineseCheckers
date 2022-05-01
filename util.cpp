@@ -40,7 +40,7 @@ QString getColorName(int color) {
 
 bool isCollinear(const ChessPostion& arg1, const ChessPostion& arg2) {
     int x(arg1.first), y(arg1.second), xx(arg2.first), yy(arg2.second);
-    return x == xx || y == yy || y - x == yy - xx;
+    return x == xx || y == yy || x+y == xx+yy;
 }
 
 bool isCollinear(const ChessPostion& arg1, const ChessPostion& arg2, const ChessPostion& arg3) {
@@ -50,8 +50,8 @@ bool isCollinear(const ChessPostion& arg1, const ChessPostion& arg2, const Chess
 }
 
 bool isWithinBoundary(const ChessPostion& arg) {
-    return (arg.first <= board::boundary && arg.second >= -board::boundary && arg.second <= arg.first + board::boundary) ||
-           (arg.first >= -board::boundary && arg.second <= board::boundary && arg.second >= arg.first - board::boundary);
+    return (arg.first+arg.second <= board::boundary && arg.first >= -board::boundary && arg.second >= -board::boundary) ||
+           (arg.first <= board::boundary && arg.second <= board::boundary && arg.first+arg.second >= -board::boundary);
 }
 
 bool isNeighbor(const ChessPostion& arg1, const ChessPostion& arg2) {

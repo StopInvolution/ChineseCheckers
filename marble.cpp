@@ -102,7 +102,7 @@ bool Marble::isCollinearWith(const Marble& rhs) const {
 
 void Marble::On_Clicked() {
     if (this->parentPlayer->activated) {
-        qDebug() << "I'm clicked";
+        qDebug() <<this->chessPosition<<" "<< "I'm clicked";
         // 两种棋子对应不同的回调
         if (chessColor == color::hint) {
             this->parentPlayer->parentChessBoard->moveChess(this);
