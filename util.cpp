@@ -1,13 +1,15 @@
 #include "util.h"
 #include <iostream>
 
-ChessPostion boardTransform(ChessPostion var) {
-    double x = var.first, y = var.second;
-    return ChessPostion(x * board::iHatX + y * board::jHatX + board::OriginX, x * board::iHatY + y * board::jHatY + board::OriginY);
-}
 
 ChessPostion boardTransform(int x, int y) {
-    return ChessPostion(x * board::iHatX + y * board::jHatX + board::OriginX, x * board::iHatY + y * board::jHatY + board::OriginY);
+    // 窗口坐标以左上角为原点
+    return ChessPostion(x * board::iHatX + y * board::jHatX + board::OriginX, -(x * board::iHatY + y * board::jHatY) + board::OriginY);
+}
+
+ChessPostion boardTransform(ChessPostion var) {
+    double x = var.first, y = var.second;
+    return boardTransform(x, y);
 }
 
 QString getColorName(int color) {

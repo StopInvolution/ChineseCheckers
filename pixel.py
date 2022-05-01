@@ -20,7 +20,7 @@ chessY = chessY.reshape(-1)
 arg = ((chessX+chessY <= boundary) & (chessX >= -boundary) & (chessY >= -boundary)
        ) | ((chessX <= boundary) & (chessY <= boundary) & (chessX+chessY >= -boundary))
 
-plt.scatter(chessX[arg], chessY[arg])
+# plt.scatter(chessX[arg], chessY[arg])
 
 cnt = 0
 spawn = [[], [], [], [], [], []]
@@ -39,12 +39,12 @@ for x, y in zip(chessX[arg], chessY[arg]):
         spawn[4].append((x, y))
     elif x+y < -boundary:
         spawn[5].append((x, y))
-print(spawn[2])
-for sp in spawn:
-    x, y = np.array(sp).T
+# print(spawn)
+for i in range(6):
+    x, y = np.array(spawn[i]).T
     for s, t in zip(x, y):
         # print(f',{s},{t}', end="")
-        print(f',{s+t},{-t}', end="")
+        print(f',{s},{t}', end="")
     print("")
 u = np.array([1, 0])
 v = np.array([0.5, np.sqrt(3)/2])
