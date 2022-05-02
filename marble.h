@@ -17,12 +17,12 @@ class Marble : public QLabel {
     Marble* from;
 
     int chessX, chessY, chessColor;
-    ChessPostion chessPosition;
+    ChessPosition chessPosition;
     void addTo(Player* _parentPlayer);
 
     // 在棋盘坐标系内移动，同时计算屏幕坐标并刷新显示，以下两个函数因 moveToWithPath 暂时被废用
     void moveTo(int _x = 0, int _y = 0);
-    void moveTo(ChessPostion pst);
+    void moveTo(ChessPosition pst);
 
     // 这个函数和上面两个是并列关系，这个实现了动画和路径
     void moveToWithPath(Marble* dest);

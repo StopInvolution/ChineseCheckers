@@ -20,8 +20,10 @@ chessY = chessY.reshape(-1)
 arg = ((chessX+chessY <= boundary) & (chessX >= -boundary) & (chessY >= -boundary)
        ) | ((chessX <= boundary) & (chessY <= boundary) & (chessX+chessY >= -boundary))
 
-# plt.scatter(chessX[arg], chessY[arg])
-
+for x, y in zip(chessX[arg], chessY[arg]):
+    print(f',{x},{y}', end='')
+print(len(chessX[arg]))
+exit()
 cnt = 0
 spawn = [[], [], [], [], [], []]
 for x, y in zip(chessX[arg], chessY[arg]):

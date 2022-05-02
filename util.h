@@ -6,8 +6,8 @@
 #include "settings.h"
 
 // 棋盘坐标转换到显示坐标
-ChessPostion boardTransform(ChessPostion var);
-ChessPostion boardTransform(int x, int y);
+ChessPosition boardTransform(ChessPosition var);
+ChessPosition boardTransform(int x, int y);
 
 // 输入编号返回颜色名字
 QString getColorName(int color);
@@ -16,20 +16,20 @@ QString getColorName(int color);
 QString getQColor(int color);
 
 // 是否共线
-bool isCollinear(const ChessPostion& arg1, const ChessPostion& arg2);
+bool isCollinear(const ChessPosition& arg1, const ChessPosition& arg2);
 
 // 返回 arg1 arg2 arg3 是否按顺序共线
-bool isCollinear(const ChessPostion& arg1, const ChessPostion& arg2, const ChessPostion& arg3);
+bool isCollinear(const ChessPosition& arg1, const ChessPosition& arg2, const ChessPosition& arg3);
 
-bool isWithinBoundary(const ChessPostion& arg);
+bool isWithinBoundary(const ChessPosition& arg);
 
 // 是否相邻
-bool isNeighbor(const ChessPostion& arg1, const ChessPostion& arg2);
+bool isNeighbor(const ChessPosition& arg1, const ChessPosition& arg2);
 
 // 返回 arg1 到 arg2 倍长线的终点
-ChessPostion jumpOver(const ChessPostion& arg1, const ChessPostion& arg2);
+ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2);
 
 // 输出 ChessPosition 类
-void outChessPostion(ChessPostion p);
+void outChessPostion(ChessPosition p);
 
 #endif  // UTIL_H

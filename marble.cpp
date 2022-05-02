@@ -34,13 +34,13 @@ void Marble::moveTo(int _x, int _y) {
         chessY = _y;
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = true;
     }
-    chessPosition = ChessPostion(chessX, chessY);
-    ChessPostion transformedPosition = boardTransform(chessX, chessY);
+    chessPosition = ChessPosition(chessX, chessY);
+    ChessPosition transformedPosition = boardTransform(chessX, chessY);
     int transformedX = transformedPosition.first, transformedY = transformedPosition.second;
     setGeometry(transformedX - marbleinfo::r, transformedY - marbleinfo::r, 2 * marbleinfo::r, 2 * marbleinfo::r);
 }
 
-void Marble::moveTo(ChessPostion pst) {
+void Marble::moveTo(ChessPosition pst) {
     moveTo(pst.first, pst.second);
 }
 
@@ -51,7 +51,7 @@ void Marble::moveToWithPath(Marble* dest) {
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = false;
         chessX = dest->chessX;
         chessY = dest->chessY;
-        chessPosition = ChessPostion(chessX, chessY);
+        chessPosition = ChessPosition(chessX, chessY);
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = true;
     }
 
@@ -101,7 +101,8 @@ bool Marble::isCollinearWith(const Marble& rhs) const {
 }
 
 void Marble::On_Clicked() {
-    if (this->parentPlayer->activated) {
+    // 只有本地当局能点击
+    if (this->parentPlayer->flag==3 || this->parentPlayer->parentChessBoard->god) {
         qDebug() <<this->chessPosition<<" "<<this->chessColor<<" "<< "I'm clicked";
         // 两种棋子对应不同的回调
         if (chessColor == color::hint) {

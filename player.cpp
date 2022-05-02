@@ -6,7 +6,7 @@
 #include "settings.h"
 
 Player::Player(int _color, int _spawn, int _target, QString _name, int _chessNum)
-    : name(_name), chessNum(_chessNum), color(_color), spawn(_spawn), target(_target), activated(false) {
+    : name(_name), chessNum(_chessNum), color(_color), spawn(_spawn), target(_target), flag(2) {
 }
 
 Player::~Player() {
@@ -15,18 +15,53 @@ Player::~Player() {
     }
 }
 
+Marble *Player::getChess(ChessPosition p)
+{
+    for(Marble* chess:this->chesses){
+        if(chess->chessPosition==p){
+            return chess;
+        }
+    }
+    return nullptr;
+}
+
+Marble *Player::getChess(int x, int y)
+{
+    return getChess(ChessPosition(x,y));
+}
+
+bool Player::checkWin()
+{
+    for(Marble* chess:this->chesses){
+        bool chessIn=false;
+        for(int i=0;i<10;i++){
+            if(chess->chessPosition==ChessPosition(board::spawnPst[this->target][i*2],board::spawnPst[this->target][i*2+1])){
+                chessIn=true;
+                break;
+            }
+        }
+        if(!chessIn){
+            return false;
+        }
+    }
+    return true;
+}
+
 void Player::addTo(ChessBoard* _parentChessBoard) {
     parentChessBoard = _parentChessBoard;
     for (int i = 0; i < chessNum; i++) {
         chesses.push_back(new Marble(parentChessBoard->parentWindow, board::spawnPst[color][i * 2], board::spawnPst[color][i * 2 + 1], color));
         chesses.back()->addTo(this);
-        //        chesses.back()->setText(QString::number(i));
+        if(parentChessBoard->god){
+            chesses.back()->setCursor(Qt::PointingHandCursor);
+        }
+        //chesses.back()->setText(QString::number(i));
     }
 }
 
-void Player::setActivated(bool flag) {
-    activated = flag;
-    if (activated) {
+void Player::setActivated(bool _flag) {
+    flag^=(!(flag & _flag));
+    if ((this->flag&2) && _flag) {
         if (!this->chesses.empty()) {
             for (auto chess : this->chesses) {
                 // 手型

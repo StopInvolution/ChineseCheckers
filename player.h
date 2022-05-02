@@ -21,11 +21,15 @@ class Player : public QObject {
     // 棋子的起点和终点
     int spawn, target;
 
-    // 是否是行棋状态
-    bool activated;
+    // 00:服务器玩家，本局不移动 01:服务器玩家，本局移动 10:本地玩家，本局不移动 11:本地玩家，本局移动 100:跳过(已结束或犯规)
+    unsigned int flag;
 
     // 棋子
     std::vector<Marble*> chesses;
+
+    Marble* getChess(ChessPosition p);
+    Marble* getChess(int x,int y);
+    bool checkWin();
 
     // 绑定父节点
     void addTo(ChessBoard* _parentChessBoard = 0);
