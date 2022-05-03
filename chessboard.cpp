@@ -11,7 +11,7 @@
 #include "widget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
-    : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), god(true), activatedPlayer(nullptr), selectedChess(nullptr) {
+    : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), god(false), activatedPlayer(nullptr), selectedChess(nullptr) {
     srand(time(0));
 
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
@@ -32,8 +32,8 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
     updateLabelInfo();
 
     // START_TURN_OP 应该等信号来了再设置，但原则上其实不需要，因为开始游戏和第一个人开始下棋的信号应当会一起发送，但是接口我就放这了
-//    nextTurn();
-//    updateLabelInfo();
+    nextTurn();
+    updateLabelInfo();
 
 
     // 创建三个随机移动相关按钮
