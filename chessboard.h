@@ -49,10 +49,13 @@ public:
     void showHint();
     void unshowHint();
 
-    // 落点(hint)被点击时的回调函数，用于移动选择的普通棋子到该棋子的位置
-    void moveChess(Marble *dest);
     // 棋子被点击时的回调函数，用于选择待移动的普通棋子
     void chooseChess (Marble *chess);
+    // 落点(hint)被点击时的回调函数，用于移动选择的普通棋子到该棋子的位置
+    void moveChess(Marble *dest,std::vector<ChessPosition> *path=nullptr);
+
+    // 当前玩家，超时判负
+    void timeout();
 
     // 落子后，首先判断刚才这一落子是否使得刚才这个人完赛，并做相应处理,
     void nextTurn();
@@ -66,6 +69,9 @@ public:
 
     // 将 activatedPlayer 的 p1 位置棋子移动到 p2 位置，合法则移动且返回 true，不合法则不移动且返回 false，同理，这里需要保证是 activatedPlayer 给出的信号
     bool moveA2B(ChessPosition p1,ChessPosition p2);
+
+    // 根据路径移动，返回格式同上，注意这里是传指针，需要小心对象生命周期
+    bool moveA2BWithPath(std::vector<ChessPosition>* p);
 
     // 随机移动一个棋子
     void randomMove();

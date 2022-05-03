@@ -3,6 +3,7 @@
 #include <queue>
 #include <random>
 #include <stack>
+#include <iostream>
 #include "marble.h"
 #include "player.h"
 #include "settings.h"
@@ -20,7 +21,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
         players.back()->addTo(this);
     }
 
-    hintPlayer = new Player(color::hint, -1, -1, "hint", 0);
+    hintPlayer = new Player(color::hint, -1, -1, 2, "hint",0);
     hintPlayer->addTo(this);
 
     // 标签
@@ -28,10 +29,12 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
     labelInfo->setGeometry(10, 10, 200, 80);
     labelInfo->setFont(QFont("华光中圆_CNKI", 16));
 
-    setActivatedPlayer(this->players.front());
-    this->activatedPlayerID = 0;
-
     updateLabelInfo();
+
+    // START_TURN_OP 应该等信号来了再设置，但原则上其实不需要，因为开始游戏和第一个人开始下棋的信号应当会一起发送，但是接口我就放这了
+//    nextTurn();
+//    updateLabelInfo();
+
 
     // 创建三个随机移动相关按钮
     btnRandomMove = new QPushButton(this->parentWindow);
@@ -103,6 +106,39 @@ bool ChessBoard::moveA2B(ChessPosition p1, ChessPosition p2)
         return false;
     }
     moveChess(dest);
+    return true;
+}
+
+bool ChessBoard::moveA2BWithPath(std::vector<ChessPosition> *path)
+{
+    selectedChess = this->activatedPlayer->getChess(path->front());
+    if(!selectedChess){
+        return false;
+    }
+    int n=path->size();
+    for(int i=1;i<n;i++){
+        ChessPosition &u=(*path)[i-1], &v=(*path)[i];
+        int vx=v.first,vy=v.second;
+        if(!isWithinBoundary((*path)[i]) || occupiedPst[vx][vy] || !isCollinear(u,v)){
+                selectedChess=nullptr;
+                return false;
+        }
+        bool flag=false;
+        for(auto player:this->players){
+            for(auto chess:player->chesses){
+                if(isCollinear(u,chess->chessPosition,v) && isNeighbor(u,chess->chessPosition) && isNeighbor(v,chess->chessPosition)){
+                    flag=true;
+                    goto checkdone;
+                }
+            }
+        }
+        checkdone:
+        if(!flag){
+            selectedChess=nullptr;
+            return false;
+        }
+    }
+    moveChess(nullptr,path);
     return true;
 }
 
@@ -203,11 +239,43 @@ void ChessBoard::unshowHint() {
     }
 }
 
-void ChessBoard::moveChess(Marble* dest) {
+void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
+    // 获取路径，按要求格式保存在 s 中
+    std::string s;
+    std::stack<ChessPosition> S;
+    Marble* now = dest;
+    while (now != selectedChess) {
+        S.push(now->chessPosition);
+        now = now->from;
+    }
+    S.push(selectedChess->chessPosition);
+    while(!S.empty()){
+        int x=S.top().first,y=S.top().second;
+        S.pop();
+        s=s+std::to_string(x)+" "+std::to_string(y)+" ";
+    }
+    std::cout<<s<<std::endl;
+
     unshowHint();
     this->stepNum++;
-    selectedChess->moveToWithPath(dest);
+    selectedChess->moveToWithPath(dest,path);
     selectedChess = nullptr;
+    updateLabelInfo();
+
+
+
+    // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
+    nextTurn();
+    updateLabelInfo();
+}
+
+void ChessBoard::timeout()
+{
+    activatedPlayer->flag=5;
+    activatedPlayer->clear();
+    selectedChess=nullptr;
+
+    // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
     nextTurn();
     updateLabelInfo();
 }
@@ -224,6 +292,10 @@ void ChessBoard::chooseChess(Marble* chess) {
 }
 
 void ChessBoard::nextTurn() {
+    if(!activatedPlayer){
+        activatedPlayer=players.front();
+        return ;
+    }
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
         qDebug()<<activatedPlayer->name<<" wins.\n";
@@ -251,7 +323,7 @@ void ChessBoard::randomMove() {
 }
 
 void ChessBoard::updateLabelInfo() {
-    labelInfo->setText(QString("当前行棋方为 ") + getColorName(activatedPlayer->color) + QString("\n已走步数 ") + QString::number(this->stepNum));
+    labelInfo->setText(QString("当前行棋方为 ") + (this->activatedPlayer?getColorName(activatedPlayer->color):"None") + QString("\n已走步数 ") + QString::number(this->stepNum));
 }
 
 void ChessBoard::show() {

@@ -8,7 +8,7 @@
 class ChessBoard;
 class Player : public QObject {
    public:
-    Player(int _color = 1, int _spawn = 0, int _target = 3, QString _name = "张三", int _chessNum = 10);
+    Player(int _color = 1, int _spawn = 0, int _target = 3, unsigned int _flag=2, QString _name = "张三", int _chessNum = 10);
     ~Player();
     ChessBoard* parentChessBoard;
 

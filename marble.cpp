@@ -23,7 +23,9 @@ Marble::Marble(Widget* _parentWindow, int _x, int _y, int _color)
 }
 
 Marble::~Marble() {
-    ;
+    if(this->chessColor!=color::hint){
+        parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = false;
+    }
 }
 
 void Marble::moveTo(int _x, int _y) {
@@ -44,23 +46,40 @@ void Marble::moveTo(ChessPosition pst) {
     moveTo(pst.first, pst.second);
 }
 
-void Marble::moveToWithPath(Marble* dest) {
+void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
     // 正常棋子要记 occupiedPst，提示棋子不能记
     // 这里的移动是改变棋盘坐标，像素坐标并没有改变，像素坐标会在下面的动画中被慢慢改变
     if (this->chessColor != color::hint) {
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = false;
-        chessX = dest->chessX;
-        chessY = dest->chessY;
+        // 如果指定路径，那么以路径终点坐标为准
+        if(path){
+            chessX = path->back().first;
+            chessY = path->back().second;
+        }
+        else{
+            chessX = dest->chessX;
+            chessY = dest->chessY;
+        }
         chessPosition = ChessPosition(chessX, chessY);
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = true;
     }
 
+    std::stack<QPoint> S;
+    // 如果没有指定路径，那么按照 hint 棋子追溯路径
+    if(!path){
     // 使用堆结构实现逆推路径 + 顺序播放。值得注意的是，这里路径的记录是全部采用指针的方法，所以在移动结束前不能删除 hint 棋子
-    Marble* now = dest;
-    std::stack<Marble*> S;
-    while (now != this) {
-        S.push(now);
-        now = now->from;
+        Marble* now = dest;
+        while (now != this) {
+            S.push(now->pos());
+            now = now->from;
+        }
+    }
+    else{
+        int n=path->size();
+        for(int i=n-1;i>=1;i--){
+            ChessPosition p=boardTransform((*path)[i]);
+            S.push(QPoint(p.first,p.second));
+        }
     }
 
     // Qt动画是多线程的，如果要串联/并联顺序播放可以用它的 动画组 库。
@@ -75,8 +94,8 @@ void Marble::moveToWithPath(Marble* dest) {
         QPropertyAnimation* pPosAnimation = new QPropertyAnimation(this, "pos");
         pPosAnimation->setDuration(500);
         pPosAnimation->setStartValue(lstPst);
-        pPosAnimation->setEndValue(S.top()->pos());
-        lstPst = S.top()->pos();
+        pPosAnimation->setEndValue(S.top());
+        lstPst = S.top();
         pPosAnimation->setEasingCurve(QEasingCurve::InOutQuad);
         sequGroup->addAnimation(pPosAnimation);
         S.pop();
