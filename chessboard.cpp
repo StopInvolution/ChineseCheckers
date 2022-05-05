@@ -35,7 +35,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
     nextTurn();
     updateLabelInfo();
 
-
     // 创建三个随机移动相关按钮
     btnRandomMove = new QPushButton(this->parentWindow);
     btnRandomMove->setGeometry(30, 210, 100, 30);
@@ -262,8 +261,6 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     selectedChess = nullptr;
     updateLabelInfo();
 
-
-
     // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
     nextTurn();
     updateLabelInfo();
@@ -294,6 +291,7 @@ void ChessBoard::chooseChess(Marble* chess) {
 void ChessBoard::nextTurn() {
     if(!activatedPlayer){
         activatedPlayer=players.front();
+        activatedPlayer->setActivated(true);
         return ;
     }
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
