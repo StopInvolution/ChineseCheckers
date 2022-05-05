@@ -1,4 +1,5 @@
 QT       += core gui
+QT += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,8 +15,15 @@ SOURCES += \
     chessboard.cpp \
     initwidget.cpp \
     main.cpp \
+    mainwindow.cpp \
     marble.cpp \
+    mul_initwidget.cpp \
+    networkdata.cpp \
+    networkserver.cpp \
+    networksocket.cpp \
     player.cpp \
+    querydialog.cpp \
+    serverwidget.cpp \
     util.cpp \
     waiting_room.cpp \
     widget.cpp
@@ -23,8 +31,15 @@ SOURCES += \
 HEADERS += \
     chessboard.h \
     initwidget.h \
+    mainwindow.h \
     marble.h \
+    mul_initwidget.h \
+    networkdata.h \
+    networkserver.h \
+    networksocket.h \
     player.h \
+    querydialog.h \
+    serverwidget.h \
     settings.h \
     util.h \
     waiting_room.h \
@@ -32,6 +47,10 @@ HEADERS += \
 
 FORMS += \
     initwidget.ui \
+    mainwindow.ui \
+    mul_initwidget.ui \
+    querydialog.ui \
+    serverwidget.ui \
     waiting_room.ui \
     widget.ui
 
