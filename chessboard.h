@@ -90,6 +90,7 @@ public:
 
     Marble* getChess(ChessPosition p,int playerID=-1);
     Marble* getChess(int x,int y,int playerID=-1);
+    QLabel *labelPlayer[7];
 };
 
 // 棋盘上是否有其他棋子在 u-mid-v 这条线上

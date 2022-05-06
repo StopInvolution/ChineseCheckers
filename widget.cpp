@@ -68,9 +68,9 @@ void Widget::initChessBoard(int newPlayerNum,std::vector<std::pair<QString,QStri
 
 void Widget::setChessBoard(int newPlayerNum,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
 {
-    if(this->chessBoard!=NULL){
+    if(this->chessBoard){
         delete this->chessBoard;
-        this->chessBoard=NULL;
+        this->chessBoard=nullptr;
     }
     playerNum = newPlayerNum;
     chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag);
@@ -82,5 +82,4 @@ void Widget::on_btnSetPlayerNum_clicked()
     if(editPlayerNum->text().toInt()){
         setChessBoard(editPlayerNum->text().toInt());
     }
-
 }

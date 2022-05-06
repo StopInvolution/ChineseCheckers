@@ -40,16 +40,14 @@ void initWidget::on_pushButton_clicked()
 {
     int t=ui->lineEdit->text().toInt();
     if(valid_check(t)){
-        std::vector<std::pair<QString,QString>>* playerInfo=new std::vector<std::pair<QString,QString>>;
-        std::map<QString,bool>* localFlag=new std::map<QString,bool>;
+        std::vector<std::pair<QString,QString>> playerInfo;
+        std::map<QString,bool> localFlag;
         for(int i=0;i<t;i++){
             QString name="我是"+QString::number(i);
-            playerInfo->push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
-            localFlag->insert(std::make_pair(name,true));
+            playerInfo.push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
+            localFlag.insert(std::make_pair(name,true));
         }
-        emit this->start(t,playerInfo,localFlag);
-        delete playerInfo;
-        delete localFlag;
+        emit this->start(t,&playerInfo,&localFlag);
         this->close();
     }
     else ui->WarnLabel->show();
