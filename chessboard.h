@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include "settings.h"
 #include <vector>
+#include <QTimer>
 
 
 class Player;
@@ -22,6 +23,9 @@ public:
 
     int playerNum;
     int stepNum;
+    QTimer *timeoutTimer= new QTimer;
+    int clockT;
+    double resTime;
     bool god;
 
     // 当前行棋方

@@ -11,7 +11,7 @@
 #include "widget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
-    : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), god(false), activatedPlayerID(0), activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow), playerNum(_player_num),stepNum(0), clockT(30), god(false), activatedPlayerID(0), activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
@@ -55,7 +55,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::p
 
     // 标签
     labelInfo = new QLabel(this->parentWindow);
-    labelInfo->setGeometry(10, 10, 200, 80);
+    labelInfo->setGeometry(10, 10, 200, 120);
     labelInfo->setFont(QFont("华光中圆_CNKI", 16));
 
     updateLabelInfo();
@@ -86,6 +86,8 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::p
     btnStopAutoMv->setText("StopAutoMv");
     btnStopAutoMv->setCursor(Qt::PointingHandCursor);
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
+
+    connect(this->timeoutTimer, &QTimer::timeout, this, [&](){resTime-=clockT/1000.0; if(resTime<=0){resTime=0; this->timeoutTimer->stop();} updateLabelInfo();});
 }
 
 ChessBoard::~ChessBoard() {
@@ -318,6 +320,8 @@ void ChessBoard::chooseChess(Marble* chess) {
 }
 
 void ChessBoard::nextTurn() {
+    resTime = 30;
+    this->timeoutTimer->start(clockT);
     if(!activatedPlayer){
         activatedPlayerID=0;
         activatedPlayer=players.front();
@@ -351,7 +355,10 @@ void ChessBoard::randomMove() {
 }
 
 void ChessBoard::updateLabelInfo() {
-    labelInfo->setText(tr("当前行棋方为\n") + (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") + QString("\n已走步数 ") + QString::number(this->stepNum));
+    labelInfo->setText(tr("当前行棋方为\n") +
+                       (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") +
+                       (this->resTime>0.0?tr("\n剩余思考时间 ")+QString::number(this->resTime)+tr("s"):tr("思考时间超时"))+
+                       tr("\n已走步数 ") + QString::number(this->stepNum));
 }
 
 void ChessBoard::show() {
