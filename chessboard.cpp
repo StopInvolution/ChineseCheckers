@@ -10,14 +10,21 @@
 #include "util.h"
 #include "widget.h"
 
-ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
+ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
     : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), god(false), activatedPlayer(nullptr), selectedChess(nullptr) {
     srand(time(0));
-
+    if(playerInfo)
+        qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
-
+    if(playerInfo)
+        sort(playerInfo->begin(),playerInfo->end(),[](const std::pair<QString,QString>& rhs1, const std::pair<QString,QString>& rhs2){return rhs1.second.compare(rhs2.second)<0;});
     for (int i = 0; i < playerNum; i++) {
-        players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
+        if(playerInfo && localFlag){
+            players.push_back(new Player(getSpawn((*playerInfo)[i].second), getSpawn((*playerInfo)[i].second), getTarget((*playerInfo)[i].second),((*localFlag)[(*playerInfo)[i].first])<<1,(*playerInfo)[i].first));
+        }
+        else{
+            players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
+        }
         players.back()->addTo(this);
     }
 

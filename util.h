@@ -32,4 +32,9 @@ ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2);
 // 输出 ChessPosition 类
 void outChessPostion(ChessPosition p);
 
+int getSpawn(QString ID);
+
+int getTarget(QString ID);
+
+QString getID(int x);
 #endif  // UTIL_H

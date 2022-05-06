@@ -68,6 +68,14 @@ void outChessPostion(ChessPosition p) {
     std::cout << p.first << " " << p.second << std::endl;
 }
 
+int getSpawn(QString ID){
+    return (int)*ID.toLatin1().data()-'A'+1;
+}
+
+int getTarget(QString ID){
+    int ret=(int)*ID.toLatin1().data()-'A'+4;
+    return ret>6?ret-6:ret;
+}
 QString getQColor(int color) {
     switch (color) {
         case 0:
@@ -99,4 +107,9 @@ QString getQColor(int color) {
             break;
     }
     return QString("color:#000000;");
+}
+
+QString getID(int x)
+{
+    return QString((char)(x+'A'-1));
 }

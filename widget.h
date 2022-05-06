@@ -33,10 +33,10 @@ public:
     QLabel *labelPlayerNum;
 
 public slots:
-    void initChessBoard(int newPlayerNum=2);
+    void initChessBoard(int newPlayerNum=2,std::vector<std::pair<QString,QString>>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr);
 
 public:
-    void setChessBoard(int newPlayerNum=2);
+    void setChessBoard(int newPlayerNum=2,std::vector<std::pair<QString,QString>>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr);
     void on_btnSetPlayerNum_clicked();
 
 //private:

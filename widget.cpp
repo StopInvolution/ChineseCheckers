@@ -60,21 +60,20 @@ void Widget::paintEvent(QPaintEvent *)
     painter.drawEllipse(471-r,312-r,2*r,2*r);
 }
 
-void Widget::initChessBoard(int newPlayerNum)
+void Widget::initChessBoard(int newPlayerNum,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
 {
-    this->setChessBoard(newPlayerNum);
+    this->setChessBoard(newPlayerNum,playerInfo,localFlag);
     this->show();
-    qDebug()<<"???";
 }
 
-void Widget::setChessBoard(int newPlayerNum)
+void Widget::setChessBoard(int newPlayerNum,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
 {
     if(this->chessBoard!=NULL){
         delete this->chessBoard;
         this->chessBoard=NULL;
     }
     playerNum = newPlayerNum;
-    chessBoard = new ChessBoard(this,playerNum);
+    chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag);
     chessBoard->show();
 }
 

@@ -16,7 +16,7 @@ class Widget;
 class ChessBoard:public QObject
 {
 public:
-    ChessBoard(Widget *_parentWindow = 0, int _player_num=6);
+    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<std::pair<QString,QString>>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr);
     ~ChessBoard();
     Widget *parentWindow;
 
