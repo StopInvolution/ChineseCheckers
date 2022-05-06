@@ -16,7 +16,8 @@ public:
     ~initWidget();
 
     signals:
-    void start(int playerNum);
+    void start(int playerNum,std::vector<std::pair<QString,QString>>* playerInfo,std::map<QString,bool>* localFlag);
+    void startOnline(int playerNum);
 
 private slots:
     void on_pushButton_clicked();

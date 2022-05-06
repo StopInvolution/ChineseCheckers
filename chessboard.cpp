@@ -10,14 +10,43 @@
 #include "util.h"
 #include "widget.h"
 
-ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num)
-    : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), god(false), activatedPlayer(nullptr), selectedChess(nullptr) {
+ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
+    : parentWindow(_parentWindow), playerNum(_player_num), stepNum(0), god(false), activatedPlayerID(0), activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
-
+    if(playerInfo)
+        qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
+    if(playerInfo)
+        sort(playerInfo->begin(),playerInfo->end(),[](const std::pair<QString,QString>& rhs1, const std::pair<QString,QString>& rhs2){return rhs1.second.compare(rhs2.second)<0;});
+
+    const int geo[]={0,0,530,110,680,240,600,455,330,485,180,355,260,140};
+    for(int i=1;i<=6;i++){
+        labelPlayer[i] = new QLabel(this->parentWindow);
+        labelPlayer[i]->setGeometry(geo[i*2],geo[i*2+1],80,40);
+        labelPlayer[i]->setFont(QFont("华光中圆_CNKI", 16));
+        labelPlayer[i]->setStyleSheet(getQColor(i));
+        labelPlayer[i]->setText(QString::number(i));
+        labelPlayer[i]->setVisible(false);
+    }
+    labelPlayer[1]->setAlignment(Qt::AlignLeft);
+    labelPlayer[2]->setAlignment(Qt::AlignLeft);
+    labelPlayer[3]->setAlignment(Qt::AlignHCenter);
+    labelPlayer[4]->setAlignment(Qt::AlignRight);
+    labelPlayer[5]->setAlignment(Qt::AlignRight);
+    labelPlayer[6]->setAlignment(Qt::AlignHCenter);
 
     for (int i = 0; i < playerNum; i++) {
-        players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
+        if(playerInfo && localFlag){
+            QString name=(*playerInfo)[i].first;
+            QString ID=(*playerInfo)[i].second;
+            int spawn=getSpawn(ID);
+            players.push_back(new Player(spawn, spawn, getTarget(ID),((*localFlag)[name])<<1,name));
+            labelPlayer[spawn]->setText(name);
+            labelPlayer[spawn]->setVisible(true);
+        }
+        else{
+            players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
+        }
         players.back()->addTo(this);
     }
 
@@ -290,6 +319,7 @@ void ChessBoard::chooseChess(Marble* chess) {
 
 void ChessBoard::nextTurn() {
     if(!activatedPlayer){
+        activatedPlayerID=0;
         activatedPlayer=players.front();
         activatedPlayer->setActivated(true);
         return ;
@@ -321,7 +351,7 @@ void ChessBoard::randomMove() {
 }
 
 void ChessBoard::updateLabelInfo() {
-    labelInfo->setText(QString("当前行棋方为 ") + (this->activatedPlayer?getColorName(activatedPlayer->color):"None") + QString("\n已走步数 ") + QString::number(this->stepNum));
+    labelInfo->setText(tr("当前行棋方为\n") + (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") + QString("\n已走步数 ") + QString::number(this->stepNum));
 }
 
 void ChessBoard::show() {

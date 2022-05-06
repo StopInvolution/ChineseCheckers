@@ -1,6 +1,9 @@
 #include "initwidget.h"
 #include "ui_initwidget.h"
 #include "widget.h"
+#include "settings.h"
+#include "util.h"
+#include <utility>
 
 initWidget::initWidget(QWidget *parent) :
     QWidget(parent),
@@ -35,8 +38,16 @@ bool initWidget::valid_check(int num)
 
 void initWidget::on_pushButton_clicked()
 {
-    if(valid_check(ui->lineEdit->text().toInt())){
-        emit this->start(ui->lineEdit->text().toInt());
+    int t=ui->lineEdit->text().toInt();
+    if(valid_check(t)){
+        std::vector<std::pair<QString,QString>> playerInfo;
+        std::map<QString,bool> localFlag;
+        for(int i=0;i<t;i++){
+            QString name="我是"+QString::number(i);
+            playerInfo.push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
+            localFlag.insert(std::make_pair(name,true));
+        }
+        emit this->start(t,&playerInfo,&localFlag);
         this->close();
     }
     else ui->WarnLabel->show();
