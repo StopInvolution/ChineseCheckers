@@ -31,7 +31,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>172</width>
+     <width>171</width>
      <height>301</height>
     </rect>
    </property>
@@ -52,28 +52,11 @@
      <number>10</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>当前房间最大玩家数</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="spinBox">
-        <property name="minimum">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <number>6</number>
-        </property>
-        <property name="value">
-         <number>2</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QLabel" name="label_roomID">
+      <property name="text">
+       <string>房间号：</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QPushButton" name="ready_pushButton">
@@ -94,10 +77,106 @@
     </item>
    </layout>
   </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>20</y>
+     <width>191</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="horizontalSpacing">
+     <number>2</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>1</number>
+    </property>
+    <item row="2" column="0">
+     <widget class="QLabel" name="playerLabel_5">
+      <property name="text">
+       <string>Waiting</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="playerLabel_6">
+      <property name="text">
+       <string>Waiting</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="playerLabel_1">
+      <property name="text">
+       <string>Waiting</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="playerLabel_3">
+      <property name="text">
+       <string>Waiting</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLabel" name="playerLabel_4">
+      <property name="text">
+       <string>Waiting</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="playerLabel_2">
+      <property name="text">
+       <string>Waiting</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>ready_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>WaitingRoom</receiver>
+   <slot>send_ready()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>110</x>
+     <y>224</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>backToTitle()</slot>
+  <slot>send_ready()</slot>
  </slots>
 </ui>

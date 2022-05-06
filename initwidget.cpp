@@ -53,11 +53,4 @@ void initWidget::on_pushButton_clicked()
     else ui->WarnLabel->show();
 }
 
-void initWidget::on_onlinepushButton_clicked()
-{
-    if(valid_check(ui->lineEdit->text().toInt())){
-        emit this->startOnline(ui->lineEdit->text().toInt());
-        this->close();
-    }
-    else ui->WarnLabel->show();
-}
+

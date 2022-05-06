@@ -1,0 +1,31 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <QPalette>
+#include <QBrush>
+
+namespace Ui {
+class MainWindow;
+}
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+    signals:
+    void startSingle();
+    void startMultiple();
+
+private:
+    Ui::MainWindow *ui;
+
+private slots:
+    void on_pushButtonSingle_clicked();
+    void on_pushButtonMultiple_clicked();
+};
+
+#endif // MAINWINDOW_H

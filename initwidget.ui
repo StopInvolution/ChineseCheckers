@@ -71,19 +71,6 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="onlinepushButton">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>170</y>
-     <width>101</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>多人畅玩</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="WarnLabel">
    <property name="geometry">
     <rect>
@@ -101,7 +88,6 @@
   <zorder>lineEdit</zorder>
   <zorder>pushButton</zorder>
   <zorder>label_2</zorder>
-  <zorder>onlinepushButton</zorder>
   <zorder>WarnLabel</zorder>
  </widget>
  <resources>

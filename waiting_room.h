@@ -3,6 +3,9 @@
 
 #include <qtableview.h>
 #include <QWidget>
+#include "networkdata.h"
+#include <QMessageBox>
+#include "networksocket.h"
 
 namespace Ui{
 class WaitingRoom;
@@ -11,18 +14,39 @@ class WaitingRoom;
 class WaitingRoom : public QWidget {
     Q_OBJECT
 
-    Ui::WaitingRoom* ui;
-    int spinBoxVal;
+    static const QString PLAYER_WAITING;
+    static const QString PLAYER_READY;
+    static const QString PLAYER_PREPARING;
+    Ui::WaitingRoom *ui;
+    NetworkSocket* socket;
+    QString roomID;
+    int playerNum;
+    QLabel **labelStack;
+    QString username;
+private:
+    /**
+    * @brief Remove the existing postfix and change it
+    * @param label the pointer of the label you want to operate
+    * @param str the postfix you need
+    */
+    void _label_setPostfix(QLabel* label, const QString str);
 public:
     explicit WaitingRoom(QWidget *parent = nullptr);
     ~WaitingRoom();
+signals:
+    void start(NetworkData state);
+
 
 public slots:
-    void initWindow(int player);
+    /**
+     * @brief initalize window, and show it when connection succeed.
+    */
+    void initWindow(QString roomID, QTcpSocket* Tcp, QString hostIP, int hostPort, NetworkData data, QString username);
 
 private slots:
-    void spinBoxRecheck(int val);
+    void receive(NetworkData data);
 
+    void send_ready();
 };
 
 #endif // WAITING_ROOM_H
