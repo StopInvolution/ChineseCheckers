@@ -8,6 +8,8 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include "marble.h"
+#include "networksocket.h"
+#include "networkdata.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -25,6 +27,8 @@ public:
     // 试验坐标，没有实际用处
     void paintEvent(QPaintEvent *);
 
+    NetworkSocket* socket;
+
     int playerNum;
     ChessBoard *chessBoard;
 
@@ -34,12 +38,14 @@ public:
 
 public slots:
     void initChessBoard(int newPlayerNum=2,std::vector<std::pair<QString,QString>>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr);
-
+    void setSocket(QTcpSocket *sck);
 public:
     void setChessBoard(int newPlayerNum=2,std::vector<std::pair<QString,QString>>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr);
     void on_btnSetPlayerNum_clicked();
 
 //private:
     Ui::Widget *ui;
+private slots:
+    void receive(NetworkData dt);
 };
 #endif // WIDGET_H

@@ -47,6 +47,22 @@ void WaitingRoom::receive(NetworkData data)
         }
         throw -1;
     };
+    auto EmitStart = [this,&data]() -> void {
+        auto ls = data.data1.split(" ");
+        std::vector<std::pair<QString,QString>> Vec;
+        std::map<QString,bool> flags;
+        int s = 0;
+        foreach(QString str,ls) {
+            Vec.push_back(std::make_pair(str, data.data2[2*s]));
+            s++;
+            if (str == username) flags[str] = true;
+            else flags[str] = false;
+        }
+        if(s != playerNum) throw 114514;
+        emit start(s, &Vec, &flags);
+        emit start_netini(socket->base());
+        return;
+    };
     try {
         switch (data.op){
             case OPCODE::LEAVE_ROOM_OP: //A player leaves the room
@@ -60,7 +76,7 @@ void WaitingRoom::receive(NetworkData data)
                 _label_setPostfix(labelStack[findPlayer(data.data1)], PLAYER_READY);
                 break;
             case OPCODE::START_GAME_OP:
-                emit start(data);
+                EmitStart();
                 close();
                 break;
             default:

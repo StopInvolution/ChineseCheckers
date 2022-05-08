@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Create new room</string>
+    <string>Create new room(x)</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">

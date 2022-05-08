@@ -34,8 +34,8 @@ public:
     explicit WaitingRoom(QWidget *parent = nullptr);
     ~WaitingRoom();
 signals:
-    void start(NetworkData state);
-
+    void start(int number, std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag);
+    void start_netini(QTcpSocket *sck);
 
 public slots:
     /**

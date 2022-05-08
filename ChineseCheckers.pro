@@ -23,6 +23,7 @@ SOURCES += \
     networksocket.cpp \
     player.cpp \
     querydialog.cpp \
+    room.cpp \
     serverwidget.cpp \
     util.cpp \
     waiting_room.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     networksocket.h \
     player.h \
     querydialog.h \
+    room.h \
     serverwidget.h \
     settings.h \
     util.h \

@@ -66,6 +66,15 @@ void Widget::initChessBoard(int newPlayerNum,std::vector<std::pair<QString,QStri
     this->show();
 }
 
+void Widget::setSocket(QTcpSocket *sck) {
+    socket = new NetworkSocket(sck, this);
+    socket->hello("10.47.41.109", 8000);
+}
+
+void Widget::receive(NetworkData data) {
+
+}
+
 void Widget::setChessBoard(int newPlayerNum,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
 {
     if(this->chessBoard){

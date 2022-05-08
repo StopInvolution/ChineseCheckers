@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     mul_initwidget mul_initW;
     WaitingRoom waitR;
     QObject::connect(&initW,&initWidget::start,&w,&Widget::initChessBoard);
+    QObject::connect(&waitR, &WaitingRoom::start, &w, &Widget::initChessBoard);
+    QObject::connect(&waitR, &WaitingRoom::start_netini, &w, &Widget::setSocket);
     QObject::connect(&m, &MainWindow::startSingle, &initW, &initWidget::show);
     QObject::connect(&m, &MainWindow::startMultiple, &mul_initW, &mul_initwidget::show);
     QObject::connect(&mul_initW, &mul_initwidget::enterRoom, &waitR, &WaitingRoom::initWindow);
