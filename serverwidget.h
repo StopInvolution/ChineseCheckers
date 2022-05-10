@@ -21,7 +21,7 @@ public:
     ~ServerWidget();
 
 private:
-    Room *findRoom(QString ID);
+    Room *findRoom(QString &);
     static bool invalidName(QString &name);
     Ui::ServerWidget *ui;
 

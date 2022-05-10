@@ -14,12 +14,15 @@ ServerWidget::ServerWidget(QWidget *parent) :
 int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
     switch(data.op) {
     case OPCODE::JOIN_ROOM_OP:
-        if(invalidName(data.data1)) {
+        if(invalidName(data.data1)) {   //check if username is absloutly unacceptable.
             server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "invalid username. Please use another one"));
             return 0;
         }
         //Room *room = findRoom(data.data2);
+        server->send(client, NetworkData(OPCODE::JOIN_ROOM_REPLY_OP, "", ""));
+        this->ui->textBrowser->append("send: JOIN_ROOM_REPLY_OP");
         break;
+    case OPCODE::LEAVE_ROOM_OP:
     default:
         break;
 
@@ -43,8 +46,10 @@ bool ServerWidget::invalidName(QString &name)
     return false;
 }
 
-Room* findRoom (QString &roomName)
+Room* ServerWidget::findRoom (QString &roomName)
 {
-    qDebug() << roomName;
+    for (auto i:roomList) {
+        if(i)
+    }
     return NULL;
 }

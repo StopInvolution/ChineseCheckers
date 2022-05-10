@@ -22,6 +22,9 @@ void MainWindow::on_pushButtonMultiple_clicked() {
     close();
     emit startMultiple();
 }
+void MainWindow::on_ServerButton_clicked() {
+    emit startServer();
+}
 
 MainWindow::~MainWindow()
 {

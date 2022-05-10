@@ -7,7 +7,7 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
     QWidget(parent),
     isConnected(false),
     ui(new Ui::mul_initwidget),
-    username("Team_Why")
+    username("user114514")
 {
     ui->setupUi(this);
     this->socket = new NetworkSocket(new QTcpSocket(), this);
@@ -15,17 +15,16 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
     connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
         QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
     });
-    connect(socket, SIGNAL(NetworkSocket::connected), this, SLOT(setConnected));
-    connect(socket, SIGNAL(NetworkSocket::error0occured), this, SLOT(setUnconnected));
+    connect(socket->base(), SIGNAL(connected()), this, SLOT(setConnected()));
+    connect(socket->base(), SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(setUnconnected(QProcess::ProcessError)));
+    connect(socket->base(), SIGNAL(hostFound()), this, SLOT(debug()));
     ui->label_2->hide();
     socket->hello(IP,PORT);
-
 
     if(isConnected)
         ui->label->setText("Welcome, "+username);
     else
-        ui->label->setText("Connection Failed, Dear "+username);
-    qDebug() << (isConnected?"yes":"no");
+        ui->label->setText("Unconnected.");
 }
 
 bool mul_initwidget::isValidID(QString *ID) {
@@ -56,10 +55,14 @@ void mul_initwidget::on_pushButtonNew_clicked()
 void mul_initwidget::setConnected()
 {
     isConnected = true;
+    ui->label->setText("Welcome, "+username);
 }
-void mul_initwidget::setDisconnected()
+QProcess::ProcessError mul_initwidget::setDisconnected(QProcess::ProcessError error)
 {
     isConnected = false;
+    ui->label->setText("Unconnected.");
+    qDebug() << "Error";
+    return error;
 }
 
 void mul_initwidget::receive(NetworkData data)
@@ -80,7 +83,12 @@ void mul_initwidget::receive(NetworkData data)
 
 mul_initwidget::~mul_initwidget()
 {
+    qDebug() << "delete";
     socket->bye();
     delete ui;
     delete socket;
+}
+
+void mul_initwidget::debug() {
+    qDebug() << "QaQ";
 }

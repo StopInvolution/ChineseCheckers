@@ -16,14 +16,14 @@ WaitingRoom::WaitingRoom(QWidget *parent):
     labelStack[5] = ui->playerLabel_6;
 }
 
-void WaitingRoom::initWindow(QString roomID, QTcpSocket *Tcp, QString hostIP, int hostPort, NetworkData roomState, QString username) {
+void WaitingRoom::initWindow(QString roomID, QTcpSocket *Tcp, NetworkData roomState, QString username) {
     this->roomID = roomID;
     socket = new NetworkSocket(Tcp, this);
     connect(socket, &NetworkSocket::receive, this, &WaitingRoom::receive);
     connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
         QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
     });
-    socket->hello(hostIP, hostPort);
+    //socket->hello(hostIP, hostPort);
     _label_setPostfix(ui->label_roomID, roomID);
     playerNum = 0;
     QStringList playerInfo = roomState.data1.split(" ", Qt::SkipEmptyParts);
@@ -97,19 +97,22 @@ void WaitingRoom::_label_setPostfix(QLabel *label, const QString str)
 {
     QString tmp = label->text();
     std::string ss = tmp.toStdString();
-    ss.erase(ss.find('('));
+    if(ss.find('(') != std::string::npos)ss.erase(ss.find('('));
     tmp.fromStdString(ss);
     tmp += str;
     label->setText(tmp);
 }
-
+void WaitingRoom::backToTitle() {
+    emit __backToTitle();
+    close();
+}
 
 WaitingRoom::~WaitingRoom()
 {
     delete ui;
 }
 
-const QString WaitingRoom::PLAYER_WAITING = "Waiting";
+const QString WaitingRoom::PLAYER_WAITING = "(Waiting)";
 const QString WaitingRoom::PLAYER_READY = "(Ready)";
-const QString WaitingRoom::PLAYER_PREPARING = "PREPARING";
+const QString WaitingRoom::PLAYER_PREPARING = "(Preparing)";
 

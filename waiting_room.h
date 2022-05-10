@@ -30,6 +30,9 @@ private:
     * @param str the postfix you need
     */
     void _label_setPostfix(QLabel* label, const QString str);
+signals:
+    void __backToTitle();
+
 public:
     explicit WaitingRoom(QWidget *parent = nullptr);
     ~WaitingRoom();
@@ -41,7 +44,8 @@ public slots:
     /**
      * @brief initalize window, and show it when connection succeed.
     */
-    void initWindow(QString roomID, QTcpSocket* Tcp, QString hostIP, int hostPort, NetworkData data, QString username);
+    void initWindow(QString roomID, QTcpSocket* Tcp, NetworkData data, QString username);
+    void backToTitle();
 
 private slots:
     void receive(NetworkData data);
