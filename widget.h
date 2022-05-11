@@ -8,6 +8,8 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include "marble.h"
+#include "settings.h"
+#include "networksocket.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -33,10 +35,10 @@ public:
     QLabel *labelPlayerNum;
 
 public slots:
-    void initChessBoard(int newPlayerNum=2,std::vector<std::pair<QString,QString>>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr);
+    void initChessBoard(int newPlayerNum=2,std::vector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
 
 public:
-    void setChessBoard(int newPlayerNum=2,std::vector<std::pair<QString,QString>>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr);
+    void setChessBoard(int newPlayerNum=2,std::vector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
     void on_btnSetPlayerNum_clicked();
 
 //private:
