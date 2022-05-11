@@ -92,7 +92,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::p
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
 
     connect(this->timeoutTimer, &QTimer::timeout, this, [&](){resTime-=clockT/1000.0; if(resTime<=0){resTime=0; this->timeoutTimer->stop();} updateLabelInfo();});
-    showRank("A D");
 }
 
 ChessBoard::~ChessBoard() {
