@@ -24,6 +24,7 @@ SOURCES += \
     player.cpp \
     querydialog.cpp \
     room.cpp \
+    serverplayer.cpp \
     serverwidget.cpp \
     util.cpp \
     waiting_room.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     player.h \
     querydialog.h \
     room.h \
+    serverplayer.h \
     serverwidget.h \
     settings.h \
     util.h \

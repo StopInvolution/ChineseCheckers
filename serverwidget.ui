@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>60</y>
+     <y>20</y>
      <width>54</width>
      <height>16</height>
     </rect>
@@ -30,9 +30,9 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>100</y>
-     <width>256</width>
-     <height>192</height>
+     <y>60</y>
+     <width>291</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="html">
@@ -44,7 +44,50 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>239</y>
+     <width>201</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>240</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>send</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ServerWidget</receiver>
+   <slot>__FakeData()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>313</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>198</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>__FakeData()</slot>
+ </slots>
 </ui>

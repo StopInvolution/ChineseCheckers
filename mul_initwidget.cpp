@@ -70,7 +70,7 @@ void mul_initwidget::receive(NetworkData data)
     switch(data.op) {
     case OPCODE::JOIN_ROOM_REPLY_OP:
         ui->label_2->hide();
-        emit enterRoom(ui->lineEdit->text(), socket->base(), IP, PORT, data, username);
+        emit enterRoom(ui->lineEdit->text(), socket->base(), data, username);
         break;
     case OPCODE::ERROR_OP: //unfinished
         break;
@@ -84,6 +84,7 @@ void mul_initwidget::receive(NetworkData data)
 mul_initwidget::~mul_initwidget()
 {
     qDebug() << "delete";
+    disconnect(socket->base(), &QAbstractSocket::disconnected, 0, 0);
     socket->bye();
     delete ui;
     delete socket;

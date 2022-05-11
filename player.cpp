@@ -85,3 +85,6 @@ void Player::clear() {
     this->chesses.clear();
     this->setActivated(false);
 }
+
+bool Player::isReady() const {assert(0); return 0;}
+QTcpSocket* Player::getSocket() const {assert(0); return nullptr;}

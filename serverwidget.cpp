@@ -18,8 +18,18 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "invalid username. Please use another one"));
             return 0;
         }
-        //Room *room = findRoom(data.data2);
-        server->send(client, NetworkData(OPCODE::JOIN_ROOM_REPLY_OP, "", ""));
+        Room *room;
+        room = findRoom(data.data2);
+        if(room == NULL) {  //A new room should be created if not found.
+            room = new Room(data.data2);
+            roomList.push_back(room);
+        }
+
+        for(auto i:room->chessboard->players) {
+            server->send(i->getSocket(), NetworkData(OPCODE::JOIN_ROOM_OP, data.data1, ""));
+        }
+        server->send(client, NetworkData(OPCODE::JOIN_ROOM_REPLY_OP, room->playerNameListStr(), ""));
+        room->addPlayer(new ServerPlayer(data.data1, client));
         this->ui->textBrowser->append("send: JOIN_ROOM_REPLY_OP");
         break;
     case OPCODE::LEAVE_ROOM_OP:
@@ -48,8 +58,29 @@ bool ServerWidget::invalidName(QString &name)
 
 Room* ServerWidget::findRoom (QString &roomName)
 {
+    // future plan: using a better search algorithm. Maybe a hash will work.
+    // anyway, there's no need optimizing it currently...
     for (auto i:roomList) {
-        if(i)
+        if(i->RoomID() == roomName)
+        {
+            return i;
+        }
     }
     return NULL;
+}
+
+void ServerWidget::__FakeData()
+{
+    QString words = ui->textEdit->toPlainText();
+    ui->textEdit->clear();
+    auto list = words.split(" ", Qt::SkipEmptyParts);
+    if(list[0] == "JOIN_ROOM_OP") {
+        auto room = roomList[0];
+        for(auto i:room->chessboard->players) {
+            server->send(i->getSocket(), NetworkData(OPCODE::JOIN_ROOM_OP, list[1], ""));
+        }
+        //server->send(client, NetworkData(OPCODE::JOIN_ROOM_REPLY_OP, room->playerNameListStr(), ""));
+        room->addPlayer(new ServerPlayer(list[1]));
+    }
+    return;
 }

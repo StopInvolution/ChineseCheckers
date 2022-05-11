@@ -47,7 +47,7 @@ private slots:
 
 public:
 signals:
-    void enterRoom(QString roomID, QTcpSocket *sckt, QString hostIP, int hostPort, NetworkData roomState, QString username);
+    void enterRoom(QString roomID, QTcpSocket *sckt, NetworkData roomState, QString username);
 };
 
 #endif // MUL_INITWIDGET_H

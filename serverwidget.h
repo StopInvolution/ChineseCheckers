@@ -27,6 +27,7 @@ private:
 
 private slots:
     int receiveData(QTcpSocket *client, NetworkData data);
+    void __FakeData();
 };
 
 #endif // SERVERWIDGET_H
