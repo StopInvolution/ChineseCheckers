@@ -4,14 +4,17 @@
 #include <random>
 #include <stack>
 #include <iostream>
+#include <QDialog>
+#include <QMessageBox>
+#include "networkdata.h"
 #include "marble.h"
 #include "player.h"
 #include "settings.h"
 #include "util.h"
 #include "widget.h"
 
-ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
-    : parentWindow(_parentWindow), playerNum(_player_num),stepNum(0), clockT(30), god(false), activatedPlayerID(0), activatedPlayer(nullptr),selectedChess(nullptr) {
+ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
+    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0), clockT(30), god(false), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
@@ -61,8 +64,9 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::p
     updateLabelInfo();
 
     // START_TURN_OP 应该等信号来了再设置，但原则上其实不需要，因为开始游戏和第一个人开始下棋的信号应当会一起发送，但是接口我就放这了
-    nextTurn();
-    updateLabelInfo();
+    if(!socket){
+        nextTurn();
+    }
 
     // 创建三个随机移动相关按钮
     btnRandomMove = new QPushButton(this->parentWindow);
@@ -88,6 +92,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::p
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
 
     connect(this->timeoutTimer, &QTimer::timeout, this, [&](){resTime-=clockT/1000.0; if(resTime<=0){resTime=0; this->timeoutTimer->stop();} updateLabelInfo();});
+    showRank("A D");
 }
 
 ChessBoard::~ChessBoard() {
@@ -271,7 +276,7 @@ void ChessBoard::unshowHint() {
 
 void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     // 获取路径，按要求格式保存在 s 中
-    std::string s;
+    QString s;
     std::stack<ChessPosition> S;
     Marble* now = dest;
     while (now != selectedChess) {
@@ -282,9 +287,10 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     while(!S.empty()){
         int x=S.top().first,y=S.top().second;
         S.pop();
-        s=s+std::to_string(x)+" "+std::to_string(y)+" ";
+        s=s+QString::number(x)+" "+QString::number(y)+" ";
     }
-    std::cout<<s<<std::endl;
+    if(socket)
+        socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
 
     unshowHint();
     this->stepNum++;
@@ -293,19 +299,41 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     updateLabelInfo();
 
     // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
-    nextTurn();
-    updateLabelInfo();
+    if(!socket){
+        nextTurn();
+    }
 }
 
-void ChessBoard::timeout()
+void ChessBoard::timeout(QString ID)
 {
+    if(ID!="" && getPlayer(ID)!=this->activatedPlayer){
+        qDebug()<<"超时判负这服务端多少有点大病";
+        return ;
+    }
+    if(!activatedPlayer){
+        qDebug()<<"超时判负炸了";
+        return ;
+    }
     activatedPlayer->flag=5;
     activatedPlayer->clear();
     selectedChess=nullptr;
 
     // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
-    nextTurn();
-    updateLabelInfo();
+    if(!socket){
+        nextTurn();
+    }
+}
+
+void ChessBoard::showRank(QString data)
+{
+    QStringList rk = data.split(" ");
+    QString output="";
+    for(int i=0;i<rk.size();i++){
+        if(i>0) output+="\n";
+        output+="No."+QString::number(i+1)+": "+getPlayer(rk[i])->name;
+    }
+    this->parentWindow->setWindowTitle("已与服务器断开，请关闭此窗口");
+    QMessageBox::about(this->parentWindow,"排行榜",output);
 }
 
 void ChessBoard::chooseChess(Marble* chess) {
@@ -326,6 +354,7 @@ void ChessBoard::nextTurn() {
         activatedPlayerID=0;
         activatedPlayer=players.front();
         activatedPlayer->setActivated(true);
+        updateLabelInfo();
         return ;
     }
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
@@ -341,6 +370,7 @@ void ChessBoard::nextTurn() {
     else{
         this->setNextActivatedPlayer();
     }
+    updateLabelInfo();
 }
 
 void ChessBoard::randomMove() {
@@ -392,6 +422,16 @@ Marble *ChessBoard::getChess(ChessPosition p, int playerID)
 Marble *ChessBoard::getChess(int x, int y, int playerID)
 {
     return this->getChess(ChessPosition(x,y),playerID);
+}
+
+Player *ChessBoard::getPlayer(QString ID)
+{
+    for(int i=0;i<this->playerNum;i++){
+        if(getSpawn(ID)==this->players[i]->spawn){
+            return this->players[i];
+        }
+    }
+    return nullptr;
 }
 
 bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v) {

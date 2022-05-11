@@ -18,6 +18,7 @@ SOURCES += \
     mainwindow.cpp \
     marble.cpp \
     mul_initwidget.cpp \
+    networkUtil.cpp \
     networkdata.cpp \
     networkserver.cpp \
     networksocket.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     mainwindow.h \
     marble.h \
     mul_initwidget.h \
+    networkUtil.h \
     networkdata.h \
     networkserver.h \
     networksocket.h \

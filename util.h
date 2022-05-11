@@ -32,9 +32,12 @@ ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2);
 // 输出 ChessPosition 类
 void outChessPostion(ChessPosition p);
 
+// 返回区域编码对应的出生位置序号
 int getSpawn(QString ID);
 
+// 返回区域编码对应的终点位置序号
 int getTarget(QString ID);
 
+// 返回数字对应的区域编码
 QString getID(int x);
 #endif  // UTIL_H
