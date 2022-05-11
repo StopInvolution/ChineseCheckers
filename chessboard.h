@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QPushButton>
+#include <networksocket.h>
 #include "settings.h"
 #include <vector>
 #include <QTimer>
@@ -17,9 +18,11 @@ class Widget;
 class ChessBoard:public QObject
 {
 public:
-    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<std::pair<QString,QString>>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr);
+    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<std::pair<QString,QString>>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
     ~ChessBoard();
     Widget *parentWindow;
+
+    NetworkSocket *socket;
 
     int playerNum;
     int stepNum;
@@ -59,7 +62,10 @@ public:
     void moveChess(Marble *dest,std::vector<ChessPosition> *path=nullptr);
 
     // 当前玩家，超时判负
-    void timeout();
+    void timeout(QString ID="");
+
+    //
+    void showRank(QString data);
 
     // 落子后，首先判断刚才这一落子是否使得刚才这个人完赛，并做相应处理,
     void nextTurn();
@@ -94,6 +100,7 @@ public:
 
     Marble* getChess(ChessPosition p,int playerID=-1);
     Marble* getChess(int x,int y,int playerID=-1);
+    Player* getPlayer(QString ID);
     QLabel *labelPlayer[7];
 };
 
