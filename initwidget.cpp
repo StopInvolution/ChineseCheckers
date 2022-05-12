@@ -47,7 +47,7 @@ void initWidget::on_pushButton_clicked()
             playerInfo.push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
             localFlag.insert(std::make_pair(name,true));
         }
-        emit this->start(t,&playerInfo,&localFlag);
+        emit this->start(t,&playerInfo,&localFlag,nullptr);
         this->close();
     }
     else ui->WarnLabel->show();

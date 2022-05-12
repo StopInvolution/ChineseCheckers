@@ -60,29 +60,21 @@ void Widget::paintEvent(QPaintEvent *)
     painter.drawEllipse(471-r,312-r,2*r,2*r);
 }
 
-void Widget::initChessBoard(int newPlayerNum,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
+void Widget::initChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 {
-    this->setChessBoard(newPlayerNum,playerInfo,localFlag);
+    this->setChessBoard(newPlayerNum,playerInfo,localFlag,_socket);
     this->show();
 }
 
-void Widget::setSocket(QTcpSocket *sck) {
-    socket = new NetworkSocket(sck, this);
-    socket->hello("10.47.41.109", 8000);
-}
+void Widget::setChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 
-void Widget::receive(NetworkData data) {
-
-}
-
-void Widget::setChessBoard(int newPlayerNum,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag)
 {
     if(this->chessBoard){
         delete this->chessBoard;
         this->chessBoard=nullptr;
     }
     playerNum = newPlayerNum;
-    chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag);
+    chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag,_socket);
     chessBoard->show();
 }
 

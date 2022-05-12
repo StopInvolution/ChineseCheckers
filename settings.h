@@ -2,9 +2,10 @@
 #define SETTINGS_H
 
 #include <utility>
+#include <QString>
 
 typedef std::pair<int,int> ChessPosition;
-
+typedef std::pair<QString,QString> pss;
 
 namespace color{
     const int hint = 0;

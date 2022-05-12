@@ -2,6 +2,8 @@
 #define INITWIDGET_H
 
 #include <QWidget>
+#include "networksocket.h"
+#include "settings.h"
 
 namespace Ui {
 class initWidget;
@@ -16,7 +18,7 @@ public:
     ~initWidget();
 
     signals:
-    void start(int playerNum,std::vector<std::pair<QString,QString>>* playerInfo,std::map<QString,bool>* localFlag);
+    void start(int playerNum,std::vector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
     void startOnline(int playerNum);
 
 private slots:

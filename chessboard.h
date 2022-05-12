@@ -10,6 +10,7 @@
 #include "settings.h"
 #include <vector>
 #include <QTimer>
+#include "networkdata.h"
 
 
 class Player;
@@ -18,7 +19,7 @@ class Widget;
 class ChessBoard:public QObject
 {
 public:
-    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<std::pair<QString,QString>>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
+    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
     ~ChessBoard();
     Widget *parentWindow;
 
@@ -62,7 +63,7 @@ public:
     void moveChess(Marble *dest,std::vector<ChessPosition> *path=nullptr);
 
     // 当前玩家，超时判负
-    void timeout(QString ID="");
+    void timeout();
 
     //
     void showRank(QString data);
@@ -102,6 +103,10 @@ public:
     Marble* getChess(int x,int y,int playerID=-1);
     Player* getPlayer(QString ID);
     QLabel *labelPlayer[7];
+
+    void nertworkProcess(NetworkData &data);
+
+    bool checkAct(QString ID="");
 };
 
 // 棋盘上是否有其他棋子在 u-mid-v 这条线上

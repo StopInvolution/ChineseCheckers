@@ -12,15 +12,16 @@
 #include "settings.h"
 #include "util.h"
 #include "widget.h"
+#include "networkUtil.h"
 
-ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
+ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
     : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0), clockT(30), god(false), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
     if(playerInfo)
-        sort(playerInfo->begin(),playerInfo->end(),[](const std::pair<QString,QString>& rhs1, const std::pair<QString,QString>& rhs2){return rhs1.second.compare(rhs2.second)<0;});
+        sort(playerInfo->begin(),playerInfo->end(),[](const pss& rhs1, const pss& rhs2){return rhs1.second.compare(rhs2.second)<0;});
 
     const int geo[]={0,0,530,110,680,240,600,455,330,485,180,355,260,140};
     for(int i=1;i<=6;i++){
@@ -92,6 +93,8 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<std::p
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
 
     connect(this->timeoutTimer, &QTimer::timeout, this, [&](){resTime-=clockT/1000.0; if(resTime<=0){resTime=0; this->timeoutTimer->stop();} updateLabelInfo();});
+    if(socket)
+        connect(this->socket,&NetworkSocket::receive,this,&ChessBoard::nertworkProcess);
 }
 
 ChessBoard::~ChessBoard() {
@@ -303,12 +306,8 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     }
 }
 
-void ChessBoard::timeout(QString ID)
+void ChessBoard::timeout()
 {
-    if(ID!="" && getPlayer(ID)!=this->activatedPlayer){
-        qDebug()<<"超时判负这服务端多少有点大病";
-        return ;
-    }
     if(!activatedPlayer){
         qDebug()<<"超时判负炸了";
         return ;
@@ -431,6 +430,50 @@ Player *ChessBoard::getPlayer(QString ID)
         }
     }
     return nullptr;
+}
+
+void ChessBoard::nertworkProcess(NetworkData &data)
+{
+    OPCODE &op=data.op;
+    QString &data1=data.data1,&data2=data.data2;
+    switch(op){
+    case OPCODE::MOVE_OP:{
+        checkAct(data1);
+        if(data2=="-1"){
+            this->timeout();
+        }
+        else{
+            std::vector<ChessPosition> v;
+            loadChessPosition(v,data2);
+            this->moveChess(nullptr,&v);
+        }
+        break;
+    }
+    case OPCODE::START_TURN_OP:{
+        nextTurn();
+        break;
+    }
+    case OPCODE::END_TURN_OP:{
+        qDebug()<<"你确实赢了，服务器知道了";
+        break;
+    }
+    case OPCODE::END_GAME_OP:{
+        showRank(data1);
+        // 这里应该断开和房间的连接，也就是bye？暂且不管
+        break;
+    }
+    default:
+        qDebug()<<"棋盘收到了无用信息，抛弃";
+    }
+}
+
+bool ChessBoard::checkAct(QString ID)
+{
+    if(ID!="" && getPlayer(ID)!=this->activatedPlayer){
+        qDebug()<<"超时判负这服务端多少有点大病";
+        return false;
+    }
+    return true;
 }
 
 bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v) {
