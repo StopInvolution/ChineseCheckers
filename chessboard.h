@@ -31,6 +31,7 @@ public:
     int clockT;
     double resTime;
     bool god;
+    bool serverPermission;
 
     // 当前行棋方
     int activatedPlayerID;

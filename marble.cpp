@@ -121,7 +121,7 @@ bool Marble::isCollinearWith(const Marble& rhs) const {
 
 void Marble::On_Clicked() {
     // 只有本地当局能点击
-    if (this->parentPlayer->flag==3 || this->parentPlayer->parentChessBoard->god) {
+    if ((this->parentPlayer->flag==3 && this->parentPlayer->parentChessBoard->serverPermission) || this->parentPlayer->parentChessBoard->god) {
         qDebug() <<this->chessPosition<<" "<<this->chessColor<<" "<< "I'm clicked";
         // 两种棋子对应不同的回调
         if (chessColor == color::hint) {
