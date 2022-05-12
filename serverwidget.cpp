@@ -13,21 +13,23 @@ ServerWidget::ServerWidget(QWidget *parent) :
 
 int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
     Room *room;
+    bool flag;
     switch(data.op) {
     case OPCODE::MOVE_OP:
         room = roomList[0];
         if(room->isGameRunning() == false)
         {
-            //server->send(client, NetworkData(OPCODE::ERROR_OP, ERRCODE::ROOM_NOT_RUNNING, ));
+            server->send(client, NetworkData(OPCODE::ERROR_OP, "ERRCODE::ROOM_NOT_RUNNING", ""));
             break;
         }
-        //TODO: check if it's legal.
+        ///////TODO: check if it's legal.
         for(auto i:room->players) {
             if(i->getSocket() == client) continue;
             server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data.data1, data.data2));
         }
         break;
     case OPCODE::JOIN_ROOM_OP:
+        this->ui->textBrowser->append("receive: JOIN_ROOM_OP");
         if(invalidName(data.data2)) {   //check if username is absloutly unacceptable.
             server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "invalid username. Please use another one"));
             return 0;
@@ -37,12 +39,11 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             room = new Room(data.data1);
             roomList.push_back(room);
         }
-        bool flag;
         flag = false;
         for(auto i:room->players) { //Look for a duplicate username
             if(i->name == data.data2) {
                 flag = true;
-                //server->send(client, NetworkData(OPCODE::ERROR_OP, ERRCODE::INVALID_JOIN, "Duplicate username."));
+                server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "Duplicate username."));
                 break;
             }
         }
@@ -55,6 +56,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
         this->ui->textBrowser->append("send: JOIN_ROOM_REPLY_OP");
         break;
     case OPCODE::LEAVE_ROOM_OP:
+        this->ui->textBrowser->append("receive: LEAVE_ROOM_OP");
         room = nullptr;
         for(auto r:roomList) {
             if (r->RoomID() == data.data1) {
@@ -62,13 +64,42 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 break;
             }
         }
-        //if(room == nullptr) server->send(OPCODE::ERROR_OP, ERRCODE::INVALID_REQ, "room name not found");
+        if(room == nullptr) server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_REQ", "room name not found"));
+        flag = false;
+        for(auto i:room->players) {
+            if(i->name == data.data2) {
+                flag = true;
+                room->removePlayer(i);
+                for(auto j:room->players) {
+                    server->send(j->getSocket(), NetworkData(OPCODE::LEAVE_ROOM_OP, data.data2, ""));
+                }
+                break;
+            }
+        }
+        if(!flag) server->send(client, NetworkData(OPCODE::ERROR_OP, "NOT_IN_ROOM", ""));
         break;
     case OPCODE::PLAYER_READY_OP:
+        this->ui->textBrowser->append("receive: PLAYER_READY_OP");
         room = roomList[0];
         for(auto i:room->players) {
             i->Ready();
             server->send(i->getSocket(), NetworkData(OPCODE::PLAYER_READY_OP, data.data1, ""));
+        }
+        int N;
+        N = room->players.size();
+        if(N >= 2 && N != 5) {
+            int count = 0;
+            for(auto i:room->players)
+                if (i->isReady()) count++;
+
+            if(count == N) {
+                this->ui->textBrowser->append("send: START_GAME_OP");
+                room->changeGameState();
+                for(auto i:room->players) {
+                    server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP,
+                        room->playerNameListStr(), QString(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str())));
+                }
+            }
         }
         break;
     default:

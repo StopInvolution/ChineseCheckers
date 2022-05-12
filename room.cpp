@@ -46,6 +46,23 @@ void Room::changeGameState() {
     gameRunning ^= 1;
 }
 
+void Room::removePlayer(int index) {
+    assert(index >= 0);
+    for(int i = index+1; i < players.size(); ++i) {
+        players[i-1] = players[i];
+    }
+    players.pop_back();
+}
+
+void Room::removePlayer(ServerPlayer *player) {
+    for (auto i = players.begin(); i != players.end(); ++i) {
+        if (*i == player) {
+            players.erase(i);
+            return;
+        }
+    }
+}
+
 Room::~Room()
 {
     delete chessboard;

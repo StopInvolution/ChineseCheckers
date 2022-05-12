@@ -7,7 +7,7 @@ NetworkServer::NetworkServer(QObject* parent)
     connect(this, &QTcpServer::newConnection, this, &NetworkServer::newconnection);
     connect(this->disconnMapper, &QSignalMapper::mappedObject, this, &NetworkServer::disconnect);
     connect(this->recvMapper, &QSignalMapper::mappedObject, this, &NetworkServer::receiveData);
-    this->listen(QHostAddress::LocalHost, 8000);
+    this->listen(QHostAddress::Any, 8000);
 }
 
 void NetworkServer::receiveData(QObject* obj) {
