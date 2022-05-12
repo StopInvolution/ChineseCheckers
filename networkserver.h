@@ -8,7 +8,6 @@ class NetworkServer : public QTcpServer {
     Q_OBJECT
 public:
     explicit NetworkServer(QObject* parent = nullptr);
-
     void send(QTcpSocket* client, NetworkData data);
 
 signals:

@@ -28,3 +28,10 @@ QTcpSocket* ServerPlayer::getSocket() const
 {
     return client;
 }
+
+void ServerPlayer::Ready() {isready = true;}
+
+ServerPlayer::~ServerPlayer()
+{
+
+}

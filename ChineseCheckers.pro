@@ -23,7 +23,6 @@ SOURCES += \
     networkserver.cpp \
     networksocket.cpp \
     player.cpp \
-    querydialog.cpp \
     room.cpp \
     serverplayer.cpp \
     serverwidget.cpp \
@@ -42,7 +41,6 @@ HEADERS += \
     networkserver.h \
     networksocket.h \
     player.h \
-    querydialog.h \
     room.h \
     serverplayer.h \
     serverwidget.h \
@@ -55,7 +53,6 @@ FORMS += \
     initwidget.ui \
     mainwindow.ui \
     mul_initwidget.ui \
-    querydialog.ui \
     serverwidget.ui \
     waiting_room.ui \
     widget.ui

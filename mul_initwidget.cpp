@@ -11,13 +11,14 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
 {
     ui->setupUi(this);
     this->socket = new NetworkSocket(new QTcpSocket(), this);
+    qDebug()<<"mul_init create socket at" << (void*)&socket;
     connect(socket, &NetworkSocket::receive, this, &mul_initwidget::receive);
-    connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
-        QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
-    });
+    //connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
+    //    QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
+    //});
     connect(socket->base(), SIGNAL(connected()), this, SLOT(setConnected()));
-    connect(socket->base(), SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(setUnconnected(QProcess::ProcessError)));
-    connect(socket->base(), SIGNAL(hostFound()), this, SLOT(debug()));
+    connect(socket->base(), SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(setDisconnected(QAbstractSocket::SocketError)));
+    //connect(socket->base(), SIGNAL(hostFound()), this, SLOT(debug()));
     ui->label_2->hide();
     socket->hello(IP,PORT);
 
@@ -46,7 +47,6 @@ void mul_initwidget::on_pushButtonJoin_clicked()
     }
     NetworkData networkData(OPCODE::JOIN_ROOM_OP, roomID, username);
     socket->send(networkData);
-
 }
 void mul_initwidget::on_pushButtonNew_clicked()
 {
@@ -57,12 +57,12 @@ void mul_initwidget::setConnected()
     isConnected = true;
     ui->label->setText("Welcome, "+username);
 }
-QProcess::ProcessError mul_initwidget::setDisconnected(QProcess::ProcessError error)
+QAbstractSocket::SocketError mul_initwidget::setDisconnected(QAbstractSocket::SocketError Error)
 {
     isConnected = false;
     ui->label->setText("Unconnected.");
     qDebug() << "Error";
-    return error;
+    return Error;
 }
 
 void mul_initwidget::receive(NetworkData data)
@@ -70,15 +70,15 @@ void mul_initwidget::receive(NetworkData data)
     switch(data.op) {
     case OPCODE::JOIN_ROOM_REPLY_OP:
         ui->label_2->hide();
-        emit enterRoom(ui->lineEdit->text(), socket->base(), data, username);
+        emit enterRoom(ui->lineEdit->text(), socket, data, username);
+        disconnect(socket, &NetworkSocket::receive, this, &mul_initwidget::receive);
+        this->close();
         break;
     case OPCODE::ERROR_OP: //unfinished
-        break;
     default:
-        qDebug() << "Error Receiving " << static_cast<int>(data.op);
+        qDebug() << "Mul_initWidget Receiving " << static_cast<int>(data.op);
         break;
     }
-    hide();
 }
 
 mul_initwidget::~mul_initwidget()

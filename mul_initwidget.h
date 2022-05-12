@@ -40,14 +40,14 @@ private slots:
     //not finished.
     void on_pushButtonJoin_clicked();
     void setConnected();
-    QProcess::ProcessError setDisconnected(QProcess::ProcessError error);
+    QAbstractSocket::SocketError setDisconnected(QAbstractSocket::SocketError error);
 
 
     void receive(NetworkData data);
 
 public:
 signals:
-    void enterRoom(QString roomID, QTcpSocket *sckt, NetworkData roomState, QString username);
+    void enterRoom(QString roomID, NetworkSocket* sck, NetworkData roomState, QString username);
 };
 
 #endif // MUL_INITWIDGET_H

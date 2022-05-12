@@ -44,7 +44,7 @@ public slots:
     /**
      * @brief initalize window, and show it when connection succeed.
     */
-    void initWindow(QString roomID, QTcpSocket* Tcp, NetworkData data, QString username);
+    void initWindow(QString roomID, NetworkSocket* sck, NetworkData data, QString username);
     void backToTitle();
 
 private slots:
