@@ -15,7 +15,7 @@
 #include "networkUtil.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
-    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0), clockT(30), god(false), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0),clockT(30), god(false), serverPermission(true), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
@@ -27,7 +27,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
     for(int i=1;i<=6;i++){
         labelPlayer[i] = new QLabel(this->parentWindow);
         labelPlayer[i]->setGeometry(geo[i*2],geo[i*2+1],80,40);
-        labelPlayer[i]->setFont(QFont("华光中圆_CNKI", 16));
+        labelPlayer[i]->setFont(QFont("华光中圆_CNKI", 14));
         labelPlayer[i]->setStyleSheet(getQColor(i));
         labelPlayer[i]->setText(QString::number(i));
         labelPlayer[i]->setVisible(false);
@@ -41,6 +41,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
 
     for (int i = 0; i < playerNum; i++) {
         if(playerInfo && localFlag){
+            qDebug()<<playerInfo<<" "<<localFlag;
             QString name=(*playerInfo)[i].first;
             QString ID=(*playerInfo)[i].second;
             int spawn=getSpawn(ID);
@@ -59,15 +60,16 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
 
     // 标签
     labelInfo = new QLabel(this->parentWindow);
-    labelInfo->setGeometry(10, 10, 200, 120);
-    labelInfo->setFont(QFont("华光中圆_CNKI", 16));
+    labelInfo->setGeometry(20, 10, 350, 160);
+    labelInfo->setFont(QFont("华光中圆_CNKI", 14));
 
+    if(socket){
+        serverPermission=false;
+    }
     updateLabelInfo();
 
     // START_TURN_OP 应该等信号来了再设置，但原则上其实不需要，因为开始游戏和第一个人开始下棋的信号应当会一起发送，但是接口我就放这了
-    if(!socket){
-        nextTurn();
-    }
+    nextTurn();
 
     // 创建三个随机移动相关按钮
     btnRandomMove = new QPushButton(this->parentWindow);
@@ -291,8 +293,10 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
         S.pop();
         s=s+QString::number(x)+" "+QString::number(y)+" ";
     }
-    if(socket)
+    if(socket){
         socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
+        this->serverPermission=false;
+    }
 
     unshowHint();
     this->stepNum++;
@@ -300,10 +304,7 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     selectedChess = nullptr;
     updateLabelInfo();
 
-    // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
-    if(!socket){
-        nextTurn();
-    }
+    nextTurn();
 }
 
 void ChessBoard::timeout()
@@ -316,10 +317,7 @@ void ChessBoard::timeout()
     activatedPlayer->clear();
     selectedChess=nullptr;
 
-    // START_TURN_OP 需要变成服务端发送指令后再 nextTurn 并计时
-    if(!socket){
-        nextTurn();
-    }
+    nextTurn();
 }
 
 void ChessBoard::showRank(QString data)
@@ -383,9 +381,24 @@ void ChessBoard::randomMove() {
 }
 
 void ChessBoard::updateLabelInfo() {
+    QString waitInfo="";
+    if(activatedPlayer){
+        if(activatedPlayer->flag==3){
+            if(serverPermission){
+                waitInfo="你的轮次，服务端正在等待你下棋\n";
+            }
+            else{
+                waitInfo="你的轮次，正在等待服务端允许你下棋\n";
+            }
+        }
+    }
+    else{
+        waitInfo="不是你的轮次，请等待\n";
+    }
     labelInfo->setText(tr("当前行棋方为\n") +
-                       (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") +
-                       (this->resTime>0.0?tr("\n剩余思考时间 ")+QString::number(this->resTime)+tr("s"):tr("思考时间超时"))+
+                       (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") +"\n"+
+                       waitInfo+
+                       (this->resTime>0.0?tr("剩余思考时间 ")+QString::number(this->resTime)+tr("s"):tr("思考时间超时"))+
                        tr("\n已走步数 ") + QString::number(this->stepNum));
 }
 
@@ -450,7 +463,8 @@ void ChessBoard::nertworkProcess(NetworkData data)
         break;
     }
     case OPCODE::START_TURN_OP:{
-        nextTurn();
+        serverPermission=true;
+        updateLabelInfo();
         break;
     }
     case OPCODE::END_TURN_OP:{
