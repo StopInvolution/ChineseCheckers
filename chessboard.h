@@ -18,6 +18,7 @@ class Marble;
 class Widget;
 class ChessBoard:public QObject
 {
+    Q_OBJECT
 public:
     ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
     ~ChessBoard();
@@ -57,6 +58,7 @@ public:
     void getHint();
     void showHint();
     void unshowHint();
+    QString getActID();
 
     // 棋子被点击时的回调函数，用于选择待移动的普通棋子
     void chooseChess (Marble *chess);
@@ -109,11 +111,15 @@ public:
     /**
      * @return 1 for legal move, 0 for illegal move, -1 for unfound player
     */
-    int serverMoveProcess(QString data1, QString data2);
+
+    int serverMoveProcess(QString data1,QString data2);
 
     bool checkAct(QString ID="");
-signals:
-    void overtime(QString);
+
+   signals:
+    void overtime(QString oo);
+    void victory(Player* player);
+    void endgame(QString data);
 };
 
 // 棋盘上是否有其他棋子在 u-mid-v 这条线上

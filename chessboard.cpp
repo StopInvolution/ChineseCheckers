@@ -76,11 +76,11 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
     btnRandomMove->setGeometry(30, 210, 100, 30);
     btnRandomMove->setText("RandomMove");
     btnRandomMove->setCursor(Qt::PointingHandCursor);
-    connect(this->btnRandomMove, &QPushButton::clicked, this, &ChessBoard::on_btnRandomMove_clicked);
+    QObject::connect(this->btnRandomMove, &QPushButton::clicked,this, &ChessBoard::on_btnRandomMove_clicked);
 
     // 给随机移动创建一个计时器
     timer = new QTimer();
-    connect(timer, &QTimer::timeout, this, [&]() { this->randomMove(); });
+    connect(timer, &QTimer::timeout,  this, [&]() { this->randomMove(); });
 
     btnAutoMv = new QPushButton(this->parentWindow);
     btnAutoMv->setGeometry(30, 260, 100, 30);
@@ -94,7 +94,13 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
     btnStopAutoMv->setCursor(Qt::PointingHandCursor);
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
 
-    connect(this->timeoutTimer, &QTimer::timeout, this, [&](){resTime-=clockT/1000.0; if(resTime<=0){resTime=0; this->timeoutTimer->stop();} updateLabelInfo();});
+    connect(this->timeoutTimer, &QTimer::timeout,this,  [&](){
+        resTime-=clockT/1000.0;
+        if(resTime<=0){
+            resTime=0;
+            this->timeoutTimer->stop();
+            emit overtime(getActID());
+        } updateLabelInfo();});
     if(socket)
         connect(this->socket,&NetworkSocket::receive,this,&ChessBoard::nertworkProcess);
 }
@@ -278,6 +284,11 @@ void ChessBoard::unshowHint() {
     }
 }
 
+QString ChessBoard::getActID()
+{
+    return getID(this->activatedPlayer->spawn);
+}
+
 void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     // 获取路径，按要求格式保存在 s 中
     QString s;
@@ -356,12 +367,19 @@ void ChessBoard::nextTurn() {
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
         qDebug()<<activatedPlayer->name<<" wins.\n";
+        emit victory(this->activatedPlayer);
         this->winnerRank.push_back(this->activatedPlayer);
     }
     hintPlayer->clear();
     if(int(this->winnerRank.size())==this->playerNum){
         this->activatedPlayer->setActivated(false);
         qDebug()<<"游戏结束";
+        QString data;
+        for(int i=0;i<playerNum;i++){
+            if(i>0) data+=" ";
+            data+=getID(this->winnerRank[i]->spawn);
+        }
+        emit endgame(data);
     }
     else{
         this->setNextActivatedPlayer();
@@ -445,6 +463,8 @@ Player *ChessBoard::getPlayer(QString ID)
     return nullptr;
 }
 
+
+
 void ChessBoard::nertworkProcess(NetworkData data)
 {
     OPCODE &op=data.op;
@@ -478,6 +498,19 @@ void ChessBoard::nertworkProcess(NetworkData data)
     }
     default:
         qDebug()<<"棋盘收到了无用信息，抛弃";
+    }
+}
+
+int ChessBoard::serverMoveProcess(QString data1,QString data2)
+{
+    if(getID(this->activatedPlayer->spawn)!=data1) return -1;
+    std::vector<ChessPosition> vec;
+    loadChessPosition(vec,data2);
+    if(moveA2BWithPath(&vec)){
+        return 1;
+    }
+    else{
+        return 0;
     }
 }
 
