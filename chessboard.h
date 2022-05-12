@@ -104,7 +104,7 @@ public:
     Player* getPlayer(QString ID);
     QLabel *labelPlayer[7];
 
-    void nertworkProcess(NetworkData &data);
+    void nertworkProcess(NetworkData data);
 
     bool checkAct(QString ID="");
 };
