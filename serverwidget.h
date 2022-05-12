@@ -20,6 +20,7 @@ public:
     explicit ServerWidget(QWidget *parent = nullptr);
     ~ServerWidget();
 
+
 private:
     Room *findRoom(QString &);
     static bool invalidName(QString &name);

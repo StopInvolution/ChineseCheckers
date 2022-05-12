@@ -83,8 +83,9 @@ void WaitingRoom::receive(NetworkData data)
                 break;
             case OPCODE::START_GAME_OP:
                 EmitStart();
-                close();
+                hide();
                 break;
+
             default:
                 qDebug() << "WaitingRoom ";
                 throw static_cast<int>(data.op);
