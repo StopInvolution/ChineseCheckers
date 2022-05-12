@@ -432,7 +432,7 @@ Player *ChessBoard::getPlayer(QString ID)
     return nullptr;
 }
 
-void ChessBoard::nertworkProcess(NetworkData &data)
+void ChessBoard::nertworkProcess(NetworkData data)
 {
     OPCODE &op=data.op;
     QString &data1=data.data1,&data2=data.data2;

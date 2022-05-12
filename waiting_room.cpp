@@ -62,8 +62,7 @@ void WaitingRoom::receive(NetworkData data)
             else flags[str] = false;
         }
         if(s != playerNum) throw 114514;
-        emit start(s, &Vec, &flags);
-        emit start_netini(socket->base());
+        emit start(s, &Vec, &flags, socket);
         return;
     };
     try {

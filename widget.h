@@ -45,7 +45,5 @@ public:
 
 //private:
     Ui::Widget *ui;
-private slots:
-    void receive(NetworkData dt);
 };
 #endif // WIDGET_H

@@ -56,7 +56,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
         break;
     case OPCODE::LEAVE_ROOM_OP:
         room = nullptr;
-        foreach(Room* r, roomList) {
+        for(auto r:roomList) {
             if (r->RoomID() == data.data1) {
                 room = r;
                 break;
@@ -113,7 +113,7 @@ void ServerWidget::__FakeData()
     QString words = ui->textEdit->toPlainText();
     ui->textEdit->clear();
     auto list = words.split(" ", Qt::SkipEmptyParts);
-    if(list[0] == "JOIN_ROOM_OP") {
+    if(list[0] == "join") {
         auto room = roomList[0];
         for(auto i:room->players) {
             server->send(i->getSocket(), NetworkData(OPCODE::JOIN_ROOM_OP, list[1], ""));
@@ -122,6 +122,12 @@ void ServerWidget::__FakeData()
         room->addPlayer(new ServerPlayer(list[1]));
     }else if (list[0] == "size") {
         //qDebug() << server->clients.size();
+    }else if (list[0] == "start") {
+        auto room = roomList[0];
+        QString p(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str());
+        for(auto i:room->players) {
+            server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP, room->playerNameListStr(), p));
+        }
     }
     return;
 }
