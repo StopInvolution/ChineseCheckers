@@ -22,7 +22,7 @@ public:
 
 private:
     static const QString IP;
-    static const int PORT = 8000;
+    static const int PORT = 2000;
 
     Ui::mul_initwidget *ui;
 
@@ -41,7 +41,6 @@ private slots:
     void on_pushButtonJoin_clicked();
     void setConnected();
     QAbstractSocket::SocketError setDisconnected(QAbstractSocket::SocketError error);
-
 
     void receive(NetworkData data);
 

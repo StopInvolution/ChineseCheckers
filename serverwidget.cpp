@@ -14,6 +14,8 @@ ServerWidget::ServerWidget(QWidget *parent) :
 int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
     Room *room;
     bool flag;
+    int result;
+    QString ErrorCode;
     switch(data.op) {
     case OPCODE::MOVE_OP:
         room = roomList[0];
@@ -22,10 +24,19 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             server->send(client, NetworkData(OPCODE::ERROR_OP, "ERRCODE::ROOM_NOT_RUNNING", ""));
             break;
         }
-        ///////TODO: check if it's legal.
-        for(auto i:room->players) {
-            if(i->getSocket() == client) continue;
-            server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data.data1, data.data2));
+        result = room->chessboard->serverMoveProcess(data.data1, data.data2);
+        switch(result) {
+        case 1:
+            for(auto i:room->players) {
+                if(i->getSocket() == client) continue;
+                server->send(i->getSocket(), data);
+            }
+        case 0:
+        case -1:
+            ErrorCode = (result == 0)?"INVALID_MOVE":"OUTTURN_MOVE";
+            server->send(client, NetworkData(OPCODE::ERROR_OP, ErrorCode, ""));
+        default:
+            qDebug() << "ERROR at server widget";
         }
         break;
     case OPCODE::JOIN_ROOM_OP:
@@ -94,11 +105,11 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
 
             if(count == N) {
                 this->ui->textBrowser->append("send: START_GAME_OP");
-                room->changeGameState();
                 for(auto i:room->players) {
                     server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP,
                         room->playerNameListStr(), QString(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str())));
                 }
+                room->changeGameState();
             }
         }
         break;

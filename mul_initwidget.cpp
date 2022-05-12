@@ -1,7 +1,7 @@
 #include "mul_initwidget.h"
 #include "ui_mul_initwidget.h"
 
-const QString mul_initwidget::IP = "192.168.43.6";
+const QString mul_initwidget::IP = "10.211.55.4";
 
 mul_initwidget::mul_initwidget(QWidget *parent) :
     QWidget(parent),

@@ -4,7 +4,7 @@ Room::Room()
 {
 }
 Room::Room(QString RoomID)
-    :roomID(RoomID), chessboard(new ChessBoard())
+    :roomID(RoomID), chessboard(nullptr)
 {
 }
 
@@ -44,6 +44,17 @@ bool Room::isGameRunning() {
 
 void Room::changeGameState() {
     gameRunning ^= 1;
+    if(gameRunning == 1) {
+        if(chessboard != nullptr) {delete chessboard;}
+        std::vector<std::pair<QString,QString>> Vec;
+        std::map<QString,bool> m{};
+        for(auto i = 0; i < players.size(); ++i){
+            char ss[] = "A"; ss[0] += 1;
+            QString s(ss);
+            Vec.push_back(std::make_pair(players[i]->name, s));
+        }
+        chessboard = new ChessBoard(0, players.size(), &Vec, &m, 0);
+    }
 }
 
 void Room::removePlayer(int index) {

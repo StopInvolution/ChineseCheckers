@@ -499,3 +499,4 @@ void ChessBoard::on_btnAutoMv_clicked() {
 void ChessBoard::on_btnStopAutoMv_clicked() {
     this->timer->stop();
 }
+int ChessBoard::serverMoveProcess(QString data1, QString data2) {return 1;}

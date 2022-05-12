@@ -105,8 +105,14 @@ public:
     QLabel *labelPlayer[7];
 
     void nertworkProcess(NetworkData data);
+    /**
+     * @return 1 for legal move, 0 for illegal move, -1 for unfound player
+    */
+    int serverMoveProcess(QString data1, QString data2);
 
     bool checkAct(QString ID="");
+signals:
+    void overtime(QString);
 };
 
 // 棋盘上是否有其他棋子在 u-mid-v 这条线上
