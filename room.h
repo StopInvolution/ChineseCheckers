@@ -31,6 +31,16 @@ public:
     */
     void addPlayer(ServerPlayer* player);
     /**
+     * @brief remove player from the room
+     * @param playerIndex: player's index in vector
+     */
+    void removePlayer(int playerIndex);
+    /**
+     * @brief remove player from the room
+     * @param player: player's address
+     */
+    void removePlayer(ServerPlayer* player);
+    /**
      * @return if the game is running, returns 1; else returns 0.
      */
     bool isGameRunning();
