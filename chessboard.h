@@ -28,6 +28,7 @@ public:
 
     int playerNum;
     int stepNum;
+    int outPlayerNum;
     QTimer *timeoutTimer= new QTimer;
     int clockT;
     double resTime;
@@ -117,8 +118,9 @@ public:
     bool checkAct(QString ID="");
 
    signals:
+    void startTurn(QString);
     void overtime(QString oo);
-    void victory(Player* player);
+    void victory(QString);
     void endgame(QString data);
 };
 
