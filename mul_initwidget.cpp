@@ -1,34 +1,34 @@
 #include "mul_initwidget.h"
 #include "ui_mul_initwidget.h"
 
-const QString mul_initwidget::IP = "10.47.41.109";
+const QString mul_initwidget::IP = "127.0.0.1";
 
 mul_initwidget::mul_initwidget(QWidget *parent) :
     QWidget(parent),
+    isConnected(false),
     ui(new Ui::mul_initwidget),
-    username("Team_Why")
+    username("user114514")
 {
     ui->setupUi(this);
     this->socket = new NetworkSocket(new QTcpSocket(), this);
+    qDebug()<<"mul_init create socket at" << (void*)&socket;
     connect(socket, &NetworkSocket::receive, this, &mul_initwidget::receive);
-    connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
-        QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
-    });
-
+    //connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
+    //    QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
+    //});
+    connect(socket->base(), SIGNAL(connected()), this, SLOT(setConnected()));
+    connect(socket->base(), SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(setDisconnected(QAbstractSocket::SocketError)));
+    //connect(socket->base(), SIGNAL(hostFound()), this, SLOT(debug()));
     ui->label_2->hide();
     socket->hello(IP,PORT);
-    connect(socket, SIGNAL(NetworkSocket::connected), this, SLOT(setConnected));
-    connect(socket, SIGNAL(NetworkSocket::error0occured), this, SLOT(setUnconnected));
 
     if(isConnected)
         ui->label->setText("Welcome, "+username);
     else
-        ui->label->setText("Connection Failed, Dear "+username);
-    qDebug() << (isConnected?"yes":"no");
+        ui->label->setText("Unconnected.");
 }
 
 bool mul_initwidget::isValidID(QString *ID) {
-    qDebug() << ID;
     std::string s = ID->toStdString();
     for (auto i : s) {
         if(!isalnum(i) && i != '_')
@@ -40,12 +40,13 @@ bool mul_initwidget::isValidID(QString *ID) {
 void mul_initwidget::on_pushButtonJoin_clicked()
 {
     QString roomID = ui->lineEdit->text();
+    if(!isConnected) socket->hello(IP,PORT);
     if(!isValidID(&roomID) || !isConnected) {
         ui->label_2->show();
         return;
     }
-    NetworkData* networkData = new NetworkData(OPCODE::JOIN_ROOM_OP, roomID, username);
-    socket->send(*networkData);
+    NetworkData networkData(OPCODE::JOIN_ROOM_OP, roomID, username);
+    socket->send(networkData);
 }
 void mul_initwidget::on_pushButtonNew_clicked()
 {
@@ -54,10 +55,14 @@ void mul_initwidget::on_pushButtonNew_clicked()
 void mul_initwidget::setConnected()
 {
     isConnected = true;
+    ui->label->setText("Welcome, "+username);
 }
-void mul_initwidget::setDisconnected()
+QAbstractSocket::SocketError mul_initwidget::setDisconnected(QAbstractSocket::SocketError Error)
 {
     isConnected = false;
+    ui->label->setText("Unconnected.");
+    qDebug() << "Error";
+    return Error;
 }
 
 void mul_initwidget::receive(NetworkData data)
@@ -65,20 +70,26 @@ void mul_initwidget::receive(NetworkData data)
     switch(data.op) {
     case OPCODE::JOIN_ROOM_REPLY_OP:
         ui->label_2->hide();
-        emit enterRoom(ui->lineEdit->text(), socket->base(), IP, PORT, data, username);
+        emit enterRoom(ui->lineEdit->text(), socket, data, username);
+        disconnect(socket, &NetworkSocket::receive, this, &mul_initwidget::receive);
+        this->close();
         break;
     case OPCODE::ERROR_OP: //unfinished
-        break;
     default:
-        qDebug() << "Error Receiving " << static_cast<int>(data.op);
+        qDebug() << "Mul_initWidget Receiving " << static_cast<int>(data.op);
         break;
     }
-    hide();
 }
 
 mul_initwidget::~mul_initwidget()
 {
+    qDebug() << "delete";
+    disconnect(socket->base(), &QAbstractSocket::disconnected, 0, 0);
     socket->bye();
     delete ui;
     delete socket;
+}
+
+void mul_initwidget::debug() {
+    qDebug() << "QaQ";
 }

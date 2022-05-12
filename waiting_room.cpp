@@ -16,14 +16,16 @@ WaitingRoom::WaitingRoom(QWidget *parent):
     labelStack[5] = ui->playerLabel_6;
 }
 
-void WaitingRoom::initWindow(QString roomID, QTcpSocket *Tcp, QString hostIP, int hostPort, NetworkData roomState, QString username) {
+void WaitingRoom::initWindow(QString roomID, NetworkSocket* sck, NetworkData roomState, QString username) {
     this->roomID = roomID;
-    socket = new NetworkSocket(Tcp, this);
+    socket = sck;
+    qDebug()<<"WaitingRoom create socket at" << (void*)socket;
     connect(socket, &NetworkSocket::receive, this, &WaitingRoom::receive);
     connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
         QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
     });
-    socket->hello(hostIP, hostPort);
+    //connect(socket->base(), &QAbstractSocket::connected, [=]() {qDebug() << "waitingroom connected.";});
+    //socket->hello("127.0.0.1", 8000);
     _label_setPostfix(ui->label_roomID, roomID);
     playerNum = 0;
     QStringList playerInfo = roomState.data1.split(" ", Qt::SkipEmptyParts);
@@ -38,17 +40,38 @@ void WaitingRoom::initWindow(QString roomID, QTcpSocket *Tcp, QString hostIP, in
 
 void WaitingRoom::receive(NetworkData data)
 {
-    qDebug() << static_cast<int>(data.op);
+    //qDebug() << "waiting room received";
     auto findPlayer = [this](QString playerID) -> int {
         for(int i = 0; i<playerNum; ++i) {
-            if(labelStack[playerNum]->text() == playerID) {
+            qDebug() << labelStack[i]->text() << i << playerNum;
+            if(labelStack[i]->text().split("(")[0] == playerID) {
                 return i;
             }
         }
         throw -1;
     };
+    auto EmitStart = [this,&data]() -> void {
+        auto ls = data.data1.split(" ");
+        std::vector<std::pair<QString,QString>> Vec;
+        std::map<QString,bool> flags;
+        int s = 0;
+        foreach(QString str,ls) {
+            Vec.push_back(std::make_pair(str, data.data2[2*s]));
+            s++;
+            if (str == username) flags[str] = true;
+            else flags[str] = false;
+        }
+        if(s != playerNum) throw 114514;
+        emit start(s, &Vec, &flags);
+        emit start_netini(socket->base());
+        return;
+    };
     try {
         switch (data.op){
+            case OPCODE::JOIN_ROOM_OP:
+                labelStack[playerNum++]->setText(data.data1);
+                _label_setPostfix(labelStack[playerNum-1], PLAYER_PREPARING);
+                break;
             case OPCODE::LEAVE_ROOM_OP: //A player leaves the room
                 //move all other players forward.
                 for(int i = findPlayer(data.data1); i+1<playerNum; ++i)
@@ -60,12 +83,12 @@ void WaitingRoom::receive(NetworkData data)
                 _label_setPostfix(labelStack[findPlayer(data.data1)], PLAYER_READY);
                 break;
             case OPCODE::START_GAME_OP:
-                emit start(data);
+                EmitStart();
                 close();
                 break;
             default:
-                qDebug() << "Unexpected signal received.";
-                throw 404;
+                qDebug() << "WaitingRoom ";
+                throw static_cast<int>(data.op);
         }
     }catch (int t) {
         qDebug() << "Exception with code " << t;
@@ -81,19 +104,24 @@ void WaitingRoom::_label_setPostfix(QLabel *label, const QString str)
 {
     QString tmp = label->text();
     std::string ss = tmp.toStdString();
-    ss.erase(ss.find('('));
-    tmp.fromStdString(ss);
+    if(ss.find('(') != std::string::npos) ss.erase(ss.find('('));
+    tmp = QString(ss.c_str());
     tmp += str;
     label->setText(tmp);
 }
-
+void WaitingRoom::backToTitle() {
+    emit __backToTitle();
+    socket->send(NetworkData(OPCODE::LEAVE_ROOM_OP, roomID, username));
+    socket->bye();
+    close();
+}
 
 WaitingRoom::~WaitingRoom()
 {
     delete ui;
 }
 
-const QString WaitingRoom::PLAYER_WAITING = "Waiting";
+const QString WaitingRoom::PLAYER_WAITING = "(Waiting)";
 const QString WaitingRoom::PLAYER_READY = "(Ready)";
-const QString WaitingRoom::PLAYER_PREPARING = "PREPARING";
+const QString WaitingRoom::PLAYER_PREPARING = "(Preparing)";
 

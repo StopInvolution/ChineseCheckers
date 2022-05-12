@@ -33,21 +33,21 @@ private:
 private:
     /**/
     static bool isValidID(QString *);
-
 private slots:
+    void debug();
     //send a request to the server.
     void on_pushButtonNew_clicked();
     //not finished.
     void on_pushButtonJoin_clicked();
     void setConnected();
-    void setDisconnected();
+    QAbstractSocket::SocketError setDisconnected(QAbstractSocket::SocketError error);
 
 
     void receive(NetworkData data);
 
 public:
 signals:
-    void enterRoom(QString roomID, QTcpSocket *sckt, QString hostIP, int hostPort, NetworkData roomState, QString username);
+    void enterRoom(QString roomID, NetworkSocket* sck, NetworkData roomState, QString username);
 };
 
 #endif // MUL_INITWIDGET_H

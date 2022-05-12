@@ -4,6 +4,7 @@
 #include <QString>
 #include <vector>
 #include "chessboard.h"
+#include "qtcpsocket.h"
 
 class ChessBoard;
 class Player : public QObject {
@@ -38,6 +39,9 @@ class Player : public QObject {
 
     // delete chess，主要是为了 hintPlayer 准备的，hintPlayer 经常需要删掉自己所有棋子
     void clear();
+
+    virtual bool isReady() const;
+    virtual QTcpSocket* getSocket() const;
 };
 
 #endif  // PLAYER_H

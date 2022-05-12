@@ -19,6 +19,7 @@ public:
     signals:
     void startSingle();
     void startMultiple();
+    void startServer();
 
 private:
     Ui::MainWindow *ui;
@@ -26,6 +27,7 @@ private:
 private slots:
     void on_pushButtonSingle_clicked();
     void on_pushButtonMultiple_clicked();
+    void on_ServerButton_clicked();
 };
 
 #endif // MAINWINDOW_H

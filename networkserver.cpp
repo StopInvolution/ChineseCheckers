@@ -7,6 +7,7 @@ NetworkServer::NetworkServer(QObject* parent)
     connect(this, &QTcpServer::newConnection, this, &NetworkServer::newconnection);
     connect(this->disconnMapper, &QSignalMapper::mappedObject, this, &NetworkServer::disconnect);
     connect(this->recvMapper, &QSignalMapper::mappedObject, this, &NetworkServer::receiveData);
+    this->listen(QHostAddress::LocalHost, 8000);
 }
 
 void NetworkServer::receiveData(QObject* obj) {
@@ -33,7 +34,7 @@ void NetworkServer::receiveData(QObject* obj) {
 void NetworkServer::send(QTcpSocket* client, NetworkData data) {
     qDebug() << "send " 
              << static_cast<int>(data.op) 
-             << data.data1 << data.data2 << Qt::endl;
+             << data.data1 << data.data2 << "to" << (void*)client << Qt::endl;
     client->write(data.encode());
     client->flush();
 }
@@ -44,6 +45,7 @@ void NetworkServer::disconnect(QObject* client) {
             emit leave(*it);
             clients.erase(it);
         }
+        if(it == clients.end()) break;
     }
 }
 

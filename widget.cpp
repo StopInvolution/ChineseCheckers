@@ -67,6 +67,7 @@ void Widget::initChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::
 }
 
 void Widget::setChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+
 {
     if(this->chessBoard){
         delete this->chessBoard;

@@ -10,7 +10,7 @@
 #include "marble.h"
 #include "settings.h"
 #include "networksocket.h"
-
+#include "networkdata.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
@@ -26,6 +26,8 @@ public:
 
     // 试验坐标，没有实际用处
     void paintEvent(QPaintEvent *);
+
+    NetworkSocket* socket;
 
     int playerNum;
     ChessBoard *chessBoard;
@@ -43,5 +45,7 @@ public:
 
 //private:
     Ui::Widget *ui;
+private slots:
+    void receive(NetworkData dt);
 };
 #endif // WIDGET_H
