@@ -1,12 +1,16 @@
 #include "room.h"
 #include "util.h"
+#include "settings.h"
+#include "widget.h"
 
 Room::Room()
 {
 }
 Room::Room(QString RoomID)
-    :roomID(RoomID), gameRunning(0),chessboard(nullptr)
+    :roomID(RoomID), gameRunning(0)
 {
+    w=new Widget;
+    w->hide();
 }
 
 
@@ -46,14 +50,14 @@ bool Room::isGameRunning() {
 void Room::changeGameState() {
     gameRunning ^= 1;
     if(gameRunning == 1) {
-        if(chessboard != nullptr) {delete chessboard;}
         std::vector<std::pair<QString,QString>> Vec;
-        std::map<QString,bool> m{};
+        std::map<QString,bool> m;
         for(size_t i = 0; i < players.size(); ++i){
             QString s=getID(board::playerSpawn[players.size()][i]);
             Vec.push_back(std::make_pair(players[i]->name, s));
         }
-        chessboard = new ChessBoard(0, players.size(), &Vec, &m, 0);
+        w->setChessBoard(players.size(), &Vec, &m, 0);
+        this->w->show();
     }
 }
 
@@ -76,7 +80,7 @@ void Room::removePlayer(ServerPlayer *player) {
 
 Room::~Room()
 {
-    delete chessboard;
+    delete w;
     for(auto i:players) {
         ServerPlayer* p = (ServerPlayer*)(void*)i;
         delete p;

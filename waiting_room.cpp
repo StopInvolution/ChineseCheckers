@@ -1,6 +1,8 @@
 #include "waiting_room.h"
 #include "ui_waiting_room.h"
 #include "networkdata.h"
+#include "settings.h"
+#include "networkUtil.h"
 
 WaitingRoom::WaitingRoom(QWidget *parent):
     QWidget(parent), ui(new Ui::WaitingRoom)
@@ -52,18 +54,12 @@ void WaitingRoom::receive(NetworkData data)
     };
     auto EmitStart = [this,&data]() -> void {
         auto ls = data.data1.split(" ");
-        std::vector<std::pair<QString,QString>> Vec;
+        std::vector<pss> Vec;
+        loadPR(Vec,data.data1,data.data2);
         std::map<QString,bool> flags;
-        int s = 0;
-        foreach(QString str,ls) {
-            Vec.push_back(std::make_pair(str, data.data2[2*s]));
-            s++;
-            if (str == username) flags[str] = true;
-            else flags[str] = false;
-        }
-        if(s != playerNum) throw 114514;
+        flags[username] = true;
         disconnect(socket, &NetworkSocket::receive, this, &WaitingRoom::receive);
-        emit start(s, &Vec, &flags, socket);
+        emit start(playerNum, &Vec, &flags, socket);
         return;
     };
     try {

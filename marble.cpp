@@ -78,7 +78,7 @@ void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
         int n=path->size();
         for(int i=n-1;i>=1;i--){
             ChessPosition p=boardTransform((*path)[i]);
-            S.push(QPoint(p.first,p.second));
+            S.push(QPoint(p.first-marbleinfo::r,p.second-marbleinfo::r));
         }
     }
 

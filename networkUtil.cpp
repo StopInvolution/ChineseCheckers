@@ -35,3 +35,14 @@ void loadReady(std::vector<bool> &vec, QString data)
         vec.push_back(data[i]=='1');
     }
 }
+
+void loadPR(std::vector<pss> &vec, QString &data1, QString &data2)
+{
+    std::vector<QString> v1;
+    std::vector<QString> v2;
+    loadPlayerName(v1,data1);
+    loadPlayerName(v2,data2);
+    for(size_t i=0;i<v1.size();i++){
+        vec.push_back(pss(v1[i],v2[i]));
+    }
+}
