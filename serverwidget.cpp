@@ -9,6 +9,7 @@ ServerWidget::ServerWidget(QWidget *parent) :
     this->server = new NetworkServer(this);
 
     connect(this->server, &NetworkServer::receive, this, &ServerWidget::receiveData);
+    //
 }
 
 int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
@@ -31,10 +32,12 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 if(i->getSocket() == client) continue;
                 server->send(i->getSocket(), data);
             }
+            break;
         case 0:
         case -1:
             ErrorCode = (result == 0)?"INVALID_MOVE":"OUTTURN_MOVE";
             server->send(client, NetworkData(OPCODE::ERROR_OP, ErrorCode, ""));
+            break;
         default:
             qDebug() << "ERROR at server widget";
         }
@@ -110,6 +113,9 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                         room->playerNameListStr(), QString(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str())));
                 }
                 room->changeGameState();
+                connect(room->chessboard, &ChessBoard::overtime, this, &ServerWidget::overtime);
+                connect(room->chessboard, &ChessBoard::endgame, this, &ServerWidget::endGame);
+                connect(room->chessboard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
             }
         }
         break;
@@ -169,7 +175,32 @@ void ServerWidget::__FakeData()
         QString p(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str());
         for(auto i:room->players) {
             server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP, room->playerNameListStr(), p));
+            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
         }
     }
     return;
+}
+
+void ServerWidget::overtime(QString data) {
+    auto room = roomList[0];
+    for(auto i:room->players) {
+        server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data, "-1"));
+    }
+}
+
+void ServerWidget::endGame(QString data)
+{
+    auto room = roomList[0];
+    for(auto i:room->players) {
+        server->send(i->getSocket(), NetworkData(OPCODE::END_TURN_OP, data, ""));
+    }
+}
+
+void ServerWidget::sendVictory(QString name)
+{
+    auto room = roomList[0];
+    for(auto i:room->players) {
+        if(i->name == name)
+            server->send(i->getSocket(), NetworkData(OPCODE::END_GAME_OP, "", ""));
+    }
 }
