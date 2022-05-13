@@ -172,13 +172,19 @@ bool ChessBoard::moveA2BWithPath(std::vector<ChessPosition> *path)
     if(!selectedChess){
         return false;
     }
+    if(path->size()==2 && isCollinear(path->front(),path->back()) && isNeighbor(path->front(),path->back())){
+        int vx=path->back().first,vy=path->back().second;
+        if(!occupiedPst[vx+board::indexBoundary][vy+board::indexBoundary]){
+            moveChess(nullptr,path);
+            return true;
+        }
+        return false;
+    }
     int n=path->size();
-    /*
     for(int i=1;i<n;i++){
         ChessPosition &u=(*path)[i-1], &v=(*path)[i];
         int vx=v.first,vy=v.second;
-        qDebug()<<!isWithinBoundary((*path)[i])<<<<!isCollinear(u,v);
-        if(!isWithinBoundary((*path)[i]) || occupiedPst[vx][vy] || !isCollinear(u,v)){
+        if(!isWithinBoundary((*path)[i]) || occupiedPst[vx+board::indexBoundary][vy+board::indexBoundary] || !isCollinear(u,v)){
                 selectedChess=nullptr;
                 return false;
         }
@@ -197,7 +203,6 @@ bool ChessBoard::moveA2BWithPath(std::vector<ChessPosition> *path)
             return false;
         }
     }
-    */
     moveChess(nullptr,path);
     return true;
 }
@@ -306,7 +311,8 @@ QString ChessBoard::getActID()
 
 void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     // 获取路径，按要求格式保存在 s 中
-    if(socket && (this->activatedPlayer->flag&2)){
+    if(selectedChess==nullptr) selectedChess=this->activatedPlayer->getChess(path->front());
+    if(socket && dest){
         QString s;
         std::stack<ChessPosition> S;
         Marble* now = dest;
@@ -321,12 +327,9 @@ void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
             s=s+QString::number(x)+" "+QString::number(y)+" ";
         }
         s = s.left(s.size()-1);
-        qDebug()<<"我发了我发了";
+        qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
         socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
-//        this->serverPermission=false;
-    }
-    else{
-
+        this->serverPermission=false;
     }
 
     unshowHint();
@@ -413,7 +416,6 @@ void ChessBoard::nextTurn() {
         this->setNextActivatedPlayer();
     }
     updateLabelInfo();
-    emit startTurn(this->activatedPlayer->name);
 }
 
 void ChessBoard::randomMove() {
@@ -507,10 +509,7 @@ void ChessBoard::nertworkProcess(NetworkData data)
         else{
             std::vector<ChessPosition> v;
             loadChessPosition(v,data2);
-            qDebug()<<"wocao";
-            moveA2B(v.front(),v.back());
-//            this->moveChess(nullptr,&v);
-            qDebug()<<"哈哈哈哈哈哈";
+            this->moveChess(nullptr,&v);
         }
         break;
     }
@@ -525,7 +524,6 @@ void ChessBoard::nertworkProcess(NetworkData data)
     }
     case OPCODE::END_GAME_OP:{
         showRank(data1);
-        // 这里应该断开和房间的连接，也就是bye？暂且不管
         break;
     }
     default:
@@ -552,18 +550,13 @@ int ChessBoard::serverMoveProcess(QString data1,QString data2)
     if(getID(this->activatedPlayer->spawn)!=data1) return -1;
     std::vector<ChessPosition> vec;
     loadChessPosition(vec,data2);
-    if(moveA2BWithPath(&vec)){
-        return 1;
-    }
-    else{
-        return 0;
-    }
+    return moveA2BWithPath(&vec);
 }
 
 bool ChessBoard::checkAct(QString ID)
 {
-    if(ID!="" && getPlayer(ID)!=this->activatedPlayer){
-        qDebug()<<"超时判负这服务端多少有点大病";
+    if(ID!="" && ID!=getID(this->activatedPlayer->spawn)){
+        qDebug()<<"activatedPlayer 不一致，"<<"本地为"<<getID(this->activatedPlayer->spawn)<<" 服务端为"<<ID;
         return false;
     }
     return true;

@@ -5,6 +5,7 @@
 #include "chessboard.h"
 #include "player.h"
 #include "serverplayer.h"
+#include "widget.h"
 
 class Room
 {
@@ -12,7 +13,7 @@ class Room
     int gameRunning;
 public:
     std::vector<ServerPlayer*> players;
-    ChessBoard* chessboard;
+//    ChessBoard* chessboard;
     /**
     * @return the ID of the room.
     */
@@ -51,6 +52,7 @@ public:
     Room();
     Room(QString RoomID);
 
+    Widget* w;
     ~Room();
 };
 

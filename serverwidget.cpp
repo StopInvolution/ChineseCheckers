@@ -1,5 +1,6 @@
 #include "serverwidget.h"
 #include "ui_serverwidget.h"
+#include "util.h"
 
 ServerWidget::ServerWidget(QWidget *parent) :
     QWidget(parent),
@@ -26,18 +27,18 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             server->send(client, NetworkData(OPCODE::ERROR_OP, "ERRCODE::ROOM_NOT_RUNNING", ""));
             break;
         }
-        result = room->chessboard->serverMoveProcess(data.data1, data.data2);
+        result = room->w->chessBoard->serverMoveProcess(data.data1, data.data2);
         qDebug()<<"Why    "<<result;
         switch(result) {
-        case 0:
-        case -1:
         case 1:
             for(auto i:room->players) {
                 if(i->getSocket() == client) continue;
                 server->send(i->getSocket(), data);
             }
+            startTurn(room->w->chessBoard->activatedPlayer->name);
             break;
-        case -2:
+        case -1:
+        case 0:
             ErrorCode = (result == 0)?"INVALID_MOVE":"OUTTURN_MOVE";
             server->send(client, NetworkData(OPCODE::ERROR_OP, ErrorCode, ""));
             break;
@@ -111,15 +112,19 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
 
             if(count == N) {
                 this->ui->textBrowser->append("send: START_GAME_OP");
+                QString data2;
+                for(size_t i=0;i<room->players.size();i++)
+                    data2+=getID(board::playerSpawn[room->players.size()][i])+" ";
+                data2.chop(1);
                 for(auto i:room->players) {
                     server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP,
-                        room->playerNameListStr(), QString(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str())));
+                        room->playerNameListStr(), data2));
                 }
                 room->changeGameState();
-                connect(room->chessboard, &ChessBoard::overtime, this, &ServerWidget::overtime);
-                connect(room->chessboard, &ChessBoard::endgame, this, &ServerWidget::endGame);
-                connect(room->chessboard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
-                connect(room->chessboard, &ChessBoard::startTurn, this,&ServerWidget::startTurn);
+                connect(room->w->chessBoard, &ChessBoard::overtime, this, &ServerWidget::overtime);
+                connect(room->w->chessBoard, &ChessBoard::endgame, this, &ServerWidget::endGame);
+                connect(room->w->chessBoard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
+                connect(room->w->chessBoard, &ChessBoard::startTurn, this,&ServerWidget::startTurn);
                 server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
             }
         }
@@ -127,7 +132,6 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
     default:
         server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_REQ", ""));
         break;
-
     }
     return 0;
 }
