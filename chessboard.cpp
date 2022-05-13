@@ -15,7 +15,7 @@
 #include "networkUtil.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
-    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0),clockT(30), god(false), serverPermission(true), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0),outPlayerNum(0),clockT(30), god(false), serverPermission(true), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
@@ -99,6 +99,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
         if(resTime<=0){
             resTime=0;
             this->timeoutTimer->stop();
+            outPlayerNum++;
             emit overtime(getActID());
         } updateLabelInfo();});
     if(socket)
@@ -367,14 +368,22 @@ void ChessBoard::nextTurn() {
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
         qDebug()<<activatedPlayer->name<<" wins.\n";
-        emit victory(this->activatedPlayer);
+        emit victory(this->activatedPlayer->name);
         this->winnerRank.push_back(this->activatedPlayer);
     }
     hintPlayer->clear();
-    if(int(this->winnerRank.size())==this->playerNum){
+    if(int(this->winnerRank.size())+this->outPlayerNum==this->playerNum){
         this->activatedPlayer->setActivated(false);
         qDebug()<<"游戏结束";
         QString data;
+        for(auto player:this->players){
+            bool flag=true;
+            for(auto winPlayer:winnerRank){
+                if(player==winPlayer) flag=false;
+            }
+            if(flag)
+                winnerRank.push_back(player);
+        }
         for(int i=0;i<playerNum;i++){
             if(i>0) data+=" ";
             data+=getID(this->winnerRank[i]->spawn);
@@ -385,6 +394,7 @@ void ChessBoard::nextTurn() {
         this->setNextActivatedPlayer();
     }
     updateLabelInfo();
+    emit startTurn(this->activatedPlayer->name);
 }
 
 void ChessBoard::randomMove() {
