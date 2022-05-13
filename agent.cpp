@@ -1,4 +1,5 @@
 #include "util.h"
+#include "agent.h"
 #include <QDebug>
 #include <QVector>
 
