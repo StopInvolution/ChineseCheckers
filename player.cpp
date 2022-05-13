@@ -15,6 +15,18 @@ Player::~Player() {
     }
 }
 
+AlgoPlayer Player::toAlgoPlayer()
+{
+    AlgoPlayer ret;
+    for(int i=0;i<10;i++){
+        ret.pst[i]=this->chesses[i]->chessPosition;
+    }
+    ret.name=this->name;
+    ret.target=this->target;
+    ret.spawn=this->spawn;
+    return ret;
+}
+
 Marble *Player::getChess(ChessPosition p)
 {
     for(Marble* chess:this->chesses){
