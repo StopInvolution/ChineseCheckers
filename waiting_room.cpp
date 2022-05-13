@@ -62,6 +62,7 @@ void WaitingRoom::receive(NetworkData data)
             else flags[str] = false;
         }
         if(s != playerNum) throw 114514;
+        disconnect(socket, &NetworkSocket::receive, this, &WaitingRoom::receive);
         emit start(s, &Vec, &flags, socket);
         return;
     };
@@ -85,7 +86,6 @@ void WaitingRoom::receive(NetworkData data)
                 EmitStart();
                 hide();
                 break;
-
             default:
                 qDebug() << "WaitingRoom ";
                 throw static_cast<int>(data.op);

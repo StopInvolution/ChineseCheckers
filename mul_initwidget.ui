@@ -110,6 +110,16 @@
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
+  <widget class="QLineEdit" name="nameEdit">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>50</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
