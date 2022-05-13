@@ -13,6 +13,7 @@
 #include "util.h"
 #include "widget.h"
 #include "networkUtil.h"
+#include <QDebug>
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
     : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0),outPlayerNum(0),clockT(30), god(false), serverPermission(true), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
@@ -162,9 +163,11 @@ bool ChessBoard::moveA2BWithPath(std::vector<ChessPosition> *path)
         return false;
     }
     int n=path->size();
+    /*
     for(int i=1;i<n;i++){
         ChessPosition &u=(*path)[i-1], &v=(*path)[i];
         int vx=v.first,vy=v.second;
+        qDebug()<<!isWithinBoundary((*path)[i])<<<<!isCollinear(u,v);
         if(!isWithinBoundary((*path)[i]) || occupiedPst[vx][vy] || !isCollinear(u,v)){
                 selectedChess=nullptr;
                 return false;
@@ -184,6 +187,7 @@ bool ChessBoard::moveA2BWithPath(std::vector<ChessPosition> *path)
             return false;
         }
     }
+    */
     moveChess(nullptr,path);
     return true;
 }
@@ -292,22 +296,27 @@ QString ChessBoard::getActID()
 
 void ChessBoard::moveChess(Marble* dest,std::vector<ChessPosition> *path) {
     // 获取路径，按要求格式保存在 s 中
-    QString s;
-    std::stack<ChessPosition> S;
-    Marble* now = dest;
-    while (now != selectedChess) {
-        S.push(now->chessPosition);
-        now = now->from;
-    }
-    S.push(selectedChess->chessPosition);
-    while(!S.empty()){
-        int x=S.top().first,y=S.top().second;
-        S.pop();
-        s=s+QString::number(x)+" "+QString::number(y)+" ";
-    }
-    if(socket){
+    if(socket && (this->activatedPlayer->flag&2)){
+        QString s;
+        std::stack<ChessPosition> S;
+        Marble* now = dest;
+        while (now != selectedChess) {
+            S.push(now->chessPosition);
+            now = now->from;
+        }
+        S.push(selectedChess->chessPosition);
+        while(!S.empty()){
+            int x=S.top().first,y=S.top().second;
+            S.pop();
+            s=s+QString::number(x)+" "+QString::number(y)+" ";
+        }
+        s = s.left(s.size()-1);
+        qDebug()<<"我发了我发了";
         socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
-        this->serverPermission=false;
+//        this->serverPermission=false;
+    }
+    else{
+
     }
 
     unshowHint();
@@ -488,7 +497,10 @@ void ChessBoard::nertworkProcess(NetworkData data)
         else{
             std::vector<ChessPosition> v;
             loadChessPosition(v,data2);
-            this->moveChess(nullptr,&v);
+            qDebug()<<"wocao";
+            moveA2B(v.front(),v.back());
+//            this->moveChess(nullptr,&v);
+            qDebug()<<"哈哈哈哈哈哈";
         }
         break;
     }
@@ -513,6 +525,7 @@ void ChessBoard::nertworkProcess(NetworkData data)
 
 int ChessBoard::serverMoveProcess(QString data1,QString data2)
 {
+    qDebug()<<getID(this->activatedPlayer->spawn);
     if(getID(this->activatedPlayer->spawn)!=data1) return -1;
     std::vector<ChessPosition> vec;
     loadChessPosition(vec,data2);

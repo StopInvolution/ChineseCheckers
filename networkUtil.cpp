@@ -1,10 +1,13 @@
 #include "networkUtil.h"
 #include <QStringList>
+#include <QDebug>
 void loadChessPosition(std::vector<ChessPosition> &vec, QString data)
 {
     QStringList list=data.split(' ');
+    qDebug()<<list;
+
     for(int i=0;i<list.size();i+=2){
-        vec.push_back(ChessPosition(list[i*2].toInt(),list[i*2+1].toInt()));
+        vec.push_back(ChessPosition(list[i].toInt(),list[i+1].toInt()));
     }
 }
 

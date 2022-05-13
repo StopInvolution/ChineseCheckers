@@ -1,10 +1,11 @@
 #include "room.h"
+#include "util.h"
 
 Room::Room()
 {
 }
 Room::Room(QString RoomID)
-    :roomID(RoomID), chessboard(nullptr)
+    :roomID(RoomID), gameRunning(0),chessboard(nullptr)
 {
 }
 
@@ -49,8 +50,7 @@ void Room::changeGameState() {
         std::vector<std::pair<QString,QString>> Vec;
         std::map<QString,bool> m{};
         for(size_t i = 0; i < players.size(); ++i){
-            char ss[] = "A"; ss[0] += 1;
-            QString s(ss);
+            QString s=getID(board::playerSpawn[players.size()][i]);
             Vec.push_back(std::make_pair(players[i]->name, s));
         }
         chessboard = new ChessBoard(0, players.size(), &Vec, &m, 0);
