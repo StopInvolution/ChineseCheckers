@@ -48,7 +48,7 @@ void Room::changeGameState() {
         if(chessboard != nullptr) {delete chessboard;}
         std::vector<std::pair<QString,QString>> Vec;
         std::map<QString,bool> m{};
-        for(auto i = 0; i < players.size(); ++i){
+        for(size_t i = 0; i < players.size(); ++i){
             char ss[] = "A"; ss[0] += 1;
             QString s(ss);
             Vec.push_back(std::make_pair(players[i]->name, s));
@@ -59,7 +59,7 @@ void Room::changeGameState() {
 
 void Room::removePlayer(int index) {
     assert(index >= 0);
-    for(int i = index+1; i < players.size(); ++i) {
+    for(size_t i = index+1; i < players.size(); ++i) {
         players[i-1] = players[i];
     }
     players.pop_back();

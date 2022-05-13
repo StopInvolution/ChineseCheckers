@@ -29,6 +29,11 @@ private:
 private slots:
     int receiveData(QTcpSocket *client, NetworkData data);
     void __FakeData();
+public slots:
+    void overtime(QString c);
+    void endGame(QString data);
+    void sendVictory(QString name);
+    void startTurn(QString name);
 };
 
 #endif // SERVERWIDGET_H
