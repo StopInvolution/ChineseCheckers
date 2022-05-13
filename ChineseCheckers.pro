@@ -12,6 +12,7 @@ CONFIG += c++11
 RC_ICONS = logo.ico
 
 SOURCES += \
+    agent.cpp \
     chessboard.cpp \
     initwidget.cpp \
     main.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
     widget.cpp
 
 HEADERS += \
+    agent.h \
     chessboard.h \
     initwidget.h \
     mainwindow.h \

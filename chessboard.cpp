@@ -13,6 +13,7 @@
 #include "util.h"
 #include "widget.h"
 #include "networkUtil.h"
+#include "agent.h"
 #include <QDebug>
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
@@ -94,6 +95,15 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
     btnStopAutoMv->setText("StopAutoMv");
     btnStopAutoMv->setCursor(Qt::PointingHandCursor);
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
+
+    btnAIMv = new QPushButton(this->parentWindow);
+    btnAIMv->setGeometry(30, 460, 100, 30);
+    btnAIMv->setText("AIMv");
+    btnAIMv->setCursor(Qt::PointingHandCursor);
+    connect(this->btnAIMv, &QPushButton::clicked, [&](){
+        pcc ret=calculate(this->AIDataProducer());
+        this->moveA2B(ret.first,ret.second);
+    });
 
     connect(this->timeoutTimer, &QTimer::timeout,this,  [&](){
         resTime-=clockT/1000.0;
@@ -521,6 +531,19 @@ void ChessBoard::nertworkProcess(NetworkData data)
     default:
         qDebug()<<"棋盘收到了无用信息，抛弃";
     }
+}
+
+QVector<AlgoPlayer> ChessBoard::AIDataProducer(){
+    int i=this->activatedPlayerID;
+    QVector<AlgoPlayer> vec;
+    do{
+        vec.push_back(this->players[i]->toAlgoPlayer());
+        do{
+            i++;
+            if(i>=playerNum) i=0;
+        }while(this->players[i]->flag&4);
+    }while(i!=this->activatedPlayerID);
+    return vec;
 }
 
 int ChessBoard::serverMoveProcess(QString data1,QString data2)

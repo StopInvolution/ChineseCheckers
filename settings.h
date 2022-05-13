@@ -6,6 +6,7 @@
 
 typedef std::pair<int,int> ChessPosition;
 typedef std::pair<QString,QString> pss;
+typedef std::pair<ChessPosition,ChessPosition> pcc;
 
 namespace color{
     const int hint = 0;
@@ -59,5 +60,20 @@ namespace board{
 
 }//namespace Board
 
+
+class AlgoPlayer{
+public:
+    AlgoPlayer()=default;
+    AlgoPlayer(int s){
+        spawn=s;
+        target=s+3>6?s-3:s+3;
+        for(int i=0;i<10;i++){
+            pst[i]=ChessPosition(board::spawnPst[s][i*2],board::spawnPst[s][i*2+1]);
+        }
+    }
+    QString name;
+    int spawn,target;
+    ChessPosition pst[10];
+};
 
 #endif // SETTINGS_H

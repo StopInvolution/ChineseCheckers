@@ -90,7 +90,7 @@ public:
 
     // 随机移动一个棋子
     void randomMove();
-    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv;
+    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv;
     QTimer* timer;
     void on_btnRandomMove_clicked();
     void on_btnAutoMv_clicked();
@@ -113,6 +113,7 @@ public:
      * @return 1 for legal move, 0 for illegal move, -1 for unfound player
     */
 
+    QVector<AlgoPlayer> AIDataProducer();
     int serverMoveProcess(QString data1,QString data2);
 
     bool checkAct(QString ID="");
