@@ -57,3 +57,4 @@ void NetworkServer::newconnection() {
     this->disconnMapper->setMapping(client, client);
     this->recvMapper->setMapping(client, client);
 }
+int NetworkServer::size() {return clients.size();}

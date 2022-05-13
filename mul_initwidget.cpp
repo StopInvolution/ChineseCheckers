@@ -7,7 +7,7 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
     QWidget(parent),
     isConnected(false),
     ui(new Ui::mul_initwidget),
-    username("user114514")
+    username("user")
 {
     ui->setupUi(this);
     this->socket = new NetworkSocket(new QTcpSocket(), this);
@@ -39,6 +39,9 @@ bool mul_initwidget::isValidID(QString *ID) {
 
 void mul_initwidget::on_pushButtonJoin_clicked()
 {
+    if(this->ui->nameEdit->text()!=""){
+        username=this->ui->nameEdit->text();
+    }
     QString roomID = ui->lineEdit->text();
     if(!isConnected) socket->hello(IP,PORT);
     if(!isValidID(&roomID) || !isConnected) {
