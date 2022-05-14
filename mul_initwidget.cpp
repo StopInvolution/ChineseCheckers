@@ -1,7 +1,7 @@
 #include "mul_initwidget.h"
 #include "ui_mul_initwidget.h"
 
-const QString mul_initwidget::IP = "127.0.0.1";
+QString mul_initwidget::IP = "192.168.137.1";
 
 mul_initwidget::mul_initwidget(QWidget *parent) :
     QWidget(parent),
@@ -43,6 +43,8 @@ void mul_initwidget::on_pushButtonJoin_clicked()
         username=this->ui->nameEdit->text();
     }
     QString roomID = ui->lineEdit->text();
+    if(this->ui->label_2->text()!="")
+        IP = this->ui->label_2->text();
     if(!isConnected) socket->hello(IP,PORT);
     if(!isValidID(&roomID) || !isConnected) {
         ui->label_2->show();
