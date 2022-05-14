@@ -21,7 +21,7 @@ public:
     bool isConnected;
 
 private:
-    static const QString IP;
+    static QString IP;
     static const int PORT = 2000;
 
     Ui::mul_initwidget *ui;

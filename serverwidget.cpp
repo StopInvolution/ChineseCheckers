@@ -195,6 +195,7 @@ void ServerWidget::overtime(QString data) {
     auto room = roomList[0];
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data, "-1"));
+        startTurn(room->w->chessBoard->activatedPlayer->name);
     }
 }
 
