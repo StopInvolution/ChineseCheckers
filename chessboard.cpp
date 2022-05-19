@@ -245,8 +245,8 @@ void ChessBoard::getHint() {
                         ChessPosition dest = jumpOver(u->chessPosition, midPst);
                         int dDestX = dest.first + board::indexBoundary, dDestY = dest.second + board::indexBoundary;
                         //                    qDebug()<<"--------------bg";
-                        //                    outChessPostion(u->chessPosition);
-                        //                    outChessPostion(dest);
+                        //                    outChessPosition(u->chessPosition);
+                        //                    outChessPosition(dest);
                         //                    qDebug()<<isAnyChessBetween(this,u->chessPosition,midPst,dest);
                         //                    qDebug()<<"--------------ed";
                         // 1.没有棋子在中间 2.宽搜没搜过 3.没有棋子占用 4.在边界内
@@ -268,8 +268,8 @@ void ChessBoard::getHint() {
         for (int k = 0; k < 6; k++) {
             ChessPosition dest(this->selectedChess->chessX + board::dx[k], this->selectedChess->chessY + board::dy[k]);
             int dDestX = dest.first + board::indexBoundary, dDestY = dest.second + board::indexBoundary;
-            //        outChessPostion(this->selectedChess->chessPosition);
-            //        outChessPostion(dest);
+            //        outChessPosition(this->selectedChess->chessPosition);
+            //        outChessPosition(dest);
             if (!vis[dDestX][dDestY] && !occupiedPst[dDestX][dDestY] && isWithinBoundary(dest)) {
                 vis[dDestX][dDestY] = true;
                 this->hintPlayer->chesses.push_back(new Marble(this->parentWindow, dest.first, dest.second, color::hint));
@@ -425,7 +425,7 @@ void ChessBoard::randomMove() {
         getHint();
     } while (hintPlayer->chesses.empty());
     moveChess(hintPlayer->chesses[rand() % hintPlayer->chessNum]);
-    //    ChessPostion pst=hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition;
+    //    ChessPosition pst=hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition;
     //    moveChess(pst);
 }
 

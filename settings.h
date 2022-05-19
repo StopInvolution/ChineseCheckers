@@ -37,8 +37,8 @@ namespace board{
     const int indexBoundary = 8;
 
 // 改用整数了，这个没什么实际意义干脆删了
-//    const ChessPostion iHat(iHatX,iHatY);
-//    const ChessPostion jHat(jHatX,jHatY);
+//    const ChessPosition iHat(iHatX,iHatY);
+//    const ChessPosition jHat(jHatX,jHatY);
 
     const ChessPosition OriginPoint(OriginX,OriginY);
 
