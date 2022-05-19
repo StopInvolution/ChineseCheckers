@@ -64,7 +64,7 @@ ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2) {
     return ChessPosition(2 * arg2.first - arg1.first, 2 * arg2.second - arg1.second);
 }
 
-void outChessPostion(ChessPosition p) {
+void outChessPosition(ChessPosition p) {
     std::cout << p.first << " " << p.second << std::endl;
 }
 

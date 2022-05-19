@@ -30,7 +30,7 @@ bool isNeighbor(const ChessPosition& arg1, const ChessPosition& arg2);
 ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2);
 
 // 输出 ChessPosition 类
-void outChessPostion(ChessPosition p);
+void outChessPosition(ChessPosition p);
 
 // 返回区域编码对应的出生位置序号
 int getSpawn(QString ID);
