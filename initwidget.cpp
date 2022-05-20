@@ -24,18 +24,6 @@ initWidget::~initWidget()
     delete ui;
 }
 
-bool initWidget::valid_check(int num)
-{
-    switch(num) {
-        case 2:
-        case 3:
-        case 4:
-        case 6:
-            return true;
-    }
-    return false;
-}
-
 void initWidget::on_pushButton_clicked()
 {
     int t=ui->lineEdit->text().toInt();

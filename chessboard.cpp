@@ -15,9 +15,10 @@
 #include "networkUtil.h"
 #include "agent.h"
 #include <QDebug>
+#include <algorithm>
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
-    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num), stepNum(0),outPlayerNum(0),clockT(30), god(false), serverPermission(true), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num),stepNum(0), clockT(30),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
@@ -75,14 +76,17 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
 
     // 创建三个随机移动相关按钮
     btnRandomMove = new QPushButton(this->parentWindow);
-    btnRandomMove->setGeometry(30, 210, 100, 30);
+    btnRandomMove->setGeometry(30, 460, 100, 30);
     btnRandomMove->setText("RandomMove");
     btnRandomMove->setCursor(Qt::PointingHandCursor);
     QObject::connect(this->btnRandomMove, &QPushButton::clicked,this, &ChessBoard::on_btnRandomMove_clicked);
 
     // 给随机移动创建一个计时器
     timer = new QTimer();
-    connect(timer, &QTimer::timeout,  this, [&]() { this->randomMove(); });
+//    connect(timer, &QTimer::timeout,  this, [&]() { this->randomMove(); });
+    connect(timer, &QTimer::timeout,  this, [&]() {
+        emit this->btnAIMv->click();
+    });
 
     btnAutoMv = new QPushButton(this->parentWindow);
     btnAutoMv->setGeometry(30, 260, 100, 30);
@@ -97,10 +101,10 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
     connect(this->btnStopAutoMv, &QPushButton::clicked, this, &ChessBoard::on_btnStopAutoMv_clicked);
 
     btnAIMv = new QPushButton(this->parentWindow);
-    btnAIMv->setGeometry(30, 460, 100, 30);
+    btnAIMv->setGeometry(30, 210, 100, 30);
     btnAIMv->setText("AIMv");
     btnAIMv->setCursor(Qt::PointingHandCursor);
-    connect(this->btnAIMv, &QPushButton::clicked, [&](){
+    connect(this->btnAIMv, &QPushButton::clicked, this,[&](){
         pcc ret=calculate(this->AIDataProducer());
         this->moveA2B(ret.first,ret.second);
     });
@@ -110,11 +114,13 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
         if(resTime<=0){
             resTime=0;
             this->timeoutTimer->stop();
-            outPlayerNum++;
+            outer.push_back(this->activatedPlayer);
             emit overtime(getActID());
         } updateLabelInfo();});
     if(socket)
         connect(this->socket,&NetworkSocket::receive,this,&ChessBoard::nertworkProcess);
+
+    connect(this,&ChessBoard::endgame,this,&ChessBoard::on_btnStopAutoMv_clicked);
 }
 
 ChessBoard::~ChessBoard() {
@@ -363,6 +369,7 @@ void ChessBoard::showRank(QString data)
         output+="No."+QString::number(i+1)+": "+getPlayer(rk[i])->name;
     }
     this->parentWindow->setWindowTitle("已与服务器断开，请关闭此窗口");
+    gameResult=output;
     QMessageBox::about(this->parentWindow,"排行榜",output);
 }
 
@@ -394,23 +401,20 @@ void ChessBoard::nextTurn() {
         this->winnerRank.push_back(this->activatedPlayer);
     }
     hintPlayer->clear();
-    if(int(this->winnerRank.size())+this->outPlayerNum==this->playerNum){
+    if(static_cast<int>(this->winnerRank.size()+this->outer.size())==this->playerNum){
         this->activatedPlayer->setActivated(false);
         qDebug()<<"游戏结束";
         QString data;
-        for(auto player:this->players){
-            bool flag=true;
-            for(auto winPlayer:winnerRank){
-                if(player==winPlayer) flag=false;
-            }
-            if(flag)
-                winnerRank.push_back(player);
-        }
+        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
         for(int i=0;i<playerNum;i++){
             if(i>0) data+=" ";
             data+=getID(this->winnerRank[i]->spawn);
         }
         emit endgame(data);
+        this->timeoutTimer->stop();
+        if(!socket){
+            this->showRank(data);
+        }
     }
     else{
         this->setNextActivatedPlayer();
@@ -430,14 +434,23 @@ void ChessBoard::randomMove() {
 }
 
 void ChessBoard::updateLabelInfo() {
+    if(gameResult.length()){
+        labelInfo->setText(gameResult);
+        return ;
+    }
     QString waitInfo="";
     if(activatedPlayer){
-        if(activatedPlayer->flag==3){
-            if(serverPermission){
-                waitInfo="你的轮次，服务端正在等待你下棋\n";
+        if(this->socket){
+            if(activatedPlayer->flag==3){
+                if(serverPermission){
+                    waitInfo="你的轮次，服务端正在等待你下棋\n";
+                }
+                else{
+                    waitInfo="你的轮次，正在等待服务端允许你下棋\n";
+                }
             }
-            else{
-                waitInfo="你的轮次，正在等待服务端允许你下棋\n";
+           else{
+                waitInfo="你的轮次，正在等待你下棋\n";
             }
         }
     }

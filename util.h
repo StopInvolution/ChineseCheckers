@@ -40,4 +40,7 @@ int getTarget(QString ID);
 
 // 返回数字对应的区域编码
 QString getID(int x);
+
+
+bool valid_check(int); //check if the number of players is valid.
 #endif  // UTIL_H

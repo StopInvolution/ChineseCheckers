@@ -40,6 +40,18 @@ QString getColorName(int color) {
     return colorName;
 }
 
+bool valid_check(int num)
+{
+    switch(num) {
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return true;
+    }
+    return false;
+}
+
 bool isCollinear(const ChessPosition& arg1, const ChessPosition& arg2) {
     int x(arg1.first), y(arg1.second), xx(arg2.first), yy(arg2.second);
     return x == xx || y == yy || x+y == xx+yy;

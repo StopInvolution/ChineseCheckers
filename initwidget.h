@@ -25,7 +25,6 @@ private slots:
     void on_pushButton_clicked();
 
 private:
-    bool valid_check(int); //check if the number of players is valid.
     Ui::initWidget *ui;
 };
 
