@@ -44,6 +44,7 @@ Marble *Player::getChess(int x, int y)
 
 bool Player::checkWin()
 {
+    qDebug()<<"checkWin";
     for(Marble* chess:this->chesses){
         bool chessIn=false;
         for(int i=0;i<10;i++){
@@ -52,6 +53,7 @@ bool Player::checkWin()
                 break;
             }
         }
+        qDebug()<<chess->chessPosition<<" "<<chessIn;
         if(!chessIn){
             return false;
         }

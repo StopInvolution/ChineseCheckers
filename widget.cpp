@@ -80,7 +80,15 @@ void Widget::setChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::m
 
 void Widget::on_btnSetPlayerNum_clicked()
 {
-    if(editPlayerNum->text().toInt()){
-        setChessBoard(editPlayerNum->text().toInt());
+    int t=editPlayerNum->text().toInt();
+    if(valid_check(t)){
+        std::vector<std::pair<QString,QString>> playerInfo;
+        std::map<QString,bool> localFlag;
+        for(int i=0;i<t;i++){
+            QString name="我是"+QString::number(i);
+            playerInfo.push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
+            localFlag.insert(std::make_pair(name,true));
+        }
+        setChessBoard(t,&playerInfo,&localFlag,nullptr);
     }
 }

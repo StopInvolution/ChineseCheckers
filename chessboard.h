@@ -28,12 +28,12 @@ public:
 
     int playerNum;
     int stepNum;
-    int outPlayerNum;
     QTimer *timeoutTimer= new QTimer;
     int clockT;
     double resTime;
     bool god;
     bool serverPermission;
+    QString gameResult;
 
     // 当前行棋方
     int activatedPlayerID;
@@ -48,6 +48,7 @@ public:
     // 玩家
     std::vector<Player*> players;
     std::vector<Player*> winnerRank;
+    std::vector<Player*> outer;
 
     // hint 抽象成一个玩家
     Player * hintPlayer;
