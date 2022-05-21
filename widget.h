@@ -24,9 +24,6 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-    // 试验坐标，没有实际用处
-    void paintEvent(QPaintEvent *);
-
     NetworkSocket* socket;
 
     int playerNum;

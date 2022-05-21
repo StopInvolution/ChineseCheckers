@@ -16,10 +16,13 @@
 #include "agent.h"
 #include <QDebug>
 #include <algorithm>
+#include "clientwidget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
     : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num),stepNum(0), clockT(30),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     srand(time(0));
+    terminal = new ClientWidget(nullptr,this);
+    terminal->hide();
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
@@ -109,6 +112,13 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
         this->moveA2B(ret.first,ret.second);
     });
 
+    btnTerminal = new QPushButton(this->parentWindow);
+    btnTerminal->setGeometry(760,590,30,30);
+    btnTerminal->setText("~");
+    btnTerminal->setCursor(Qt::PointingHandCursor);
+    btnTerminal->setFlat(true);
+    connect(this->btnTerminal,&QPushButton::clicked,this,&ChessBoard::onTerminal);
+
     connect(this->timeoutTimer, &QTimer::timeout,this,  [&](){
         resTime-=clockT/1000.0;
         if(resTime<=0){
@@ -132,6 +142,11 @@ ChessBoard::~ChessBoard() {
     delete this->btnStopAutoMv;
     delete this->btnAutoMv;
     delete this->btnRandomMove;
+    for(int i=1;i<=6;i++)
+        if(this->labelPlayer[i]){
+            delete this->labelPlayer[i];
+        }
+    delete this->btnAIMv;
 }
 
 void ChessBoard::setActivatedPlayer(Player* _activatedPlayer) {
@@ -507,8 +522,6 @@ Player *ChessBoard::getPlayer(QString ID)
     return nullptr;
 }
 
-
-
 void ChessBoard::nertworkProcess(NetworkData data)
 {
     OPCODE &op=data.op;
@@ -573,6 +586,16 @@ bool ChessBoard::checkAct(QString ID)
         return false;
     }
     return true;
+}
+
+void ChessBoard::onTerminal()
+{
+    if(this->terminal->isVisible()){
+        this->terminal->hide();
+    }
+    else{
+        this->terminal->show();
+    }
 }
 
 bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v) {

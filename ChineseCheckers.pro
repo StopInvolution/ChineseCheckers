@@ -14,6 +14,7 @@ RC_ICONS = logo.ico
 SOURCES += \
     agent.cpp \
     chessboard.cpp \
+    clientwidget.cpp \
     initwidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 HEADERS += \
     agent.h \
     chessboard.h \
+    clientwidget.h \
     initwidget.h \
     mainwindow.h \
     marble.h \
@@ -52,6 +54,7 @@ HEADERS += \
     widget.h
 
 FORMS += \
+    clientwidget.ui \
     initwidget.ui \
     mainwindow.ui \
     mul_initwidget.ui \
