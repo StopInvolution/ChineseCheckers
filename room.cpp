@@ -50,7 +50,7 @@ bool Room::isGameRunning() {
 void Room::changeGameState() {
     gameRunning ^= 1;
     if(gameRunning == 1) {
-        std::vector<std::pair<QString,QString>> Vec;
+        QVector<std::pair<QString,QString>> Vec;
         std::map<QString,bool> m;
         for(size_t i = 0; i < players.size(); ++i){
             QString s=getID(board::playerSpawn[players.size()][i]);

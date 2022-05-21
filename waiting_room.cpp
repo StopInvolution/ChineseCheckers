@@ -54,7 +54,7 @@ void WaitingRoom::receive(NetworkData data)
     };
     auto EmitStart = [this,&data]() -> void {
         auto ls = data.data1.split(" ");
-        std::vector<pss> Vec;
+        QVector<pss> Vec;
         loadPR(Vec,data.data1,data.data2);
         std::map<QString,bool> flags;
         flags[username] = true;

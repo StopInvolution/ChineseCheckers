@@ -48,13 +48,13 @@ Widget::~Widget()
     delete chessBoard;
 }
 
-void Widget::initChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::initChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 {
     this->setChessBoard(newPlayerNum,playerInfo,localFlag,_socket);
     this->show();
 }
 
-void Widget::setChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::setChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 
 {
     if(this->chessBoard){
@@ -70,7 +70,7 @@ void Widget::on_btnSetPlayerNum_clicked()
 {
     int t=editPlayerNum->text().toInt();
     if(valid_check(t)){
-        std::vector<std::pair<QString,QString>> playerInfo;
+        QVector<std::pair<QString,QString>> playerInfo;
         std::map<QString,bool> localFlag;
         for(int i=0;i<t;i++){
             QString name="我是"+QString::number(i);

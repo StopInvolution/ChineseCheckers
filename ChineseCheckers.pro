@@ -20,6 +20,7 @@ SOURCES += \
     mainwindow.cpp \
     marble.cpp \
     mul_initwidget.cpp \
+    mvector.cpp \
     networkUtil.cpp \
     networkdata.cpp \
     networkserver.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     mainwindow.h \
     marble.h \
     mul_initwidget.h \
+    mvector.h \
     networkUtil.h \
     networkdata.h \
     networkserver.h \

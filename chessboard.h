@@ -11,6 +11,7 @@
 #include <vector>
 #include <QTimer>
 #include "networkdata.h"
+#include "mvector.h"
 
 
 class Player;
@@ -21,13 +22,13 @@ class ChessBoard:public QObject
 {
     Q_OBJECT
 public:
-    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
+    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,QVector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
     ~ChessBoard();
     Widget *parentWindow;
 
     NetworkSocket *socket;
     ClientWidget *terminal;
-
+    MVector<QVector<ChessPosition>>* steps;
     int rotateAngle;
     int playerNum;
     int stepNum;
@@ -49,9 +50,9 @@ public:
     bool occupiedPst[2*board::indexBoundary+1][2*board::indexBoundary+1];
 
     // 玩家
-    std::vector<Player*> players;
-    std::vector<Player*> winnerRank;
-    std::vector<Player*> outer;
+    QVector<Player*> players;
+    QVector<Player*> winnerRank;
+    QVector<Player*> outer;
 
     // hint 抽象成一个玩家
     Player * hintPlayer;
@@ -68,7 +69,7 @@ public:
     // 棋子被点击时的回调函数，用于选择待移动的普通棋子
     void chooseChess (Marble *chess);
     // 落点(hint)被点击时的回调函数，用于移动选择的普通棋子到该棋子的位置
-    void moveChess(Marble *dest,std::vector<ChessPosition> *path=nullptr);
+    void moveChess(Marble *dest,QVector<ChessPosition> *path=nullptr);
 
     // 当前玩家，超时判负
     void timeout();
@@ -90,7 +91,7 @@ public:
     bool moveA2B(ChessPosition p1,ChessPosition p2);
 
     // 根据路径移动，返回格式同上，注意这里是传指针，需要小心对象生命周期
-    bool moveA2BWithPath(std::vector<ChessPosition>* p);
+    bool moveA2BWithPath(QVector<ChessPosition>* p);
 
     // 随机移动一个棋子
     void randomMove();
@@ -101,7 +102,7 @@ public:
     void on_btnStopAutoMv_clicked();
     void on_btnSetPlayerNum_clicked();
 
-    std::vector<pss> initPlayerInfo;
+    QVector<pss> initPlayerInfo;
     std::map<QString,bool> initLocalFlag;
 
     // 更新 labelInfo
