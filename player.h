@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include <QString>
-#include <vector>
+#include <QVector>
 #include "chessboard.h"
 #include "qtcpsocket.h"
 
@@ -16,6 +16,9 @@ class Player : public QObject {
     AlgoPlayer toAlgoPlayer();
     // 玩家名
     QString name;
+
+    QVector<ChessPosition> lstMove;
+    void replay();
 
     // 棋子数和棋子颜色(泛颜色)，color=color::hint
     int chessNum, color;

@@ -14,6 +14,7 @@ RC_ICONS = logo.ico
 SOURCES += \
     agent.cpp \
     chessboard.cpp \
+    clickableqlabel.cpp \
     clientwidget.cpp \
     initwidget.cpp \
     main.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
 HEADERS += \
     agent.h \
     chessboard.h \
+    clickableqlabel.h \
     clientwidget.h \
     initwidget.h \
     mainwindow.h \

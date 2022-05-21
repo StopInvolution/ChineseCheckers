@@ -26,10 +26,10 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     srand(time(0));
     terminal = new ClientWidget(nullptr,this);
     terminal->hide();
-    if(playerInfo)
+    if(playerInfo && localFlag)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
-    if(playerInfo){
+    if(playerInfo && localFlag){
         std::sort(playerInfo->begin(),playerInfo->end(),[](const pss& rhs1, const pss& rhs2){return rhs1.second.compare(rhs2.second)<0;});
         for(int i=0;i<playerNum;i++){
             QString name=(*playerInfo)[i].first;
@@ -45,12 +45,13 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     const int geo[]={0,0,530,110,680,240,600,455,330,485,180,355,260,140};
     for(int i=1;i<=6;i++){
         int j=mod6Add(i,this->rotateAngle);
-        labelPlayer[i] = new QLabel(this->parentWindow);
+        labelPlayer[i] = new ClickableQLabel(this->parentWindow);
         labelPlayer[i]->setGeometry(geo[i*2],geo[i*2+1],80,40);
         labelPlayer[i]->setFont(QFont("华光中圆_CNKI", 14));
         labelPlayer[i]->setStyleSheet(getQColor(j));
         labelPlayer[i]->setText(QString::number(i));
         labelPlayer[i]->setVisible(false);
+        labelPlayer[i]->setCursor(Qt::PointingHandCursor);
     }
     labelPlayer[1]->setAlignment(Qt::AlignLeft);
     labelPlayer[2]->setAlignment(Qt::AlignLeft);
@@ -68,6 +69,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
             players.push_back(new Player(spawn, spawn, getTarget(ID),((*localFlag)[name])<<1,name));
             labelPlayer[mod6Add(spawn,-this->rotateAngle)]->setText(name);
             labelPlayer[mod6Add(spawn,-this->rotateAngle)]->setVisible(true);
+            connect(this->labelPlayer[mod6Add(spawn,-this->rotateAngle)],&ClickableQLabel::clicked,this->players.back(),&Player::replay);
         }
         else{
             players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
@@ -141,6 +143,9 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
             resTime=0;
             this->timeoutTimer->stop();
             outer.push_back(this->activatedPlayer);
+            if(!socket){
+                timeout();
+            }
             emit overtime(getActID());
         } updateLabelInfo();});
     if(socket)
@@ -203,9 +208,10 @@ bool ChessBoard::moveA2B(ChessPosition p1, ChessPosition p2)
     return true;
 }
 
-bool ChessBoard::moveA2BWithPath(QVector<ChessPosition> *path)
+bool ChessBoard::moveA2BWithPath(QVector<ChessPosition> *path,bool ck)
 {
-    selectedChess = this->activatedPlayer->getChess(path->front());
+    if(ck) selectedChess = this->activatedPlayer->getChess(path->front());
+    else selectedChess = this->getChess(path->front());
     if(!selectedChess){
         return false;
     }
@@ -349,7 +355,8 @@ QString ChessBoard::getActID()
 void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
     // 获取路径，按要求格式保存在 s 中
     if(selectedChess==nullptr) selectedChess=this->activatedPlayer->getChess(path->front());
-    if(socket && dest){
+    // 传统点击
+    if(dest){
         QString s;
         std::stack<ChessPosition> S;
         Marble* now = dest;
@@ -364,9 +371,17 @@ void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
             s=s+QString::number(x)+" "+QString::number(y)+" ";
         }
         s = s.left(s.size()-1);
-        qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
-        socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
-        this->serverPermission=false;
+        this->activatedPlayer->lstMove=loadChessPosition(s);
+        // 本地点击，即服务器上不执行下列操作
+        if(socket){
+            qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
+            socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
+            this->serverPermission=false;
+        }
+    }
+    // 服务器点击
+    if(path){
+        this->activatedPlayer->lstMove=*path;
     }
 
     unshowHint();
@@ -416,7 +431,7 @@ void ChessBoard::chooseChess(Marble* chess) {
 }
 
 void ChessBoard::nextTurn() {
-    resTime = 30;
+    resTime = 15;
     this->timeoutTimer->start(clockT);
     if(!activatedPlayer){
         activatedPlayerID=0;
@@ -514,6 +529,8 @@ void ChessBoard::show() {
     btnAutoMv->show();
     btnStopAutoMv->show();
     btnRandomMove->show();
+    btnAIMv->show();
+    btnTerminal->show();
 }
 
 Marble *ChessBoard::getChess(ChessPosition p, int playerID)
