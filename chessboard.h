@@ -16,6 +16,7 @@
 class Player;
 class Marble;
 class Widget;
+class ClientWidget;
 class ChessBoard:public QObject
 {
     Q_OBJECT
@@ -25,6 +26,7 @@ public:
     Widget *parentWindow;
 
     NetworkSocket *socket;
+    ClientWidget *terminal;
 
     int playerNum;
     int stepNum;
@@ -91,7 +93,7 @@ public:
 
     // 随机移动一个棋子
     void randomMove();
-    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv;
+    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv,*btnTerminal;
     QTimer* timer;
     void on_btnRandomMove_clicked();
     void on_btnAutoMv_clicked();
@@ -118,6 +120,7 @@ public:
     int serverMoveProcess(QString data1,QString data2);
 
     bool checkAct(QString ID="");
+    void onTerminal();
 
    signals:
     void startTurn(QString);
