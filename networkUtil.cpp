@@ -16,7 +16,7 @@ QVector<ChessPosition> loadChessPosition(QString data)
     QStringList list=data.split(' ');
     QVector<ChessPosition> vec;
     for(int i=0;i<list.size();i+=2){
-        vec.push_back(ChessPosition(list[i*2].toInt(),list[i*2+1].toInt()));
+        vec.push_back(ChessPosition(list[i].toInt(),list[i+1].toInt()));
     }
     return vec;
 }

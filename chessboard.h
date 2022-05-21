@@ -12,6 +12,7 @@
 #include <QTimer>
 #include "networkdata.h"
 #include "mvector.h"
+#include "clickableqlabel.h"
 
 
 class Player;
@@ -91,7 +92,7 @@ public:
     bool moveA2B(ChessPosition p1,ChessPosition p2);
 
     // 根据路径移动，返回格式同上，注意这里是传指针，需要小心对象生命周期
-    bool moveA2BWithPath(QVector<ChessPosition>* p);
+    bool moveA2BWithPath(QVector<ChessPosition>* p,bool ck=true);
 
     // 随机移动一个棋子
     void randomMove();
@@ -114,7 +115,7 @@ public:
     Marble* getChess(ChessPosition p,int playerID=-1);
     Marble* getChess(int x,int y,int playerID=-1);
     Player* getPlayer(QString ID);
-    QLabel *labelPlayer[7];
+    ClickableQLabel *labelPlayer[7];
 
     void nertworkProcess(NetworkData data);
     /**

@@ -25,7 +25,7 @@ class Marble : public QLabel {
     void moveTo(ChessPosition pst);
 
     // 这个函数和上面两个是并列关系，这个实现了动画和路径
-    void moveToWithPath(Marble* dest, QVector<ChessPosition>* path=nullptr);
+    void moveToWithPath(Marble* dest, QVector<ChessPosition>* path=nullptr, bool burn=false);
 
     // 是否在棋盘内
     bool isWithinBoundary_();

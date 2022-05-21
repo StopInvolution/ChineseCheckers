@@ -27,6 +27,17 @@ AlgoPlayer Player::toAlgoPlayer()
     return ret;
 }
 
+void Player::replay()
+{
+    if(lstMove.length()){
+        int x=this->lstMove.front().first,y=this->lstMove.front().second;
+        Marble* start = new Marble(this->parentChessBoard->parentWindow,x,y,this->color);
+        start->show();
+        start->addTo(this);
+        start->moveToWithPath(nullptr,&this->lstMove,true);
+    }
+}
+
 Marble *Player::getChess(ChessPosition p)
 {
     for(Marble* chess:this->chesses){
@@ -44,7 +55,6 @@ Marble *Player::getChess(int x, int y)
 
 bool Player::checkWin()
 {
-    qDebug()<<"checkWin";
     for(Marble* chess:this->chesses){
         bool chessIn=false;
         for(int i=0;i<10;i++){
@@ -53,7 +63,6 @@ bool Player::checkWin()
                 break;
             }
         }
-        qDebug()<<chess->chessPosition<<" "<<chessIn;
         if(!chessIn){
             return false;
         }
