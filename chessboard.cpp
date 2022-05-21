@@ -16,6 +16,7 @@
 #include "agent.h"
 #include <QDebug>
 #include <algorithm>
+#include <QDateTime>
 #include "clientwidget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
@@ -432,7 +433,9 @@ void ChessBoard::chooseChess(Marble* chess) {
 
 void ChessBoard::nextTurn() {
     resTime = 15;
-    this->timeoutTimer->start(clockT);
+    if(!socket){
+        this->timeoutTimer->start(clockT);
+    }
     if(!activatedPlayer){
         activatedPlayerID=0;
         activatedPlayer=players.front();
@@ -583,6 +586,10 @@ void ChessBoard::nertworkProcess(NetworkData data)
     }
     case OPCODE::START_TURN_OP:{
         serverPermission=true;
+        QDateTime time1 = QDateTime::currentDateTime();   //获取当前时间
+        int timeT = time1.toSecsSinceEpoch(),timeServer=data2.toInt();
+        resTime=timeT+15-timeServer;
+        this->timeoutTimer->start(clockT);
         updateLabelInfo();
         break;
     }

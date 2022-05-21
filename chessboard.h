@@ -35,7 +35,7 @@ public:
     int stepNum;
     QTimer *timeoutTimer= new QTimer;
     int clockT;
-    double resTime;
+    double resTime,tick;
     bool god;
     bool serverPermission;
     QString gameResult;
