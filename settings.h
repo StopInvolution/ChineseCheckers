@@ -32,7 +32,7 @@ namespace board{
     const double jHatX = 0.5*spacing;
     const double jHatY = 0.83*spacing;
     const int OriginX = 471;
-    const int OriginY = 312;
+    const int OriginY = 314;
     const int boundary = 4;
     const int indexBoundary = 8;
 
@@ -64,13 +64,7 @@ namespace board{
 class AlgoPlayer{
 public:
     AlgoPlayer()=default;
-    AlgoPlayer(int s){
-        spawn=s;
-        target=s+3>6?s-3:s+3;
-        for(int i=0;i<10;i++){
-            pst[i]=ChessPosition(board::spawnPst[s][i*2],board::spawnPst[s][i*2+1]);
-        }
-    }
+    AlgoPlayer(int s);
     QString name;
     int spawn,target;
     ChessPosition pst[10];

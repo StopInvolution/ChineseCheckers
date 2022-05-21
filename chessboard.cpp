@@ -19,22 +19,33 @@
 #include "clientwidget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
-    : parentWindow(_parentWindow), socket(_socket),playerNum(_player_num),stepNum(0), clockT(30),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow), socket(_socket),rotateAngle(0),playerNum(_player_num),stepNum(0), clockT(30),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr),initPlayerInfo(*playerInfo),initLocalFlag(*localFlag) {
     srand(time(0));
     terminal = new ClientWidget(nullptr,this);
     terminal->hide();
     if(playerInfo)
         qDebug()<< (*playerInfo)<<"  "<<(*localFlag);
     memset(this->occupiedPst, 0, sizeof(this->occupiedPst));
-    if(playerInfo)
+    if(playerInfo){
         sort(playerInfo->begin(),playerInfo->end(),[](const pss& rhs1, const pss& rhs2){return rhs1.second.compare(rhs2.second)<0;});
+        for(int i=0;i<playerNum;i++){
+            QString name=(*playerInfo)[i].first;
+            if((*localFlag)[name]){
+                QString ID=(*playerInfo)[i].second;
+                int spawn=getSpawn(ID);
+                this->rotateAngle=spawn-4;
+                break;
+            }
+        }
+    }
 
     const int geo[]={0,0,530,110,680,240,600,455,330,485,180,355,260,140};
     for(int i=1;i<=6;i++){
+        int j=mod6Add(i,this->rotateAngle);
         labelPlayer[i] = new QLabel(this->parentWindow);
         labelPlayer[i]->setGeometry(geo[i*2],geo[i*2+1],80,40);
         labelPlayer[i]->setFont(QFont("华光中圆_CNKI", 14));
-        labelPlayer[i]->setStyleSheet(getQColor(i));
+        labelPlayer[i]->setStyleSheet(getQColor(j));
         labelPlayer[i]->setText(QString::number(i));
         labelPlayer[i]->setVisible(false);
     }
@@ -52,8 +63,8 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
             QString ID=(*playerInfo)[i].second;
             int spawn=getSpawn(ID);
             players.push_back(new Player(spawn, spawn, getTarget(ID),((*localFlag)[name])<<1,name));
-            labelPlayer[spawn]->setText(name);
-            labelPlayer[spawn]->setVisible(true);
+            labelPlayer[mod6Add(spawn,-this->rotateAngle)]->setText(name);
+            labelPlayer[mod6Add(spawn,-this->rotateAngle)]->setVisible(true);
         }
         else{
             players.push_back(new Player(board::playerSpawn[playerNum][i], board::playerSpawn[playerNum][i], board::playerTarget[playerNum][i]));
@@ -108,8 +119,10 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,std::vector<pss>* 
     btnAIMv->setText("AIMv");
     btnAIMv->setCursor(Qt::PointingHandCursor);
     connect(this->btnAIMv, &QPushButton::clicked, this,[&](){
-        pcc ret=calculate(this->AIDataProducer());
-        this->moveA2B(ret.first,ret.second);
+        if(serverPermission){
+            pcc ret=calculate(this->AIDataProducer());
+            this->moveA2B(ret.first,ret.second);
+        }
     });
 
     btnTerminal = new QPushButton(this->parentWindow);
@@ -409,17 +422,27 @@ void ChessBoard::nextTurn() {
         updateLabelInfo();
         return ;
     }
+    hintPlayer->clear();
+
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
         this->winnerRank.push_back(this->activatedPlayer);
     }
-    hintPlayer->clear();
-    if(static_cast<int>(this->winnerRank.size()+this->outer.size())==this->playerNum){
+
+    this->setNextActivatedPlayer();
+
+    if(static_cast<int>(this->winnerRank.size()+this->outer.size())==this->playerNum-1){
+        activatedPlayer->flag=4;
         this->activatedPlayer->setActivated(false);
+        qDebug()<<activatedPlayer->name<<" wins.\n";
+        emit victory(this->activatedPlayer->name);
+
         qDebug()<<"游戏结束";
+
         QString data;
+        this->winnerRank.push_back(this->activatedPlayer);
         std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
         for(int i=0;i<playerNum;i++){
             if(i>0) data+=" ";
@@ -431,21 +454,20 @@ void ChessBoard::nextTurn() {
             this->showRank(data);
         }
     }
-    else{
-        this->setNextActivatedPlayer();
-    }
+
     updateLabelInfo();
 }
 
 void ChessBoard::randomMove() {
-    do {
-        hintPlayer->clear();
-        selectedChess = activatedPlayer->chesses[rand() % activatedPlayer->chessNum];
-        getHint();
-    } while (hintPlayer->chesses.empty());
-    moveChess(hintPlayer->chesses[rand() % hintPlayer->chessNum]);
-    //    ChessPosition pst=hintPlayer->chesses[rand()%hintPlayer->chessNum]->chessPosition;
-    //    moveChess(pst);
+
+    if(serverPermission){
+        do {
+            hintPlayer->clear();
+            selectedChess = activatedPlayer->chesses[rand() % activatedPlayer->chessNum];
+            getHint();
+        } while (hintPlayer->chesses.empty());
+        moveChess(hintPlayer->chesses[rand() % hintPlayer->chessNum]);
+    }
 }
 
 void ChessBoard::updateLabelInfo() {

@@ -37,7 +37,7 @@ void Marble::moveTo(int _x, int _y) {
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = true;
     }
     chessPosition = ChessPosition(chessX, chessY);
-    ChessPosition transformedPosition = boardTransform(chessX, chessY);
+    ChessPosition transformedPosition = boardTransform(chessPosition,this->parentPlayer->parentChessBoard->rotateAngle);
     int transformedX = transformedPosition.first, transformedY = transformedPosition.second;
     setGeometry(transformedX - marbleinfo::r, transformedY - marbleinfo::r, 2 * marbleinfo::r, 2 * marbleinfo::r);
 }
@@ -77,7 +77,7 @@ void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
     else{
         int n=path->size();
         for(int i=n-1;i>=1;i--){
-            ChessPosition p=boardTransform((*path)[i]);
+            ChessPosition p=boardTransform((*path)[i],this->parentPlayer->parentChessBoard->rotateAngle);
             S.push(QPoint(p.first-marbleinfo::r,p.second-marbleinfo::r));
         }
     }

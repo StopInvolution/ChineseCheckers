@@ -28,6 +28,7 @@ public:
     NetworkSocket *socket;
     ClientWidget *terminal;
 
+    int rotateAngle;
     int playerNum;
     int stepNum;
     QTimer *timeoutTimer= new QTimer;
@@ -99,6 +100,9 @@ public:
     void on_btnAutoMv_clicked();
     void on_btnStopAutoMv_clicked();
     void on_btnSetPlayerNum_clicked();
+
+    std::vector<pss> initPlayerInfo;
+    std::map<QString,bool> initLocalFlag;
 
     // 更新 labelInfo
     void updateLabelInfo();
