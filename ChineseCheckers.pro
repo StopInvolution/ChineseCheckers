@@ -28,6 +28,7 @@ SOURCES += \
     room.cpp \
     serverplayer.cpp \
     serverwidget.cpp \
+    settings.cpp \
     util.cpp \
     waiting_room.cpp \
     widget.cpp

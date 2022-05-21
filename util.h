@@ -6,7 +6,7 @@
 #include "settings.h"
 
 // 棋盘坐标转换到显示坐标
-ChessPosition boardTransform(ChessPosition var);
+ChessPosition boardTransform(ChessPosition var,int alpha=0);
 ChessPosition boardTransform(int x, int y);
 
 // 输入编号返回颜色名字
@@ -43,4 +43,8 @@ QString getID(int x);
 
 
 bool valid_check(int); //check if the number of players is valid.
+
+ChessPosition rotateCounterclockwise (ChessPosition begin, int alpha);
+
+int mod6Add(int x,int t);
 #endif  // UTIL_H
