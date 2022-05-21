@@ -27,7 +27,7 @@ class Player : public QObject {
     unsigned int flag;
 
     // 棋子
-    std::vector<Marble*> chesses;
+    QVector<Marble*> chesses;
 
     Marble* getChess(ChessPosition p);
     Marble* getChess(int x,int y);

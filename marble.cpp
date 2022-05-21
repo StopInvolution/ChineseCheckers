@@ -46,7 +46,7 @@ void Marble::moveTo(ChessPosition pst) {
     moveTo(pst.first, pst.second);
 }
 
-void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
+void Marble::moveToWithPath(Marble* dest,QVector<ChessPosition>* path){
     // 正常棋子要记 occupiedPst，提示棋子不能记
     // 这里的移动是改变棋盘坐标，像素坐标并没有改变，像素坐标会在下面的动画中被慢慢改变
     if (this->chessColor != color::hint) {

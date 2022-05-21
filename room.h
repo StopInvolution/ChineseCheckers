@@ -12,7 +12,7 @@ class Room
     QString roomID;
     int gameRunning;
 public:
-    std::vector<ServerPlayer*> players;
+    QVector<ServerPlayer*> players;
 //    ChessBoard* chessboard;
     /**
     * @return the ID of the room.

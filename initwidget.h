@@ -18,7 +18,7 @@ public:
     ~initWidget();
 
     signals:
-    void start(int playerNum,std::vector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
+    void start(int playerNum,QVector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
     void startOnline(int playerNum);
 
 private slots:
