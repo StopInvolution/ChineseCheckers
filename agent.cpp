@@ -161,7 +161,7 @@ struct moveStruct {
     };
 };
 
-pcc calculate(QVector<AlgoPlayer> vec){
+pcc calculateGreedy(QVector<AlgoPlayer> vec){
     //printvec(vec);
     int map[17][17];
     bool vis[17][17][10];
@@ -241,7 +241,26 @@ pcc calculate(QVector<AlgoPlayer> vec){
         }
     }
     moveStruct best = moveCandidate.top();
+    std::cout << vec[0].name.toStdString();
+    std::cout << " choices: " << moveCandidate.size();
 
+    int cnt1 = 0,cnt2 = 0, cnt3 = 0;
+    while (!moveCandidate.empty()) {
+        moveStruct tmp = moveCandidate.top();
+        moveCandidate.pop();
+        if (tmp.value > 0) cnt1++;
+        else if (tmp.value == 0) cnt2++;
+        else cnt3++;
+    }
+    std::cout << " >0:" << cnt1 << " =0:" << cnt2 << " <0:" << cnt3;
+
+    std::cout << " best.value: " << best.value;
+
+    std::cout << std::endl;
     //rotate back
     return pcc(rotateCounterclockwise(vec[0].pst[best.beginNo],6 - alpha), rotateCounterclockwise(best.c, 6 - alpha));
+}
+
+pcc calculate(QVector<AlgoPlayer> vec){
+    return calculateGreedy(vec);
 }
