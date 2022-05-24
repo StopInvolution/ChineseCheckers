@@ -14,11 +14,14 @@ RC_ICONS = logo.ico
 SOURCES += \
     agent.cpp \
     chessboard.cpp \
+    clickableqlabel.cpp \
+    clientwidget.cpp \
     initwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     marble.cpp \
     mul_initwidget.cpp \
+    mvector.cpp \
     networkUtil.cpp \
     networkdata.cpp \
     networkserver.cpp \
@@ -27,6 +30,7 @@ SOURCES += \
     room.cpp \
     serverplayer.cpp \
     serverwidget.cpp \
+    settings.cpp \
     util.cpp \
     waiting_room.cpp \
     widget.cpp
@@ -34,10 +38,13 @@ SOURCES += \
 HEADERS += \
     agent.h \
     chessboard.h \
+    clickableqlabel.h \
+    clientwidget.h \
     initwidget.h \
     mainwindow.h \
     marble.h \
     mul_initwidget.h \
+    mvector.h \
     networkUtil.h \
     networkdata.h \
     networkserver.h \
@@ -52,6 +59,7 @@ HEADERS += \
     widget.h
 
 FORMS += \
+    clientwidget.ui \
     initwidget.ui \
     mainwindow.ui \
     mul_initwidget.ui \

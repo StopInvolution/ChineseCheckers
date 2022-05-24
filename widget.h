@@ -11,6 +11,8 @@
 #include "settings.h"
 #include "networksocket.h"
 #include "networkdata.h"
+#include <QVector>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
@@ -24,9 +26,6 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-    // 试验坐标，没有实际用处
-    void paintEvent(QPaintEvent *);
-
     NetworkSocket* socket;
 
     int playerNum;
@@ -37,10 +36,10 @@ public:
     QLabel *labelPlayerNum;
 
 public slots:
-    void initChessBoard(int newPlayerNum=2,std::vector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
+    void initChessBoard(int newPlayerNum=2,QVector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
 
 public:
-    void setChessBoard(int newPlayerNum=2,std::vector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
+    void setChessBoard(int newPlayerNum=2,QVector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
     void on_btnSetPlayerNum_clicked();
 
 //private:

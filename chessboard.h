@@ -11,29 +11,34 @@
 #include <vector>
 #include <QTimer>
 #include "networkdata.h"
+#include "mvector.h"
+#include "clickableqlabel.h"
 
 
 class Player;
 class Marble;
 class Widget;
+class ClientWidget;
 class ChessBoard:public QObject
 {
     Q_OBJECT
 public:
-    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,std::vector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
+    ChessBoard(Widget *_parentWindow = 0, int _player_num=6,QVector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr,NetworkSocket* _socket=nullptr);
     ~ChessBoard();
     Widget *parentWindow;
 
     NetworkSocket *socket;
-
+    ClientWidget *terminal;
+    MVector<QVector<ChessPosition>>* steps;
+    int rotateAngle;
     int playerNum;
     int stepNum;
-    int outPlayerNum;
     QTimer *timeoutTimer= new QTimer;
     int clockT;
-    double resTime;
+    double resTime,tick;
     bool god;
     bool serverPermission;
+    QString gameResult;
 
     // 当前行棋方
     int activatedPlayerID;
@@ -46,8 +51,9 @@ public:
     bool occupiedPst[2*board::indexBoundary+1][2*board::indexBoundary+1];
 
     // 玩家
-    std::vector<Player*> players;
-    std::vector<Player*> winnerRank;
+    QVector<Player*> players;
+    QVector<Player*> winnerRank;
+    QVector<Player*> outer;
 
     // hint 抽象成一个玩家
     Player * hintPlayer;
@@ -64,7 +70,7 @@ public:
     // 棋子被点击时的回调函数，用于选择待移动的普通棋子
     void chooseChess (Marble *chess);
     // 落点(hint)被点击时的回调函数，用于移动选择的普通棋子到该棋子的位置
-    void moveChess(Marble *dest,std::vector<ChessPosition> *path=nullptr);
+    void moveChess(Marble *dest,QVector<ChessPosition> *path=nullptr);
 
     // 当前玩家，超时判负
     void timeout();
@@ -86,16 +92,19 @@ public:
     bool moveA2B(ChessPosition p1,ChessPosition p2);
 
     // 根据路径移动，返回格式同上，注意这里是传指针，需要小心对象生命周期
-    bool moveA2BWithPath(std::vector<ChessPosition>* p);
+    bool moveA2BWithPath(QVector<ChessPosition>* p,bool ck=true);
 
     // 随机移动一个棋子
     void randomMove();
-    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv;
+    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv,*btnTerminal;
     QTimer* timer;
     void on_btnRandomMove_clicked();
     void on_btnAutoMv_clicked();
     void on_btnStopAutoMv_clicked();
     void on_btnSetPlayerNum_clicked();
+
+    QVector<pss> initPlayerInfo;
+    std::map<QString,bool> initLocalFlag;
 
     // 更新 labelInfo
     void updateLabelInfo();
@@ -106,7 +115,7 @@ public:
     Marble* getChess(ChessPosition p,int playerID=-1);
     Marble* getChess(int x,int y,int playerID=-1);
     Player* getPlayer(QString ID);
-    QLabel *labelPlayer[7];
+    ClickableQLabel *labelPlayer[7];
 
     void nertworkProcess(NetworkData data);
     /**
@@ -117,6 +126,7 @@ public:
     int serverMoveProcess(QString data1,QString data2);
 
     bool checkAct(QString ID="");
+    void onTerminal();
 
    signals:
     void startTurn(QString);

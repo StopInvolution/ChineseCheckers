@@ -18,14 +18,13 @@ public:
     ~initWidget();
 
     signals:
-    void start(int playerNum,std::vector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
+    void start(int playerNum,QVector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
     void startOnline(int playerNum);
 
 private slots:
     void on_pushButton_clicked();
 
 private:
-    bool valid_check(int); //check if the number of players is valid.
     Ui::initWidget *ui;
 };
 

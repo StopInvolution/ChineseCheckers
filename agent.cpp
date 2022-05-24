@@ -52,19 +52,6 @@ public:
 //ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2);
 
 //alpha * pi/3 :所有棋子逆时针旋转角度
-ChessPosition rotateCounterclockwise (ChessPosition begin, int alpha) {
-    //qDebug() << "rotateCounterclockwise: begin = " << begin.first << " " << begin.second << ", alpha = " << alpha;
-    if (alpha == 0)
-        return begin;
-    const double pi = acos(-1);
-    double cosalpha = cos(alpha * pi / 3.0), sinalpha = sin(alpha * pi / 3.0);
-    double x2 = begin.first + 0.5 * begin.second, y2 = sqrt(3) / 2.0 * begin.second;
-    double s2 = x2 * cosalpha - y2 * sinalpha, t2 = x2 * sinalpha + y2 * cosalpha;
-    double s = s2 - sqrt(3) / 3.0 * t2, t = 2.0 * sqrt(3) / 3.0 * t2;
-    //qDebug() << "rotate finish, s = " << s << ", t = " << t;
-    //while(1);
-    return ChessPosition(round(s), round(t));
-}
 
 const int OUTOFBOUNDARY = -1;
 const int EMPTY = 0;

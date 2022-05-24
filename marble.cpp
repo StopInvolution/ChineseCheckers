@@ -37,7 +37,7 @@ void Marble::moveTo(int _x, int _y) {
         parentPlayer->parentChessBoard->occupiedPst[chessX + board::indexBoundary][chessY + board::indexBoundary] = true;
     }
     chessPosition = ChessPosition(chessX, chessY);
-    ChessPosition transformedPosition = boardTransform(chessX, chessY);
+    ChessPosition transformedPosition = boardTransform(chessPosition,this->parentPlayer->parentChessBoard->rotateAngle);
     int transformedX = transformedPosition.first, transformedY = transformedPosition.second;
     setGeometry(transformedX - marbleinfo::r, transformedY - marbleinfo::r, 2 * marbleinfo::r, 2 * marbleinfo::r);
 }
@@ -46,7 +46,7 @@ void Marble::moveTo(ChessPosition pst) {
     moveTo(pst.first, pst.second);
 }
 
-void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
+void Marble::moveToWithPath(Marble* dest,QVector<ChessPosition>* path,bool burn){
     // 正常棋子要记 occupiedPst，提示棋子不能记
     // 这里的移动是改变棋盘坐标，像素坐标并没有改变，像素坐标会在下面的动画中被慢慢改变
     if (this->chessColor != color::hint) {
@@ -77,7 +77,7 @@ void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
     else{
         int n=path->size();
         for(int i=n-1;i>=1;i--){
-            ChessPosition p=boardTransform((*path)[i]);
+            ChessPosition p=boardTransform((*path)[i],this->parentPlayer->parentChessBoard->rotateAngle);
             S.push(QPoint(p.first-marbleinfo::r,p.second-marbleinfo::r));
         }
     }
@@ -90,6 +90,13 @@ void Marble::moveToWithPath(Marble* dest,std::vector<ChessPosition>* path){
 
     QSequentialAnimationGroup* sequGroup = new QSequentialAnimationGroup;
     QPoint lstPst = this->pos();
+
+    if(burn){
+        QTimer::singleShot(500*S.size(),[&](){
+            delete this;
+        });
+    }
+
     while (!S.empty()) {
         QPropertyAnimation* pPosAnimation = new QPropertyAnimation(this, "pos");
         pPosAnimation->setDuration(500);

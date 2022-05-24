@@ -48,25 +48,13 @@ Widget::~Widget()
     delete chessBoard;
 }
 
-void Widget::paintEvent(QPaintEvent *)
-{
-    return ;
-    QPainter painter(this);
-    painter.setPen(QColor(Qt::black));
-    painter.setBrush(QBrush(Qt::yellow));
-    int x=693,y=190,r=12;
-    painter.drawEllipse(249-r,y-r,2*r,2*r);
-    painter.drawEllipse(x-r,y-r,2*r,2*r);
-    painter.drawEllipse(471-r,312-r,2*r,2*r);
-}
-
-void Widget::initChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::initChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 {
     this->setChessBoard(newPlayerNum,playerInfo,localFlag,_socket);
     this->show();
 }
 
-void Widget::setChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::setChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 
 {
     if(this->chessBoard){
@@ -80,7 +68,15 @@ void Widget::setChessBoard(int newPlayerNum,std::vector<pss>* playerInfo, std::m
 
 void Widget::on_btnSetPlayerNum_clicked()
 {
-    if(editPlayerNum->text().toInt()){
-        setChessBoard(editPlayerNum->text().toInt());
+    int t=editPlayerNum->text().toInt();
+    if(valid_check(t)){
+        QVector<std::pair<QString,QString>> playerInfo;
+        std::map<QString,bool> localFlag;
+        for(int i=0;i<t;i++){
+            QString name="我是"+QString::number(i);
+            playerInfo.push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
+            localFlag.insert(std::make_pair(name,true));
+        }
+        setChessBoard(t,&playerInfo,&localFlag,nullptr);
     }
 }

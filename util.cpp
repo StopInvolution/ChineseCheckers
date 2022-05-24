@@ -7,8 +7,9 @@ ChessPosition boardTransform(int x, int y) {
     return ChessPosition(x * board::iHatX + y * board::jHatX + board::OriginX, -(x * board::iHatY + y * board::jHatY) + board::OriginY);
 }
 
-ChessPosition boardTransform(ChessPosition var) {
-    double x = var.first, y = var.second;
+ChessPosition boardTransform(ChessPosition var,int alpha) {
+    ChessPosition rotate=rotateCounterclockwise(var,alpha);
+    double x = rotate.first, y = rotate.second;
     return boardTransform(x, y);
 }
 
@@ -38,6 +39,18 @@ QString getColorName(int color) {
             break;
     }
     return colorName;
+}
+
+bool valid_check(int num)
+{
+    switch(num) {
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+            return true;
+    }
+    return false;
 }
 
 bool isCollinear(const ChessPosition& arg1, const ChessPosition& arg2) {
@@ -112,4 +125,25 @@ QString getQColor(int color) {
 QString getID(int x)
 {
     return QString((char)(x+'A'-1));
+}
+
+ChessPosition rotateCounterclockwise (ChessPosition begin, int alpha) {
+    //qDebug() << "rotateCounterclockwise: begin = " << begin.first << " " << begin.second << ", alpha = " << alpha;
+    if (alpha == 0)
+        return begin;
+    const double pi = acos(-1);
+    double cosalpha = cos(alpha * pi / 3.0), sinalpha = sin(alpha * pi / 3.0);
+    double x2 = begin.first + 0.5 * begin.second, y2 = sqrt(3) / 2.0 * begin.second;
+    double s2 = x2 * cosalpha - y2 * sinalpha, t2 = x2 * sinalpha + y2 * cosalpha;
+    double s = s2 - sqrt(3) / 3.0 * t2, t = 2.0 * sqrt(3) / 3.0 * t2;
+    //qDebug() << "rotate finish, s = " << s << ", t = " << t;
+    //while(1);
+    return ChessPosition(round(s), round(t));
+}
+
+int mod6Add(int x,int t){
+    int ret=x+t;
+    if(ret<=0) ret+=6;
+    if(ret>6) ret-=6;
+    return ret;
 }

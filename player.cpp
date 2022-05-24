@@ -27,6 +27,17 @@ AlgoPlayer Player::toAlgoPlayer()
     return ret;
 }
 
+void Player::replay()
+{
+    if(lstMove.length()){
+        int x=this->lstMove.front().first,y=this->lstMove.front().second;
+        Marble* start = new Marble(this->parentChessBoard->parentWindow,x,y,this->color);
+        start->show();
+        start->addTo(this);
+        start->moveToWithPath(nullptr,&this->lstMove,true);
+    }
+}
+
 Marble *Player::getChess(ChessPosition p)
 {
     for(Marble* chess:this->chesses){

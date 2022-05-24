@@ -13,7 +13,7 @@ class ServerWidget;
 class ServerWidget : public QWidget
 {
     Q_OBJECT
-    std::vector<Room*> roomList;
+    QVector<Room*> roomList;
     NetworkServer *server;
 
 public:
