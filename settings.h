@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <QString>
+#include <QVector>
 
 typedef std::pair<int,int> ChessPosition;
 typedef std::pair<QString,QString> pss;
@@ -70,4 +71,5 @@ public:
     ChessPosition pst[10];
 };
 
+using Agent_algorithm = pcc(QVector<AlgoPlayer>);
 #endif // SETTINGS_H

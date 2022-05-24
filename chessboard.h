@@ -28,13 +28,14 @@ public:
     Widget *parentWindow;
 
     NetworkSocket *socket;
-    ClientWidget *terminal;
+    ClientWidget *console;
     MVector<QVector<ChessPosition>>* steps;
     int rotateAngle;
     int playerNum;
     int stepNum;
     QTimer *timeoutTimer= new QTimer;
     int clockT;
+    const double initResTime;
     double resTime,tick;
     bool god;
     bool serverPermission;
@@ -96,12 +97,16 @@ public:
 
     // 随机移动一个棋子
     void randomMove();
-    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv,*btnTerminal;
+    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv,*btnConsole;
     QTimer* timer;
     void on_btnRandomMove_clicked();
     void on_btnAutoMv_clicked();
     void on_btnStopAutoMv_clicked();
     void on_btnSetPlayerNum_clicked();
+    void agent_move();
+
+    QVector<pss> initPlayerInfo;
+    std::map<QString,bool> initLocalFlag;
 
     QVector<pss> initPlayerInfo;
     std::map<QString,bool> initLocalFlag;
@@ -114,7 +119,8 @@ public:
 
     Marble* getChess(ChessPosition p,int playerID=-1);
     Marble* getChess(int x,int y,int playerID=-1);
-    Player* getPlayer(QString ID);
+    Player* getPlayerByName(QString name);
+    Player *getPlayerByID(QString ID);
     ClickableQLabel *labelPlayer[7];
 
     void nertworkProcess(NetworkData data);
@@ -126,7 +132,7 @@ public:
     int serverMoveProcess(QString data1,QString data2);
 
     bool checkAct(QString ID="");
-    void onTerminal();
+    void onConsole();
 
    signals:
     void startTurn(QString);
