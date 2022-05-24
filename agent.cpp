@@ -251,3 +251,11 @@ pcc calculateGreedy(QVector<AlgoPlayer> vec){
 pcc calculate(QVector<AlgoPlayer> vec){
     return calculateGreedy(vec);
 }
+
+Agent_algorithm *get_agent_algorithm(QString func)
+{
+    if(func=="auto"){
+        return &calculate;
+    }
+    return nullptr;
+}

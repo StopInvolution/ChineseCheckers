@@ -6,7 +6,7 @@
 #include "settings.h"
 
 Player::Player(int _color, int _spawn, int _target, unsigned int _flag, QString _name, int _chessNum)
-    : name(_name), chessNum(_chessNum), color(_color), spawn(_spawn), target(_target), flag(_flag) {
+    : name(_name), chessNum(_chessNum), color(_color), spawn(_spawn), target(_target), flag(_flag),agent_algorithm(nullptr) {
 }
 
 Player::~Player() {

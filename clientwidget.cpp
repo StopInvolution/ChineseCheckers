@@ -3,6 +3,8 @@
 #include <QPushButton>
 #include <sstream>
 #include <QString>
+#include <player.h>
+#include <agent.h>
 
 ClientWidget::ClientWidget(QWidget *parent,ChessBoard* _parentChessBoard) :
     QWidget(parent),
@@ -19,13 +21,13 @@ ClientWidget::~ClientWidget()
     delete ui;
 }
 
-void ClientWidget::onSend()
+void ClientWidget::send(std::string data)
 {
-    QString data = this->ui->sendEdit->text();
-    std::string type,d1,d2,d3,d4;
-    std::istringstream iss(data.toStdString());
+    std::string type;
+    std::istringstream iss(data);
     iss>>type;
     if(type=="god"){
+        std::string d1;
         if(iss>>d1){
             if(d1=="0") this->parentChessBoard->god=false;
             else{
@@ -35,4 +37,40 @@ void ClientWidget::onSend()
         QString info = QString("God mode is ")+QString(this->parentChessBoard->god?"On":"Off")+QString("\n");
         this->ui->infoEdit->insertPlainText(info);
     }
+    if(type=="agent"){
+        std::string d1,d2;
+        if(iss>>d1>>d2){
+            Player* player = this->parentChessBoard->getPlayerByName(QString::fromStdString(d1));
+            if(!player){
+                QString info = QString::fromStdString(d1) + QString(" does not exist")+QString("\n");
+                this->ui->infoEdit->insertPlainText(info);
+            }
+            else{
+                Agent_algorithm *func=get_agent_algorithm(QString::fromStdString(d2));
+                if(func){
+                    player->agent_algorithm=func;
+                    QString info = QString("Change ") + QString::fromStdString(d1) + QString("'s agent_algorithm to ") + QString::fromStdString(d2) + QString("\n");
+                    this->ui->infoEdit->insertPlainText(info);
+                }
+                else{
+                    QString info = QString::fromStdString(d2) + QString(" does not exist")+QString("\n");
+                    this->ui->infoEdit->insertPlainText(info);
+                }
+            }
+        }
+    }
+    // 成功后会销毁控制台
+    if(type=="set"){
+        std::string d1;
+        if(iss>>d1){
+            this->parentChessBoard->parentWindow->editPlayerNum->setText(QString::fromStdString(d1));
+            this->parentChessBoard->parentWindow->on_btnSetPlayerNum_clicked();
+        }
+    }
+}
+
+void ClientWidget::onSend()
+{
+    QString data = this->ui->sendEdit->text();
+    send(data.toStdString());
 }

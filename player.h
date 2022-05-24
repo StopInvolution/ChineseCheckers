@@ -46,6 +46,8 @@ class Player : public QObject {
 
     virtual bool isReady() const;
     virtual QTcpSocket* getSocket() const;
+
+    Agent_algorithm *agent_algorithm;
 };
 
 #endif  // PLAYER_H

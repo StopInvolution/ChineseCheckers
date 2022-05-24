@@ -36,17 +36,10 @@ void loadReady(QVector<bool> &vec, QString data)
     }
 }
 
-<<<<<<< HEAD
-void loadPR(std::vector<pss> &vec, QString &data1, QString &data2)
-{
-    std::vector<QString> v1;
-    std::vector<QString> v2;
-=======
 void loadPR(QVector<pss> &vec, QString &data1, QString &data2)
 {
     QVector<QString> v1;
     QVector<QString> v2;
->>>>>>> ak
     loadPlayerName(v1,data1);
     loadPlayerName(v2,data2);
     for(size_t i=0;i<v1.size();i++){
