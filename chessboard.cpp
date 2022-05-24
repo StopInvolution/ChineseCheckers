@@ -68,7 +68,9 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
             QString ID=(*playerInfo)[i].second;
             int spawn=getSpawn(ID);
             players.push_back(new Player(spawn, spawn, getTarget(ID),((*localFlag)[name])<<1,name));
+            
             players.back()->agent_algorithm=get_agent_algorithm("auto");
+            
             labelPlayer[mod6Add(spawn,-this->rotateAngle)]->setText(name);
             labelPlayer[mod6Add(spawn,-this->rotateAngle)]->setVisible(true);
             connect(this->labelPlayer[mod6Add(spawn,-this->rotateAngle)],&ClickableQLabel::clicked,this->players.back(),&Player::replay);
@@ -133,6 +135,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     btnConsole->setCursor(Qt::PointingHandCursor);
     btnConsole->setFlat(true);
     connect(this->btnConsole,&QPushButton::clicked,this,&ChessBoard::onConsole);
+
     connect(this->timeoutTimer, &QTimer::timeout,this,  [&](){
         resTime-=clockT/1000.0;
         if(resTime<=0){
@@ -447,6 +450,7 @@ void ChessBoard::chooseChess(Marble* chess) {
 
 void ChessBoard::nextTurn() {
     resTime = initResTime;
+
     if(!socket){
         this->timeoutTimer->start(clockT);
     }

@@ -73,4 +73,5 @@ void ClientWidget::onSend()
 {
     QString data = this->ui->sendEdit->text();
     send(data.toStdString());
+
 }
