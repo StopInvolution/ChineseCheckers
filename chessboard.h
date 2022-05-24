@@ -107,10 +107,6 @@ public:
 
     QVector<pss> initPlayerInfo;
     std::map<QString,bool> initLocalFlag;
-
-    QVector<pss> initPlayerInfo;
-    std::map<QString,bool> initLocalFlag;
-
     // 更新 labelInfo
     void updateLabelInfo();
 

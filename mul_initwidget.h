@@ -4,6 +4,7 @@
 #include "networkdata.h"
 #include "networksocket.h"
 #include <QWidget>
+#include "settings.h"
 #include <QMessageBox>
 
 namespace Ui {
@@ -21,9 +22,7 @@ public:
     bool isConnected;
 
 private:
-    static QString IP;
-    static const int PORT = 2000;
-
+    static QString convertToQStr(ERRCODE err);
     Ui::mul_initwidget *ui;
 
     /* currently it's fixed. */
@@ -39,6 +38,7 @@ private slots:
     void on_pushButtonNew_clicked();
     //not finished.
     void on_pushButtonJoin_clicked();
+    void on_pushButton_rename_clicked();
     void setConnected();
     QAbstractSocket::SocketError setDisconnected(QAbstractSocket::SocketError error);
 
