@@ -42,7 +42,7 @@ void loadPR(QVector<pss> &vec, QString &data1, QString &data2)
     QVector<QString> v2;
     loadPlayerName(v1,data1);
     loadPlayerName(v2,data2);
-    for(size_t i=0;i<v1.size();i++){
+    for(qsizetype i=0;i<v1.size();i++){
         vec.push_back(pss(v1[i],v2[i]));
     }
 }

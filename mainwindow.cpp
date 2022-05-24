@@ -25,6 +25,9 @@ void MainWindow::on_pushButtonMultiple_clicked() {
 void MainWindow::on_ServerButton_clicked() {
     emit startServer();
 }
+void MainWindow::on_pushButtonSetting_clicked() {
+    emit startSetting();
+}
 
 MainWindow::~MainWindow()
 {

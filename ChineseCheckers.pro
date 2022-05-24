@@ -30,6 +30,7 @@ SOURCES += \
     room.cpp \
     serverplayer.cpp \
     serverwidget.cpp \
+    settingswidget.cpp \
     settings.cpp \
     util.cpp \
     waiting_room.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     serverplayer.h \
     serverwidget.h \
     settings.h \
+    settingswidget.h \
     util.h \
     waiting_room.h \
     widget.h
@@ -64,6 +66,7 @@ FORMS += \
     mainwindow.ui \
     mul_initwidget.ui \
     serverwidget.ui \
+    settingswidget.ui \
     waiting_room.ui \
     widget.ui
 

@@ -8,3 +8,8 @@ AlgoPlayer::AlgoPlayer(int s)
         pst[i]=ChessPosition(board::spawnPst[s][i*2],board::spawnPst[s][i*2+1]);
     }
 }
+
+namespace Network {
+QString ip[4] = {"127","0","0","1"};
+int port = 8000;
+}

@@ -61,6 +61,10 @@ namespace board{
 
 }//namespace Board
 
+namespace Network {
+    extern int port;
+    extern QString ip[];
+}
 
 class AlgoPlayer{
 public:

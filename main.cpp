@@ -5,6 +5,7 @@
 #include "util.h"
 #include "mul_initwidget.h"
 #include "serverwidget.h"
+#include "settingswidget.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -12,19 +13,30 @@ int main(int argc, char *argv[])
 //    qDebug()<<(QString("A").compare(QString("B")));
     qDebug()<<getSpawn("F")<<" "<<getTarget("F");
     QApplication a(argc, argv);
-    ServerWidget* sw;
+    ServerWidget* sw = nullptr;
+    SettingsWidget *settW = nullptr;
     MainWindow m;
     Widget w;
     initWidget initW;
-    mul_initwidget mul_initW;
+    mul_initwidget* mul_initW = nullptr;
     WaitingRoom waitR;
     QObject::connect(&initW,&initWidget::start,&w,&Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::start, &w, &Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::__backToTitle, &m, &MainWindow::show);
     QObject::connect(&m, &MainWindow::startSingle, &initW, &initWidget::show);
-    QObject::connect(&m, &MainWindow::startServer, [&]() {sw = new ServerWidget(); sw->show();});
-    QObject::connect(&m, &MainWindow::startMultiple, &mul_initW, &mul_initwidget::show);
-    QObject::connect(&mul_initW, &mul_initwidget::enterRoom, &waitR, &WaitingRoom::initWindow);
+    QObject::connect(&m, &MainWindow::startMultiple, [&]() {
+        if(mul_initW != nullptr) delete mul_initW;
+        mul_initW = new mul_initwidget(); mul_initW->show();
+        QObject::connect(mul_initW, &mul_initwidget::enterRoom, &waitR, &WaitingRoom::initWindow);
+    });
+    QObject::connect(&m, &MainWindow::startServer, [&]() {
+        if(sw != nullptr) delete sw;
+        sw = new ServerWidget(); sw->show();
+    });
+    QObject::connect(&m, &MainWindow::startSetting, [&]() {
+        if(settW != nullptr) delete settW;
+        settW = new SettingsWidget(); settW->init();
+    });
     m.show();
     return a.exec();
 }
