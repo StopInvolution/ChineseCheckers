@@ -81,10 +81,6 @@ QAbstractSocket::SocketError mul_initwidget::setDisconnected(QAbstractSocket::So
     return Error;
 }
 
-QString mul_initwidget::convertToQStr(ERRCODE err) {
-    return QString::number(static_cast<int>(err));
-}
-
 void mul_initwidget::receive(NetworkData data)
 {
     switch(data.op) {

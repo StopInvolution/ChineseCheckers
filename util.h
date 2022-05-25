@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <utility>
+#include "networkdata.h"
 #include "settings.h"
 
 // 棋盘坐标转换到显示坐标
@@ -47,4 +48,6 @@ bool valid_check(int); //check if the number of players is valid.
 ChessPosition rotateCounterclockwise (ChessPosition begin, int alpha);
 
 int mod6Add(int x,int t);
+
+QString convertToQStr(ERRCODE err);
 #endif  // UTIL_H
