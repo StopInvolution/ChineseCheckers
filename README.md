@@ -19,6 +19,4 @@
 
 ## 还不会的东西
 
-1. 多窗体
 2. GitHub到底怎么用呢
-3. 每天一问 -1: error: \[ Makefile.Debug:102: debug/ChineseCheckers_resource_res.o \] Error 1
