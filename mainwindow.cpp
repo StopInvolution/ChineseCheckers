@@ -15,11 +15,13 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::on_pushButtonSingle_clicked() {
-    this->hide();
+//    this->hide();
+    this->close();
     emit startSingle();
 }
 void MainWindow::on_pushButtonMultiple_clicked() {
-    this->hide();
+//    this->hide();
+    this->close();
     emit startMultiple();
 }
 void MainWindow::on_ServerButton_clicked() {
