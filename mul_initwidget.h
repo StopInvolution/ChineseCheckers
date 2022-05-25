@@ -5,6 +5,7 @@
 #include "networksocket.h"
 #include <QWidget>
 #include "settings.h"
+#include "util.h"
 #include <QMessageBox>
 
 namespace Ui {
@@ -22,7 +23,6 @@ public:
     bool isConnected;
 
 private:
-    static QString convertToQStr(ERRCODE err);
     Ui::mul_initwidget *ui;
 
     /* currently it's fixed. */
