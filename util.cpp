@@ -148,6 +148,6 @@ int mod6Add(int x,int t){
     return ret;
 }
 
-QString mul_initwidget::convertToQStr(ERRCODE err) {
+QString convertToQStr(ERRCODE err) {
     return QString::number(static_cast<int>(err));
 }
