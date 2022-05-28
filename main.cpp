@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     MainWindow m;
     Widget w;
     initWidget initW;
-    mul_initwidget* mul_initW = nullptr;
+    mul_initwidget *mul_initW = nullptr;
     WaitingRoom waitR;
     QObject::connect(&initW,&initWidget::start,&w,&Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::start, &w, &Widget::initChessBoard);
@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
         if(mul_initW != nullptr) delete mul_initW;
         mul_initW = new mul_initwidget(); mul_initW->show();
         QObject::connect(mul_initW, &mul_initwidget::enterRoom, &waitR, &WaitingRoom::initWindow);
+        QObject::connect(mul_initW, &mul_initwidget::backToTitle, &m, &MainWindow::show);
     });
     QObject::connect(&m, &MainWindow::startServer, [&]() {
         if(sw != nullptr) delete sw;

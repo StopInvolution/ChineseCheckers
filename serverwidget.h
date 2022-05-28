@@ -20,7 +20,6 @@ public:
     explicit ServerWidget(QWidget *parent = nullptr);
     ~ServerWidget();
 
-
 private:
     Room *findRoom(QString &);
     static bool invalidName(QString &name);
@@ -28,7 +27,7 @@ private:
 
 private slots:
     int receiveData(QTcpSocket *client, NetworkData data);
-    void __FakeData();
+    void __receiveFakeData();
 public slots:
     void overtime(QString c);
     void endGame(QString data);

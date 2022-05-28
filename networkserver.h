@@ -3,6 +3,7 @@
 
 #include "networkdata.h"
 #include <QtNetwork>
+#include "settings.h"
 
 class NetworkServer : public QTcpServer {
     Q_OBJECT

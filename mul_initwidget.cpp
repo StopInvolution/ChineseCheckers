@@ -27,6 +27,12 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
         ui->label->setText("Welcome, "+username);
     else
         ui->label->setText("Unconnected.");
+
+    connect(ui->pushButtonExit, &QAbstractButton::clicked, [this]() {
+        emit backToTitle();
+        close();
+        return;
+    });
 }
 
 bool mul_initwidget::isValidID(QString *ID) {
@@ -95,6 +101,7 @@ void mul_initwidget::receive(NetworkData data)
             on_pushButtonNew_clicked();
             break;
         }
+        break;
     default:
         qDebug() << "Mul_initWidget Receiving " << static_cast<int>(data.op);
         break;
