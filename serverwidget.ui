@@ -11,28 +11,15 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>服务端控制台</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>20</y>
-     <width>54</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Current</string>
-   </property>
-  </widget>
   <widget class="QTextBrowser" name="textBrowser">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>60</y>
-     <width>291</width>
-     <height>111</height>
+     <x>10</x>
+     <y>10</y>
+     <width>381</width>
+     <height>241</height>
     </rect>
    </property>
    <property name="html">
@@ -47,9 +34,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QTextEdit" name="textEdit">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>239</y>
-     <width>201</width>
+     <x>10</x>
+     <y>260</y>
+     <width>291</width>
      <height>31</height>
     </rect>
    </property>
@@ -57,10 +44,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>240</y>
+     <x>310</x>
+     <y>260</y>
      <width>80</width>
-     <height>24</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">

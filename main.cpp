@@ -10,8 +10,6 @@
 
 int main(int argc, char *argv[])
 {
-//    qDebug()<<(QString("A").compare(QString("B")));
-    qDebug()<<getSpawn("F")<<" "<<getTarget("F");
     QApplication a(argc, argv);
     ServerWidget* sw = nullptr;
     SettingsWidget *settW = nullptr;
