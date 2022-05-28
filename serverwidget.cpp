@@ -20,15 +20,15 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
     QString ErrorCode;
     switch(data.op) {
     case OPCODE::MOVE_OP:
-        this->ui->textBrowser->append("send MOVE_OP");
+        this->ui->textBrowser->append("receive: MOVE_OP");
         room = roomList[0];
         if(room->isGameRunning() == false)
         {
-            server->send(client, NetworkData(OPCODE::ERROR_OP, "ERRCODE::ROOM_NOT_RUNNING", ""));
+            server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::ROOM_NOT_RUNNING), ""));
             break;
         }
         result = room->w->chessBoard->serverMoveProcess(data.data1, data.data2);
-        qDebug()<<"Why    "<<result;
+       //Debug()<<"Why    "<<result; q
         switch(result) {
         case 1:
             for(auto i:room->players) {
@@ -46,6 +46,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             qDebug() << "ERROR at server widget";
         }
         break;
+
     case OPCODE::JOIN_ROOM_OP:
         this->ui->textBrowser->append("receive: JOIN_ROOM_OP");
         if(invalidName(data.data2)) {   //check if username is absloutly unacceptable.
@@ -113,7 +114,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             if(count == N) {
                 this->ui->textBrowser->append("send: START_GAME_OP");
                 QString data2;
-                for(size_t i=0;i<room->players.size();i++)
+                for(qsizetype i=0;i<room->players.size();i++)
                     data2+=getID(board::playerSpawn[room->players.size()][i])+" ";
                 data2.chop(1);
                 for(auto i:room->players) {
@@ -130,7 +131,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
         }
         break;
     default:
-        server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_REQ", ""));
+        server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_REQ), ""));
         break;
     }
     return 0;
@@ -165,7 +166,7 @@ Room* ServerWidget::findRoom (QString &roomName)
     return NULL;
 }
 
-void ServerWidget::__FakeData()
+void ServerWidget::__receiveFakeData()
 {
     QString words = ui->textEdit->toPlainText();
     ui->textEdit->clear();
