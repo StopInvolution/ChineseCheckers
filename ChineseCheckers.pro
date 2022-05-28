@@ -34,7 +34,8 @@ SOURCES += \
     settings.cpp \
     util.cpp \
     waiting_room.cpp \
-    widget.cpp
+    widget.cpp \
+    windowAddress.cpp
 
 HEADERS += \
     agent.h \
@@ -58,7 +59,8 @@ HEADERS += \
     settingswidget.h \
     util.h \
     waiting_room.h \
-    widget.h
+    widget.h \
+    windowAddress.h
 
 FORMS += \
     clientwidget.ui \

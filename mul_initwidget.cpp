@@ -23,6 +23,7 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
     QString IP = ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3];
     qDebug()<<IP<<" "<<port;
     socket->hello(IP,port);
+    socket->base()->waitForConnected(1000);
 
     if(isConnected)
         ui->label->setText("Welcome, "+username);

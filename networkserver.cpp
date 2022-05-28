@@ -7,6 +7,7 @@ NetworkServer::NetworkServer(QObject* parent)
     connect(this, &QTcpServer::newConnection, this, &NetworkServer::newconnection);
     connect(this->disconnMapper, &QSignalMapper::mappedObject, this, &NetworkServer::disconnect);
     connect(this->recvMapper, &QSignalMapper::mappedObject, this, &NetworkServer::receiveData);
+    qDebug()<<Network::port;
     this->listen(QHostAddress::Any ,Network::port);
 }
 

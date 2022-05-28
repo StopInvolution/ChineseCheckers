@@ -4,6 +4,7 @@
 #include <utility>
 #include <QString>
 #include <QVector>
+#include "mainwindow.h"
 
 typedef std::pair<int,int> ChessPosition;
 typedef std::pair<QString,QString> pss;
@@ -64,6 +65,7 @@ namespace board{
 namespace Network {
     extern int port;
     extern QString ip[];
+    extern double resTime;
 }
 
 class AlgoPlayer{

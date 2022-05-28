@@ -11,6 +11,7 @@ Room::Room(QString RoomID)
 {
     w=new Widget;
     w->hide();
+    w->setWindowTitle("服务端棋盘");
 }
 
 
@@ -52,6 +53,7 @@ void Room::changeGameState() {
     if(gameRunning == 1) {
         QVector<std::pair<QString,QString>> Vec;
         std::map<QString,bool> m;
+        qDebug()<<m.size();
         for(size_t i = 0; i < players.size(); ++i){
             QString s=getID(board::playerSpawn[players.size()][i]);
             Vec.push_back(std::make_pair(players[i]->name, s));

@@ -36,9 +36,16 @@ void initWidget::on_pushButton_clicked()
             localFlag.insert(std::make_pair(name,true));
         }
         emit this->start(t,&playerInfo,&localFlag,nullptr);
-        this->close();
+        this->hide();
     }
     else ui->WarnLabel->show();
 }
 
+
+
+void initWidget::on_pushButton_2_clicked()
+{
+    emit backToTitle();
+    this->hide();
+}
 

@@ -20,9 +20,12 @@ public:
     signals:
     void start(int playerNum,QVector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
     void startOnline(int playerNum);
+    void backToTitle();
 
 private slots:
     void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::initWidget *ui;
