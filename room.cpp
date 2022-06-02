@@ -53,12 +53,8 @@ void Room::changeGameState() {
     if(gameRunning == 1) {
         QVector<std::pair<QString,QString>> Vec;
         std::map<QString,bool> m;
-<<<<<<< HEAD
-        for(qsizetype i = 0; i < players.size(); ++i){
-=======
         qDebug()<<m.size();
-        for(size_t i = 0; i < players.size(); ++i){
->>>>>>> 531da727249f183e13d883a5445516c13480dfb0
+        for(qsizetype i = 0; i < players.size(); ++i){
             QString s=getID(board::playerSpawn[players.size()][i]);
             Vec.push_back(std::make_pair(players[i]->name, s));
         }

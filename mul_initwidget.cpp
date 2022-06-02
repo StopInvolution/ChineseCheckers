@@ -67,6 +67,7 @@ void mul_initwidget::on_pushButtonNew_clicked()
         return;
     }
     QString roomID = QString::number((int)(rand()*1.0/RAND_MAX*1000000), 16);
+    ui->lineEdit->setText(roomID);
     NetworkData networkData(OPCODE::JOIN_ROOM_OP, roomID, username);
     socket->send(networkData);
 }

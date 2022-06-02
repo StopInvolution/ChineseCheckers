@@ -52,11 +52,25 @@
      <number>10</number>
     </property>
     <item>
-     <widget class="QLabel" name="label_roomID">
-      <property name="text">
-       <string>房间号：</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>当前房间号</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_roomID">
+        <property name="text">
+         <string>114514</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <widget class="QPushButton" name="ready_pushButton">

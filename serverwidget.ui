@@ -13,7 +13,6 @@
   <property name="windowTitle">
    <string>服务端控制台</string>
   </property>
-<<<<<<< HEAD
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
@@ -33,16 +32,7 @@
      <x>40</x>
      <y>40</y>
      <width>321</width>
-     <height>151</height>
-=======
-  <widget class="QTextBrowser" name="textBrowser">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>381</width>
-     <height>241</height>
->>>>>>> 531da727249f183e13d883a5445516c13480dfb0
+     <height>191</height>
     </rect>
    </property>
    <property name="html">
@@ -56,15 +46,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QTextEdit" name="textEdit">
    <property name="geometry">
     <rect>
-<<<<<<< HEAD
-     <x>40</x>
-     <y>240</y>
-     <width>231</width>
-=======
      <x>10</x>
      <y>260</y>
      <width>291</width>
->>>>>>> 531da727249f183e13d883a5445516c13480dfb0
      <height>31</height>
     </rect>
    </property>
