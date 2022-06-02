@@ -84,11 +84,25 @@
     <string>请输入一个合法人数！</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>170</y>
+     <width>101</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>返回主菜单</string>
+   </property>
+  </widget>
   <zorder>label</zorder>
   <zorder>lineEdit</zorder>
   <zorder>pushButton</zorder>
   <zorder>label_2</zorder>
   <zorder>WarnLabel</zorder>
+  <zorder>pushButton_2</zorder>
  </widget>
  <resources>
   <include location="res.qrc"/>

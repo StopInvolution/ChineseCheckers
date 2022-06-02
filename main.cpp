@@ -7,15 +7,15 @@
 #include "serverwidget.h"
 #include "settingswidget.h"
 #include <QApplication>
+#include "windowAddress.h"
 
 int main(int argc, char *argv[])
 {
-//    qDebug()<<(QString("A").compare(QString("B")));
-    qDebug()<<getSpawn("F")<<" "<<getTarget("F");
     QApplication a(argc, argv);
+    MainWindow m;
+    WindowAddress::mainWindow=&m;
     ServerWidget* sw = nullptr;
     SettingsWidget *settW = nullptr;
-    MainWindow m;
     Widget w;
     initWidget initW;
     mul_initwidget *mul_initW = nullptr;
@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     QObject::connect(&initW,&initWidget::start,&w,&Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::start, &w, &Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::__backToTitle, &m, &MainWindow::show);
+    QObject::connect(&initW, &initWidget::backToTitle, &m, &MainWindow::show);
     QObject::connect(&m, &MainWindow::startSingle, &initW, &initWidget::show);
     QObject::connect(&m, &MainWindow::startMultiple, [&]() {
         if(mul_initW != nullptr) delete mul_initW;

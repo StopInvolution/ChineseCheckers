@@ -20,7 +20,7 @@
 #include "clientwidget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
-    : parentWindow(_parentWindow), socket(_socket),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30), initResTime(300),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow), socket(_socket),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30), initResTime(Network::resTime),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     if(playerInfo) initPlayerInfo=*playerInfo;
     if(localFlag) initLocalFlag=*localFlag;
 
@@ -489,8 +489,12 @@ void ChessBoard::nextTurn() {
         }
         emit endgame(data);
         this->timeoutTimer->stop();
-        if(!socket){
+        if(!socket && this->initLocalFlag.size()>0){
             this->showRank(data);
+        }
+        else if(!socket){
+            this->parentWindow->setWindowTitle("服务端棋盘 本局游戏已结束");
+            this->labelInfo->setText("");
         }
     }
 

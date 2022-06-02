@@ -41,8 +41,12 @@ public slots:
 public:
     void setChessBoard(int newPlayerNum=2,QVector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
     void on_btnSetPlayerNum_clicked();
+    void closeEvent(QCloseEvent *);
 
 //private:
     Ui::Widget *ui;
+
+public: signals:
+    void backToTitle();
 };
 #endif // WIDGET_H

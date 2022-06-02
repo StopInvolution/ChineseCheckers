@@ -5,6 +5,7 @@
 #include <QPixmap>
 #include <QPalette>
 #include <QDebug>
+#include "windowAddress.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -54,8 +55,21 @@ void Widget::initChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<
     this->show();
 }
 
-void Widget::setChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::closeEvent(QCloseEvent *event){
+    if(this->chessBoard->initLocalFlag.size()){
+        WindowAddress::mainWindow->show();
+        this->chessBoard->gameResult="stop";
+        if(this->socket){
+//            this->socket->bye();
+        }
+        this->hide();
+    }
+    else{
+        QWidget::closeEvent(event);
+    }
+}
 
+void Widget::setChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 {
     if(this->chessBoard){
         delete this->chessBoard;

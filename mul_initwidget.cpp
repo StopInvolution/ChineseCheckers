@@ -20,8 +20,10 @@ mul_initwidget::mul_initwidget(QWidget *parent) :
     connect(socket->base(), SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(setDisconnected(QAbstractSocket::SocketError)));
     //connect(socket->base(), SIGNAL(hostFound()), this, SLOT(debug()));
     ui->label_2->hide();
-    QString IP = ip[0]+":"+ip[1]+":"+ip[2]+":"+ip[3];
+    QString IP = ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3];
+    qDebug()<<IP<<" "<<port;
     socket->hello(IP,port);
+    socket->base()->waitForConnected(1000);
 
     if(isConnected)
         ui->label->setText("Welcome, "+username);
