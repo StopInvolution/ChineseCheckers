@@ -126,7 +126,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 connect(room->w->chessBoard, &ChessBoard::endgame, this, &ServerWidget::endGame);
                 connect(room->w->chessBoard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
                 connect(room->w->chessBoard, &ChessBoard::startTurn, this,&ServerWidget::startTurn);
-                server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
+                server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "A", QString::number(time(NULL)))));
             }
         }
         break;
@@ -189,7 +189,7 @@ void ServerWidget::__receiveCommand()
         for(auto i:room->players) {
             i->startArea = p[2*k + 1]; k++;
             server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP, room->playerNameListStr(), p));
-            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, time(NULL)));
+            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, QString::number(time(NULL))));
         }
     }else if (cmd == "display") {
         this->roomList[0]->w->show();
@@ -231,7 +231,7 @@ void ServerWidget::startTurn(QString name)
     auto room = roomList[0];
     for(auto i:room->players) {
         if(i->name == name)
-            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
+            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, QString::number(time(NULL))));
     }
 }
 
