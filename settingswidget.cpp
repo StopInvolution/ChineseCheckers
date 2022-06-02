@@ -33,8 +33,10 @@ void SettingsWidget::saveSettings()
         }
     }
     int x = this->ui->port->text().toInt(&invalidPort);
-    invalidPort = !invalidPort;
-    if(invalidPort || x < 0 || x > 65535) invalidPort = true;
+    bool tmp = invalidPort;
+    int y = this->ui->port_server->text().toInt(&invalidPort);
+    invalidPort = !invalidPort || !tmp;
+    if(invalidPort || x < 0 || x > 65535 || y < 0 || y > 65535) invalidPort = true;
 
     if(invalidPort || invalidIP) {
         QString message = "Invalid ";
@@ -45,7 +47,8 @@ void SettingsWidget::saveSettings()
     }else{
         for(int i = 0; i<4; ++i)
             Network::ip[i] = this->edits[i]->text();
-        Network::port = this->ui->port->text().toInt();
+        Network::port = x;
+        Network::serverPort = y;
     }
     close();
 }

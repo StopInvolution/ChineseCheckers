@@ -13,124 +13,107 @@
   <property name="windowTitle">
    <string>选择房间</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>201</width>
-     <height>30</height>
+     <x>80</x>
+     <y>60</y>
+     <width>341</width>
+     <height>251</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Welcome, user TrioxWater.</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonJoin">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>100</y>
-     <width>120</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Join with code</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonNew">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>210</y>
-     <width>120</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Create new room</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>170</y>
-     <width>140</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Error:Failed to join.</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>140</y>
-     <width>121</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="const_label_ID">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>140</y>
-     <width>54</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>ID</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="nameEdit">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>10</y>
-     <width>121</width>
-     <height>31</height>
-    </rect>
-   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QLabel" name="const_label_ID">
+      <property name="text">
+       <string>房间号</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="pushButtonNew">
+      <property name="text">
+       <string>创建新房间</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QPushButton" name="pushButtonExit">
+      <property name="text">
+       <string>返回主界面</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="pushButtonJoin">
+      <property name="text">
+       <string>房间号加入</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>加入失败！</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QPushButton" name="pushButtonSettings">
+      <property name="text">
+       <string>设置</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QPushButton" name="pushButton_rename">
    <property name="geometry">
     <rect>
-     <x>429</x>
-     <y>13</y>
-     <width>51</width>
-     <height>21</height>
+     <x>410</x>
+     <y>10</y>
+     <width>80</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="text">
     <string>rename</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonExit">
+  <widget class="QLineEdit" name="nameEdit">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>260</y>
-     <width>121</width>
-     <height>21</height>
+     <x>260</x>
+     <y>10</y>
+     <width>140</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>201</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>EXIT</string>
+    <string>Welcome, user TrioxWater.</string>
    </property>
   </widget>
  </widget>

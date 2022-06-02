@@ -17,6 +17,7 @@ public:
     explicit SettingsWidget(QWidget *parent = nullptr);
     ~SettingsWidget();
 
+public slots:
     void init();
 
 private:

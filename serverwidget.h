@@ -2,6 +2,8 @@
 #define SERVERWIDGET_H
 
 #include <QWidget>
+#include <ctime>
+#include "widget.h"
 #include "room.h"
 #include "networkserver.h"
 #include "networkdata.h"
@@ -21,13 +23,14 @@ public:
     ~ServerWidget();
 
 private:
+    void write(std::string);
     Room *findRoom(QString &);
     static bool invalidName(QString &name);
     Ui::ServerWidget *ui;
 
 private slots:
     int receiveData(QTcpSocket *client, NetworkData data);
-    void __receiveFakeData();
+    void __receiveCommand();
 public slots:
     void overtime(QString c);
     void endGame(QString data);

@@ -28,7 +28,7 @@ void WaitingRoom::initWindow(QString roomID, NetworkSocket* sck, NetworkData roo
     });
     //connect(socket->base(), &QAbstractSocket::connected, [=]() {qDebug() << "waitingroom connected.";});
     //socket->hello("127.0.0.1", 8000);
-    _label_setPostfix(ui->label_roomID, roomID);
+    ui->label_roomID->setText(roomID);
     playerNum = 0;
     QStringList playerInfo = roomState.data1.split(" ", Qt::SkipEmptyParts);
     foreach(QString name, playerInfo) {

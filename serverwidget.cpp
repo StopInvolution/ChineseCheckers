@@ -106,7 +106,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
         }
         int N;
         N = room->players.size();
-        if(N >= 1 && N != 5) {
+        if(N >= 2 && N != 5) {
             int count = 0;
             for(auto i:room->players)
                 if (i->isReady()) count++;
@@ -166,28 +166,33 @@ Room* ServerWidget::findRoom (QString &roomName)
     return NULL;
 }
 
-void ServerWidget::__receiveFakeData()
+void ServerWidget::__receiveCommand()
 {
     QString words = ui->textEdit->toPlainText();
     ui->textEdit->clear();
     auto list = words.split(" ", Qt::SkipEmptyParts);
-    if(list[0] == "join") {
+    auto &cmd = list[0];
+    if(cmd == "help") {
+        write("?");
+    }else if (cmd == "size") {      //size <roomID=0>
+        write("当前房间内人数:" + std::to_string(roomList[0]->players.size()));
+    }else if (cmd == "start") {     //start
         auto room = roomList[0];
-        for(auto i:room->players) {
-            server->send(i->getSocket(), NetworkData(OPCODE::JOIN_ROOM_OP, list[1], ""));
+        QString p;
+        switch(room->players.size()) {
+        case 2:p = "A D"; break;
+        case 3:p = "A C E"; break;
+        case 4:p = "A B D E";break;
+        case 6:p = "A B C D E F";break;
         }
-        //server->send(client, NetworkData(OPCODE::JOIN_ROOM_REPLY_OP, room->playerNameListStr(), ""));
-        room->addPlayer(new ServerPlayer(list[1]));
-    }else if (list[0] == "size") {
-        qDebug() << server->size();
-    }else if (list[0] == "start") {
-        auto room = roomList[0];
-        QString p(std::string("A B C D E F").substr(0, 2*room->players.size()-1).c_str());
+        int k = 0;
         for(auto i:room->players) {
+            i->startArea = p[2*k + 1]; k++;
             server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP, room->playerNameListStr(), p));
-            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
+            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, time(NULL)));
         }
-
+    }else if (cmd == "display") {
+        this->roomList[0]->w->show();
     }
     return;
 }
@@ -211,10 +216,13 @@ void ServerWidget::endGame(QString data)
 void ServerWidget::sendVictory(QString name)
 {
     auto room = roomList[0];
+    room->changeGameState();
     for(auto i:room->players) {
         if(i->name == name)
             server->send(i->getSocket(), NetworkData(OPCODE::END_TURN_OP, "", ""));
     }
+    delete room;
+    roomList.pop_back();
 }
 
 void ServerWidget::startTurn(QString name)
@@ -226,3 +234,9 @@ void ServerWidget::startTurn(QString name)
             server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
     }
 }
+
+void ServerWidget::write (std::string str) {
+    this->ui->textBrowser->append(QString::fromStdString(str));
+    return;
+};
+

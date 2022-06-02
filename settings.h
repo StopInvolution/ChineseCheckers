@@ -66,6 +66,7 @@ namespace Network {
     extern int port;
     extern QString ip[];
     extern double resTime;
+    extern int serverPort;
 }
 
 class AlgoPlayer{
