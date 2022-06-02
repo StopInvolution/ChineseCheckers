@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "util.h"
 #include <QMessageBox>
+#include "settingswidget.h"
 
 namespace Ui {
 class mul_initwidget;
@@ -39,6 +40,7 @@ private slots:
     //not finished.
     void on_pushButtonJoin_clicked();
     void on_pushButton_rename_clicked();
+    void on_pushButtonSettings_clicked();
     void setConnected();
     QAbstractSocket::SocketError setDisconnected(QAbstractSocket::SocketError error);
 

@@ -58,13 +58,13 @@ void mul_initwidget::on_pushButtonJoin_clicked()
 }
 void mul_initwidget::on_pushButtonNew_clicked()
 {
-    QString roomID = QString::number((int)(rand()*1.0/RAND_MAX*1000000), 16);
     QString IP = ip[0]+":"+ip[1]+":"+ip[2]+":"+ip[3];
     if(!isConnected) socket->hello(IP,port);
-    if(!isValidID(&roomID) || !isConnected) {
+    if(!isConnected) {
         ui->label_2->show();
         return;
     }
+    QString roomID = QString::number((int)(rand()*1.0/RAND_MAX*1000000), 16);
     NetworkData networkData(OPCODE::JOIN_ROOM_OP, roomID, username);
     socket->send(networkData);
 }
@@ -73,6 +73,12 @@ void mul_initwidget::on_pushButton_rename_clicked() {
         username=this->ui->nameEdit->text();
     }
     if(isConnected) ui->label->setText("Welcome, "+username);
+}
+static SettingsWidget *widget = nullptr;
+void mul_initwidget::on_pushButtonSettings_clicked() {
+    if(widget != nullptr) delete widget;
+    widget = new SettingsWidget();
+    widget->init();
 }
 void mul_initwidget::setConnected()
 {
