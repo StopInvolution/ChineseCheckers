@@ -185,9 +185,11 @@ void ServerWidget::__receiveCommand()
         case 4:p = "A B D E";break;
         case 6:p = "A B C D E F";break;
         }
+        int k = 0;
         for(auto i:room->players) {
+            i->startArea = p[2*k + 1]; k++;
             server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP, room->playerNameListStr(), p));
-            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, "", ""));
+            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, time(NULL)));
         }
     }else if (cmd == "display") {
         this->roomList[0]->w->show();

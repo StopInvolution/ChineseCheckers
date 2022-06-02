@@ -7,8 +7,8 @@ class ServerPlayer : public Player
 {
     bool isready;
     QTcpSocket* client;
-
 public:
+    QString startArea;
     ServerPlayer(QString Name);
     ServerPlayer(QString Name, QTcpSocket* socket);
     ServerPlayer(int _color = 1, int _spawn = 0, int _target = 3,

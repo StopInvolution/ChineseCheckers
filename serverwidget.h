@@ -2,6 +2,7 @@
 #define SERVERWIDGET_H
 
 #include <QWidget>
+#include <ctime>
 #include "widget.h"
 #include "room.h"
 #include "networkserver.h"
