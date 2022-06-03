@@ -168,6 +168,9 @@ ChessBoard::~ChessBoard() {
         }
     delete this->btnAIMv;
     delete this->console;
+    if(this->socket){
+        this->socket->bye();
+    }
 }
 
 void ChessBoard::setActivatedPlayer(Player* _activatedPlayer) {

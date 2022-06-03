@@ -5,6 +5,8 @@
 #include <QString>
 #include <player.h>
 #include <agent.h>
+#include <networkdata.h>
+#include <QString>
 
 ClientWidget::ClientWidget(QWidget *parent,ChessBoard* _parentChessBoard) :
     QWidget(parent),
@@ -65,6 +67,12 @@ void ClientWidget::send(std::string data)
         if(iss>>d1){
             this->parentChessBoard->parentWindow->editPlayerNum->setText(QString::fromStdString(d1));
             this->parentChessBoard->parentWindow->on_btnSetPlayerNum_clicked();
+        }
+    }
+    if(type=="leave"){
+        std::string d1,d2;
+        if(iss>>d1>>d2){
+            this->parentChessBoard->socket->send(NetworkData(OPCODE::LEAVE_ROOM_OP,QString::fromStdString(d1),QString::fromStdString(d2)));
         }
     }
 }
