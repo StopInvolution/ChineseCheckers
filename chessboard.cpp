@@ -624,9 +624,15 @@ void ChessBoard::nertworkProcess(NetworkData data)
     }
     case OPCODE::END_TURN_OP:{
         qDebug()<<"你确实赢了，服务器知道了";
+        if(this->timer->isActive()){
+            this->timer->stop();
+        }
         break;
     }
     case OPCODE::END_GAME_OP:{
+        if(this->timer->isActive()){
+            this->timer->stop();
+        }
         showRank(data1);
         break;
     }

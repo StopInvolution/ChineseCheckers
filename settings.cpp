@@ -14,8 +14,9 @@ namespace Network {
 //    int port = 8000;
 //    double resTime=300;
 //    int serverPort = 8000;
-    QString ip[4] = {"10","46","54","135"};
-    int port = 16666;
-    double resTime=15;
-    int serverPort = 8000;
+//    QString ip[4] = {"10","46","54","135"};
+    QString ip[4] = {"10","46","20","137"};
+    int port = 8007;
+    double resTime=120;
+    int serverPort = 8007;
 }
