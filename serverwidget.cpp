@@ -126,7 +126,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 connect(room->w->chessBoard, &ChessBoard::endgame, this, &ServerWidget::endGame);
                 connect(room->w->chessBoard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
                 connect(room->w->chessBoard, &ChessBoard::startTurn, this,&ServerWidget::startTurn);
-                server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "A", QString::number(time(NULL)))));
+                server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "A", QString::number(time(NULL))));
             }
         }
         break;

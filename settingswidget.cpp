@@ -17,6 +17,7 @@ void SettingsWidget::init() {
     for(int i = 0; i<4; ++i)
         this->edits[i]->setText(Network::ip[i]);
     this->ui->port->setText(QString::number(Network::port));
+    this->ui->port_server->setText(QString::number(Network::serverPort));
     show();
 }
 
@@ -50,6 +51,19 @@ void SettingsWidget::saveSettings()
         Network::port = x;
         Network::serverPort = y;
     }
+
+    QSettings *settings = new QSettings("../savings/net.ini");
+
+    settings->beginGroup("CLIENT");
+    settings->setValue("IP", Network::ip[0]+"."+Network::ip[1]+"."+Network::ip[2]+"."+Network::ip[3]);
+    settings->setValue("port", Network::port);
+    settings->endGroup();
+
+    settings->beginGroup("SERVER");
+    settings->setValue("port", Network::serverPort);
+    settings->endGroup();
+
+    delete settings;
     close();
 }
 

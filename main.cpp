@@ -9,6 +9,22 @@
 #include <QApplication>
 #include "windowAddress.h"
 
+void init() {
+    QSettings *settings = new QSettings("../savings/net.ini");
+    settings->beginGroup("CLIENT");
+    auto tmp = settings->value("IP", "127.0.0.1").toString().split('.');
+    for(int i = 0; i<4; ++i)
+        Network::ip[i] = tmp[i];
+    Network::port = settings->value("port", 8000).toInt();
+    settings->endGroup();
+
+    settings->beginGroup("SERVER");
+    Network::serverPort = settings->value("port", 8000).toInt();
+    settings->endGroup();
+
+    delete settings;
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -20,6 +36,7 @@ int main(int argc, char *argv[])
     initWidget initW;
     mul_initwidget *mul_initW = nullptr;
     WaitingRoom waitR;
+    init();
     QObject::connect(&initW,&initWidget::start,&w,&Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::start, &w, &Widget::initChessBoard);
     QObject::connect(&waitR, &WaitingRoom::__backToTitle, &m, &MainWindow::show);
