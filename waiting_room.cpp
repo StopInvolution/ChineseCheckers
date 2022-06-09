@@ -23,9 +23,9 @@ void WaitingRoom::initWindow(QString roomID, NetworkSocket* sck, NetworkData roo
     socket = sck;
     qDebug()<<"WaitingRoom create socket at" << (void*)socket;
     connect(socket, &NetworkSocket::receive, this, &WaitingRoom::receive);
-    connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
-        QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
-    });
+//    connect(socket->base(), &QAbstractSocket::disconnected, [=]() {
+//        QMessageBox::critical(this, tr("Connection lost"), tr("Connection to server has closed"));
+//    });
     //connect(socket->base(), &QAbstractSocket::connected, [=]() {qDebug() << "waitingroom connected.";});
     //socket->hello("127.0.0.1", 8000);
     ui->label_roomID->setText(roomID);
@@ -81,6 +81,11 @@ void WaitingRoom::receive(NetworkData data)
             case OPCODE::START_GAME_OP:
                 EmitStart();
                 hide();
+                break;
+            case OPCODE::CLOSE_ROOM_OP:
+                QMessageBox::critical(this, tr("Room closed"), tr("The room has closed"));
+                backToTitle();
+                close();
                 break;
             default:
                 qDebug() << "WaitingRoom ";

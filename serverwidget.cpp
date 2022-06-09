@@ -182,9 +182,39 @@ void ServerWidget::__receiveCommand()
     ui->textEdit->clear();
     auto list = words.split(" ", Qt::SkipEmptyParts);
     auto &cmd = list[0];
-    if(cmd == "help") {
+    if (cmd == "display") {
+        this->roomList[0]->w->show();
+    }else if(cmd == "help") {
         write("?");
-    }else if (cmd == "size") {      //size <roomID=0>
+    }else if(cmd == "info") {
+        write("当前房间内人数:" + std::to_string(roomList[0]->players.size()));
+        write("当前房间内玩家用户名:");
+        write(roomList[0]->playerNameListStr('\n').toStdString());
+        write(std::string("当前游玩状态：")+((roomList[0]->isGameRunning())?
+                  "正在游玩":"正在等待"));
+    }
+    else if (cmd == "kick") {
+        if(list.size() != 2) {write("kick指令格式：kick <username>"); return;}
+        else if (invalidName(list[1])) {
+            write("kick指令格式：kick <username>\n<username>应当仅包含数字/字母/下划线且长度不超过20");
+            return;
+        }
+        auto name = list[1];bool flag = false;
+        for(auto i:roomList[0]->players) {
+            if(i->name == name) {
+                flag = true;
+                roomList[0]->removePlayer(i);
+                server->send(i->getSocket(), NetworkData(OPCODE::CLOSE_ROOM_OP, "", ""));
+                for(auto j:roomList[0]->players) {
+                    server->send(j->getSocket(), NetworkData(OPCODE::LEAVE_ROOM_OP, name, ""));
+                }
+                break;
+            }
+        }
+        if(flag) write("已成功踢出该用户");
+        else write("用户未找到");
+    }
+    else if (cmd == "size") {      //size <roomID=0>
         write("当前房间内人数:" + std::to_string(roomList[0]->players.size()));
     }else if (cmd == "start") {     //start
         auto room = roomList[0];
@@ -201,8 +231,6 @@ void ServerWidget::__receiveCommand()
             server->send(i->getSocket(), NetworkData(OPCODE::START_GAME_OP, room->playerNameListStr(), p));
             server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, QString::number(time(NULL))));
         }
-    }else if (cmd == "display") {
-        this->roomList[0]->w->show();
     }
     return;
 }

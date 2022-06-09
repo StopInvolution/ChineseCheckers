@@ -22,7 +22,7 @@ public:
     * @return players' name in the form of "player1 player2 ... playerN"
     *        note that there's no space at the end of string.
     */
-    QString playerNameListStr() const;
+    QString playerNameListStr(char sep = ' ') const;
     /**
     * @return players' state(ready or not) in the form of "state1state2...stateN"
     */

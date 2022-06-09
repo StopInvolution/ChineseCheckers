@@ -13,44 +13,45 @@ SettingsWidget::SettingsWidget(QWidget *parent) :
     this->edits[3] = ui->IP_4;
 }
 
-void SettingsWidget::init() {
+void SettingsWidget::init(bool doShow) {
     for(int i = 0; i<4; ++i)
         this->edits[i]->setText(Network::ip[i]);
     this->ui->port->setText(QString::number(Network::port));
     this->ui->port_server->setText(QString::number(Network::serverPort));
-    show();
+    if(doShow) show();
 }
 
 void SettingsWidget::saveSettings()
 {
     bool invalidIP = false, invalidPort = false;
-//    for(int i = 0; i<4; ++i) {
-//        bool tmp = true;
-//        int t = this->edits[i]->text().toInt(&tmp);
-//        if(tmp == false) invalidIP = true;
-//        if(invalidIP || t > 255 || t < 0){
-//            invalidIP = true;
-//            break;
-//        }
-//    }
+    for(int i = 0; i<4; ++i) {
+        bool tmp = true;
+        int t = this->edits[i]->text().toInt(&tmp);
+        if(tmp == false) invalidIP = true;
+        if(invalidIP || t > 255 || t < 0){
+            invalidIP = true;
+            break;
+        }
+    }
     int x = this->ui->port->text().toInt(&invalidPort);
-//    bool tmp = invalidPort;
+    bool tmp = invalidPort;
     int y = this->ui->port_server->text().toInt(&invalidPort);
-//    invalidPort = !invalidPort || !tmp;
-//    if(invalidPort || x < 0 || x > 65535 || y < 0 || y > 65535) invalidPort = true;
-
-//    if(invalidPort || invalidIP) {
-//        QString message = "Invalid ";
-//        if(invalidPort) message.append("port ");
-//        if(invalidIP) message.append(invalidPort?"and IP ":"IP ");
-//        message.append("is entered, and all changes have been discarded.");
-//        QMessageBox::critical(this, tr("Invalid input"), message);
-//    }else{
-//        for(int i = 0; i<4; ++i)
-//            Network::ip[i] = this->edits[i]->text();
-//        Network::port = x;
-//        Network::serverPort = y;
-//    }
+    invalidPort = !invalidPort || !tmp;
+    if(invalidPort || x < 0 || x > 65535 || y < 0 || y > 65535) invalidPort = true;
+    if(invalidPort || invalidIP) {
+        QString message = "Invalid ";
+        if(invalidPort) message.append("port ");
+        if(invalidIP) message.append(invalidPort?"and IP ":"IP ");
+        message.append("is entered, and all changes have been discarded.");
+        QMessageBox::critical(this, tr("Invalid input"), message);
+        init(false);
+        return;
+    }else{
+        for(int i = 0; i<4; ++i)
+            Network::ip[i] = this->edits[i]->text();
+        Network::port = x;
+        Network::serverPort = y;
+    }
 
     for(int i = 0; i<4; ++i)
         Network::ip[i] = this->edits[i]->text();
@@ -63,6 +64,7 @@ void SettingsWidget::saveSettings()
         if(invalidIP) message.append(invalidPort?"and IP ":"IP ");
         message.append("is entered, and all changes have been discarded.");
         QMessageBox::critical(this, tr("Invalid input"), message);
+        return;
     }else{
         for(int i = 0; i<4; ++i)
             Network::ip[i] = this->edits[i]->text();

@@ -19,7 +19,7 @@ public:
     ~SettingsWidget();
 
 public slots:
-    void init();
+    void init(bool doShow = true);
 
 private:
     QLineEdit* edits[4];
