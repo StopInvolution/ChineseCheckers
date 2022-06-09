@@ -4,6 +4,7 @@
 #include "settings.h"
 #include <QWidget>
 #include <QMessageBox>
+#include <QSettings>
 
 namespace Ui {
 class SettingsWidget;
