@@ -20,11 +20,11 @@ QString Room::RoomID() const
     return this->roomID;
 }
 
-QString Room::playerNameListStr() const
+QString Room::playerNameListStr(char sep) const
 {
     QString tmp("");
     for(auto i:players) {
-        if(!tmp.isEmpty()) tmp.append(' ');
+        if(!tmp.isEmpty()) tmp.append(sep);
         tmp.append(i->name);
     }
     return tmp;

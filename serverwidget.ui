@@ -73,20 +73,20 @@ p, li { white-space: pre-wrap; }
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>ServerWidget</receiver>
-   <slot>__FakeData()</slot>
+   <slot>__receiveCommand()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>313</x>
-     <y>253</y>
+     <x>339</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
-     <x>238</x>
-     <y>198</y>
+     <x>292</x>
+     <y>231</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>__FakeData()</slot>
+  <slot>__receiveCommand()</slot>
  </slots>
 </ui>
