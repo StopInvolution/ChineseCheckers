@@ -168,6 +168,9 @@ ChessBoard::~ChessBoard() {
         }
     delete this->btnAIMv;
     delete this->console;
+    if(this->socket){
+        this->socket->bye();
+    }
 }
 
 void ChessBoard::setActivatedPlayer(Player* _activatedPlayer) {
@@ -467,6 +470,7 @@ void ChessBoard::nextTurn() {
         activatedPlayer->flag=4;
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
+        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
         this->winnerRank.push_back(this->activatedPlayer);
     }
 
@@ -478,7 +482,7 @@ void ChessBoard::nextTurn() {
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
 
-        qDebug()<<"游戏结束";
+        qDebug()<<"game end";
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);
@@ -487,7 +491,6 @@ void ChessBoard::nextTurn() {
             if(i>0) data+=" ";
             data+=getID(this->winnerRank[i]->spawn);
         }
-        emit endgame(data);
         this->timeoutTimer->stop();
         if(!socket && this->initLocalFlag.size()>0){
             this->showRank(data);
@@ -496,6 +499,8 @@ void ChessBoard::nextTurn() {
             this->parentWindow->setWindowTitle("服务端棋盘 本局游戏已结束");
             this->labelInfo->setText("");
         }
+        emit endgame(data);
+        return ;
     }
 
     updateLabelInfo();
@@ -517,7 +522,7 @@ void ChessBoard::updateLabelInfo() {
         labelInfo->setText(gameResult);
         return ;
     }
-    QString waitInfo="";
+    QString waitInfo="不是你的轮次，请等待\n";
     if(activatedPlayer){
         if(this->socket){
             if(activatedPlayer->flag==3){
@@ -528,13 +533,10 @@ void ChessBoard::updateLabelInfo() {
                     waitInfo="你的轮次，正在等待服务端允许你下棋\n";
                 }
             }
-           else{
-                waitInfo="你的轮次，正在等待你下棋\n";
-            }
         }
-    }
-    else{
-        waitInfo="不是你的轮次，请等待\n";
+        else{
+             waitInfo="你的轮次，正在等待你下棋\n";
+         }
     }
     labelInfo->setText(tr("当前行棋方为\n") +
                        (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") +"\n"+
@@ -606,19 +608,31 @@ void ChessBoard::nertworkProcess(NetworkData data)
         break;
     }
     case OPCODE::START_TURN_OP:{
-        serverPermission=true;
+        qDebug()<<data1;
+        for(auto player:this->players){
+            if((player->flag&2) && getID(player->spawn)==data1){
+                serverPermission=true;
+                break;
+            }
+        }
         QDateTime time1 = QDateTime::currentDateTime();   //获取当前时间
         int timeT = time1.toSecsSinceEpoch(),timeServer=data2.toInt();
-        resTime=timeT+15-timeServer;
+        resTime=timeT+Network::resTime-timeServer;
         this->timeoutTimer->start(clockT);
         updateLabelInfo();
         break;
     }
     case OPCODE::END_TURN_OP:{
         qDebug()<<"你确实赢了，服务器知道了";
+        if(this->timer->isActive()){
+            this->timer->stop();
+        }
         break;
     }
     case OPCODE::END_GAME_OP:{
+        if(this->timer->isActive()){
+            this->timer->stop();
+        }
         showRank(data1);
         break;
     }

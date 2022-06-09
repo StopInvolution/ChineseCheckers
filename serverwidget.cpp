@@ -35,7 +35,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 if(i->getSocket() == client) continue;
                 server->send(i->getSocket(), data);
             }
-            startTurn(room->w->chessBoard->activatedPlayer->name);
+            startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
             break;
         case -1:
         case 0:
@@ -201,37 +201,36 @@ void ServerWidget::overtime(QString data) {
     auto room = roomList[0];
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data, "-1"));
-        startTurn(room->w->chessBoard->activatedPlayer->name);
     }
+    startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
 }
 
 void ServerWidget::endGame(QString data)
 {
     auto room = roomList[0];
-    for(auto i:room->players) {
-        server->send(i->getSocket(), NetworkData(OPCODE::END_GAME_OP, data, ""));
-    }
-}
-
-void ServerWidget::sendVictory(QString name)
-{
-    auto room = roomList[0];
     room->changeGameState();
     for(auto i:room->players) {
-        if(i->name == name)
-            server->send(i->getSocket(), NetworkData(OPCODE::END_TURN_OP, "", ""));
+        server->send(i->getSocket(), NetworkData(OPCODE::END_GAME_OP, data, ""));
     }
     delete room;
     roomList.pop_back();
 }
 
-void ServerWidget::startTurn(QString name)
+void ServerWidget::sendVictory(QString name)
 {
-    qDebug()<<"ting wo shuo xie xie ni"<<name;
     auto room = roomList[0];
     for(auto i:room->players) {
         if(i->name == name)
-            server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, i->startArea, QString::number(time(NULL))));
+            server->send(i->getSocket(), NetworkData(OPCODE::END_TURN_OP, "", ""));
+    }
+}
+
+void ServerWidget::startTurn(QString ID)
+{
+    auto room = roomList[0];
+    for(auto i:room->players) {
+        if(i->flag&4) continue;
+        server->send(i->getSocket(), NetworkData(OPCODE::START_TURN_OP, ID, QString::number(time(NULL))));
     }
 }
 

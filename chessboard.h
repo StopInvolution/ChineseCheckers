@@ -43,7 +43,7 @@ public:
 
     // 当前行棋方
     int activatedPlayerID;
-    Player* activatedPlayer;
+    Player *activatedPlayer;
 
     // 选取后待移动的子
     Marble *selectedChess;
