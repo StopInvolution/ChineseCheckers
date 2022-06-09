@@ -6,44 +6,101 @@
 #include "networkdata.h"
 #include "settings.h"
 
-// 棋盘坐标转换到显示坐标
+/**
+ * @brief boardTransform 棋盘坐标转换到显示坐标，可以带旋转
+ * @param var 棋盘坐标
+ * @param alpha 旋转角度
+ * @return
+ */
 ChessPosition boardTransform(ChessPosition var,int alpha=0);
 ChessPosition boardTransform(int x, int y);
 
-// 输入编号返回颜色名字
+/**
+ * @brief getColorName 编号对应的颜色名字
+ * @param color 编号
+ * @return 颜色名字，如"green"
+ */
 QString getColorName(int color);
 
-// 输入颜色编号返回颜色对应的 QColor 用于给文字配色
+/**
+ * @brief getQColor 颜色编号对应的CSS格式颜色
+ * @param color 颜色编号
+ * @return CSS格式颜色
+ */
 QString getQColor(int color);
 
-// 是否共线
+/**
+ * @brief isCollinear 是否共线
+ * @param arg1 第1个点
+ * @param arg2 第2个点
+ * @return 是否共线
+ */
 bool isCollinear(const ChessPosition& arg1, const ChessPosition& arg2);
 
-// 返回 arg1 arg2 arg3 是否按顺序共线
+/**
+ * @brief isCollinear 是否三点共线
+ * @param arg1 第1个点
+ * @param arg2 第2个点
+ * @param arg3 第3个点
+ * @return 是否共线
+ */
 bool isCollinear(const ChessPosition& arg1, const ChessPosition& arg2, const ChessPosition& arg3);
 
+/**
+ * @brief isWithinBoundary 是否在棋盘边界内
+ * @param arg 坐标
+ * @return 是否在边界内
+ */
 bool isWithinBoundary(const ChessPosition& arg);
 
-// 是否相邻
+/**
+ * @brief isNeighbor 两个棋子是否相邻，一步能走到的相邻
+ * @param arg1 第1个点
+ * @param arg2 第2个点
+ * @return 是否相邻
+ */
 bool isNeighbor(const ChessPosition& arg1, const ChessPosition& arg2);
 
-// 返回 arg1 到 arg2 倍长线的终点
+/**
+ * @brief jumpOver 计算倍长线的终点
+ * @param arg1 起点
+ * @param arg2 中点
+ * @return 倍长线的终点
+ */
 ChessPosition jumpOver(const ChessPosition& arg1, const ChessPosition& arg2);
 
-// 输出 ChessPosition 类
+/**
+ * @brief outChessPosition 临时输出ChessPosition
+ * @param p chessPosition
+ */
 void outChessPosition(ChessPosition p);
 
-// 返回区域编码对应的出生位置序号
+/**
+ * @brief getSpawn 返回位置编码对应的出生位置序号
+ * @param ID 位置编码
+ * @return 位置序号
+ */
 int getSpawn(QString ID);
 
-// 返回区域编码对应的终点位置序号
+/**
+ * @brief getTarget 返回位置编码对应的终点位置序号
+ * @param ID 位置编码
+ * @return 位置序号
+ */
 int getTarget(QString ID);
 
-// 返回数字对应的区域编码
+/**
+ * @brief getID 返回位置序号对应的位置编码
+ * @param x 位置序号
+ * @return 位置编码
+ */
 QString getID(int x);
 
-
-bool valid_check(int); //check if the number of players is valid.
+/**
+ * @brief valid_check check if the number of players is valid.
+ * @return is valid
+ */
+bool valid_check(int);
 
 ChessPosition rotateCounterclockwise (ChessPosition begin, int alpha);
 

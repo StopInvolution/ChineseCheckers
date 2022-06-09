@@ -76,7 +76,13 @@ void Widget::setChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<Q
         this->chessBoard=nullptr;
     }
     playerNum = newPlayerNum;
-    chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag,_socket);
+    if(_socket){
+        chessBoard = new SocketChessBoard(this,playerNum,playerInfo,localFlag,_socket);
+    }
+    else{
+        chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag);
+    }
+
     chessBoard->show();
 }
 
