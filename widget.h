@@ -36,6 +36,13 @@ public:
     QLabel *labelPlayerNum;
 
 public slots:
+    /**
+     * @brief initChessBoard 给定棋盘信息，创建（重建）棋盘
+     * @param newPlayerNum 玩家总数
+     * @param playerInfo 玩家信息，{玩家：位置编号}键值对
+     * @param localFlag 本地玩家标记
+     * @param _socket 可空，客户端socket
+     */
     void initChessBoard(int newPlayerNum=2,QVector<pss>* playerInfo=nullptr, std::map<QString,bool>* localFlag=nullptr, NetworkSocket* _socket=nullptr);
 
 public:

@@ -69,12 +69,6 @@ void ClientWidget::send(std::string data)
             this->parentChessBoard->parentWindow->on_btnSetPlayerNum_clicked();
         }
     }
-    if(type=="leave"){
-        std::string d1,d2;
-        if(iss>>d1>>d2){
-            this->parentChessBoard->socket->send(NetworkData(OPCODE::LEAVE_ROOM_OP,QString::fromStdString(d1),QString::fromStdString(d2)));
-        }
-    }
 }
 
 void ClientWidget::onSend()
