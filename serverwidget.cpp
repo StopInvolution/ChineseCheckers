@@ -28,7 +28,6 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             break;
         }
         result = room->w->chessBoard->serverMoveProcess(data.data1, data.data2);
-       //Debug()<<"Why    "<<result; q
         switch(result) {
         case 1:
             for(auto i:room->players) {
@@ -240,7 +239,7 @@ void ServerWidget::endGame(QString data)
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::END_GAME_OP, data, ""));
     }
-    delete room;
+    //delete room;
     roomList.pop_back();
 }
 
