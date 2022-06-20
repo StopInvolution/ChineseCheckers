@@ -19,6 +19,19 @@ class Player;
 class Marble;
 class Widget;
 class ClientWidget;
+
+class AgentThread:public QThread{
+public:
+    Agent_algorithm *algo;
+    QVector<AlgoPlayer> data;
+    pcc res;
+    AgentThread();
+    AgentThread(Agent_algorithm _algo,QVector<AlgoPlayer> _data);
+    void set(Agent_algorithm _algo,QVector<AlgoPlayer> _data);
+protected:
+    void run() override;
+};
+
 /**
  * @brief 棋盘，承载了所有跳棋游戏逻辑
  * @note 不包含重新设置玩家数量和重开的逻辑
@@ -38,10 +51,15 @@ public:
     QTimer *timeoutTimer= new QTimer;
     int clockT;
     const double initResTime;
+    const clock_t initAgentCD;
+    clock_t agentCD;
     double resTime,tick;
     bool god;
-    bool serverPermission;
+    bool movePermission;
+    bool onAgent;
     QString gameResult;
+
+    AgentThread *agT;
 
     // 当前行棋方
     int activatedPlayerID;
@@ -155,7 +173,6 @@ public:
     void randomMove();
 
     QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv,*btnConsole;
-    QTimer* timer;
 
     void on_btnRandomMove_clicked();
     void on_btnAutoMv_clicked();
@@ -227,6 +244,11 @@ public:
     void startTurn(QString);
 
     /**
+     * @brief onMyTurn 是我能下棋的信号（包含了这局是我行棋的含义）
+     */
+    void onMyTurn();
+
+    /**
      * @brief overtime 是超时信号
      * @param ID 超时玩家的位置编号
      */
@@ -275,5 +297,4 @@ public:
  * @return 是否有
  */
 bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v);
-
 #endif // CHESSBOARD_H

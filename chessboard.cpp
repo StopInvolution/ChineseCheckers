@@ -20,7 +20,7 @@
 #include "clientwidget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag)
-    : parentWindow(_parentWindow),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30), initResTime(Network::resTime),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30),initResTime(Network::resTime),initAgentCD(100),god(false), movePermission(true),onAgent(false), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     if(playerInfo) initPlayerInfo=*playerInfo;
     if(localFlag) initLocalFlag=*localFlag;
 
@@ -43,6 +43,11 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
         }
     }
 
+    // 标签
+    labelInfo = new QLabel(this->parentWindow);
+    labelInfo->setGeometry(20, 10, 350, 160);
+    labelInfo->setFont(QFont("华光中圆_CNKI", 14));
+
     const int geo[]={0,0,530,110,680,240,600,455,330,485,180,355,260,140};
     for(int i=1;i<=6;i++){
         int j=mod6Add(i,this->rotateAngle);
@@ -53,6 +58,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
         labelPlayer[i]->setText(QString::number(i));
         labelPlayer[i]->setVisible(false);
         labelPlayer[i]->setCursor(Qt::PointingHandCursor);
+        labelPlayer[i]->setAlignment(Qt::AlignVCenter);
     }
     labelPlayer[1]->setAlignment(Qt::AlignLeft);
     labelPlayer[2]->setAlignment(Qt::AlignLeft);
@@ -84,11 +90,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     hintPlayer = new Player(color::hint, -1, -1, 2, "hint",0);
     hintPlayer->addTo(this);
 
-    // 标签
-    labelInfo = new QLabel(this->parentWindow);
-    labelInfo->setGeometry(20, 10, 350, 160);
-    labelInfo->setFont(QFont("华光中圆_CNKI", 14));
-
     updateLabelInfo();
 
     // START_TURN_OP 应该等信号来了再设置，但原则上其实不需要，因为开始游戏和第一个人开始下棋的信号应当会一起发送，但是接口我就放这了
@@ -100,13 +101,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     btnRandomMove->setText("RandomMove");
     btnRandomMove->setCursor(Qt::PointingHandCursor);
     QObject::connect(this->btnRandomMove, &QPushButton::clicked,this, &ChessBoard::on_btnRandomMove_clicked);
-
-    // 给随机移动创建一个计时器
-    timer = new QTimer();
-//    connect(timer, &QTimer::timeout,  this, [&]() { this->randomMove(); });
-    connect(timer, &QTimer::timeout,  this, [&]() {
-        emit this->btnAIMv->click();
-    });
 
     btnAutoMv = new QPushButton(this->parentWindow);
     btnAutoMv->setGeometry(30, 260, 100, 30);
@@ -124,7 +118,11 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     btnAIMv->setGeometry(30, 210, 100, 30);
     btnAIMv->setText("AIMv");
     btnAIMv->setCursor(Qt::PointingHandCursor);
-    connect(this->btnAIMv, &QPushButton::clicked, this, &ChessBoard::agent_move);
+    connect(this->btnAIMv, &QPushButton::clicked, this, [&](){
+        if(!this->onAgent){
+            agent_move();
+        }
+    });
 
     btnConsole = new QPushButton(this->parentWindow);
     btnConsole->setGeometry(760,590,30,30);
@@ -144,6 +142,19 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
 
     connect(this,&ChessBoard::overtime,this,&ChessBoard::timeout);
     connect(this,&ChessBoard::endgame,this,&ChessBoard::on_btnStopAutoMv_clicked);
+
+    this->agentCD=clock();
+    agT=new AgentThread();
+    connect(agT,&AgentThread::finished,this,[&](){
+        if(this->onAgent){
+            this->moveA2B(agT->res.first,agT->res.second);
+            this->agentCD=clock();
+            qDebug()<<"Thread test";
+        }
+        else{
+            qDebug()<<"onAgent = false";
+        }
+    });
 }
 
 ChessBoard::~ChessBoard() {
@@ -161,6 +172,7 @@ ChessBoard::~ChessBoard() {
         }
     delete this->btnAIMv;
     delete this->console;
+    delete this->agT;
 }
 
 void ChessBoard::setActivatedPlayer(Player* _activatedPlayer) {
@@ -245,9 +257,14 @@ bool ChessBoard::moveA2BWithPath(QVector<ChessPosition> *path,bool ck)
 
 void ChessBoard::agent_move()
 {
-    if(serverPermission){
-        pcc ret=this->activatedPlayer->agent_algorithm(this->AIDataProducer());
-        this->moveA2B(ret.first,ret.second);
+    if(movePermission){
+        int dt = this->agentCD+200-clock();
+        dt = dt<0?0:dt;
+        QTimer::singleShot(dt,this,[&](){
+//            pcc ret=this->activatedPlayer->agent_algorithm(this->AIDataProducer());
+            agT->set(activatedPlayer->agent_algorithm,this->AIDataProducer());
+            agT->start();
+        });
     }
 }
 
@@ -483,10 +500,11 @@ void ChessBoard::nextTurn() {
     }
 
     updateLabelInfo();
+    emit onMyTurn();
 }
 
 void ChessBoard::randomMove() {
-    if(serverPermission){
+    if(movePermission && !this->onAgent){
         do {
             hintPlayer->clear();
             selectedChess = activatedPlayer->chesses[rand() % activatedPlayer->chessNum];
@@ -605,17 +623,21 @@ void ChessBoard::on_btnRandomMove_clicked() {
 }
 
 void ChessBoard::on_btnAutoMv_clicked() {
-    // 每200ms移动一次
-    this->timer->start(200);
+    if(!this->onAgent){
+        if(movePermission && !this->onAgent) this->agent_move();
+        this->onAgent=true;
+        connect(this,&ChessBoard::onMyTurn,this,&ChessBoard::agent_move);
+    }
 }
 
 void ChessBoard::on_btnStopAutoMv_clicked() {
-    this->timer->stop();
+    this->onAgent=false;
+    disconnect(this,&ChessBoard::onMyTurn,this,&ChessBoard::agent_move);
 }
 
 SocketChessBoard::SocketChessBoard(Widget *_parentWindow, int _player_num, QVector<pss> *playerInfo, std::map<QString, bool> *localFlag, NetworkSocket *_socket)
     :ChessBoard(_parentWindow,_player_num,playerInfo,localFlag), socket(_socket){
-    serverPermission=false;
+    movePermission=false;
     connect(this->socket,&NetworkSocket::receive,this,&SocketChessBoard::nertworkProcess);
     disconnect(this,&ChessBoard::overtime,this,&ChessBoard::timeout);
 }
@@ -692,7 +714,7 @@ void SocketChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
         this->activatedPlayer->lstMove=loadChessPosition(s);
         qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
         socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
-        this->serverPermission=false;
+        this->movePermission=false;
     }
     // 服务器点击
     if(path){
@@ -729,7 +751,7 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
         qDebug()<<data1;
         for(auto player:this->players){
             if((player->flag&2) && getID(player->spawn)==data1){
-                serverPermission=true;
+                movePermission=true;
                 break;
             }
         }
@@ -738,19 +760,18 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
         resTime=timeT+Network::resTime-timeServer;
         this->timeoutTimer->start(clockT);
         updateLabelInfo();
+        if(movePermission){
+            emit this->onMyTurn();
+        }
         break;
     }
     case OPCODE::END_TURN_OP:{
         qDebug()<<"你确实赢了，服务器知道了";
-        if(this->timer->isActive()){
-            this->timer->stop();
-        }
+        this->on_btnStopAutoMv_clicked();
         break;
     }
     case OPCODE::END_GAME_OP:{
-        if(this->timer->isActive()){
-            this->timer->stop();
-        }
+        this->on_btnStopAutoMv_clicked();
         showRank(data1);
         break;
     }
@@ -767,7 +788,7 @@ void SocketChessBoard::updateLabelInfo() {
     QString waitInfo="不是你的轮次，请等待\n";
     if(activatedPlayer){
          if(activatedPlayer->flag==3){
-            if(serverPermission){
+            if(movePermission){
                 waitInfo="你的轮次，服务端正在等待你下棋\n";
             }
             else{
@@ -780,4 +801,26 @@ void SocketChessBoard::updateLabelInfo() {
                        waitInfo+
                        (this->resTime>0.0?tr("剩余思考时间 ")+QString::number(this->resTime)+tr("s"):tr("思考时间超时"))+
                        tr("\n已走步数 ") + QString::number(this->stepNum));
+}
+
+AgentThread::AgentThread()
+{
+
+}
+
+AgentThread::AgentThread(Agent_algorithm *_algo, QVector<AlgoPlayer> _data):
+    algo(_algo),data(_data)
+{
+}
+
+void AgentThread::set(Agent_algorithm _algo, QVector<AlgoPlayer> _data)
+{
+    algo=_algo;
+    data=_data;
+}
+
+void AgentThread::run()
+{
+    this->res = algo(data);
+    qDebug()<<"agentThread test";
 }
