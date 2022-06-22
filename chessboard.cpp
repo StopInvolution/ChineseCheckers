@@ -19,8 +19,8 @@
 #include <QDateTime>
 #include "clientwidget.h"
 
-ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag,NetworkSocket* _socket)
-    : parentWindow(_parentWindow), socket(_socket),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30), initResTime(Network::resTime),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag)
+    : parentWindow(_parentWindow),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30), initResTime(Network::resTime),god(false), serverPermission(true), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     if(playerInfo) initPlayerInfo=*playerInfo;
     if(localFlag) initLocalFlag=*localFlag;
 
@@ -89,9 +89,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     labelInfo->setGeometry(20, 10, 350, 160);
     labelInfo->setFont(QFont("华光中圆_CNKI", 14));
 
-    if(socket){
-        serverPermission=false;
-    }
     updateLabelInfo();
 
     // START_TURN_OP 应该等信号来了再设置，但原则上其实不需要，因为开始游戏和第一个人开始下棋的信号应当会一起发送，但是接口我就放这了
@@ -142,14 +139,10 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
             resTime=0;
             this->timeoutTimer->stop();
             outer.push_back(this->activatedPlayer);
-            if(!socket){
-                timeout();
-            }
             emit overtime(getActID());
         } updateLabelInfo();});
-    if(socket)
-        connect(this->socket,&NetworkSocket::receive,this,&ChessBoard::nertworkProcess);
 
+    connect(this,&ChessBoard::overtime,this,&ChessBoard::timeout);
     connect(this,&ChessBoard::endgame,this,&ChessBoard::on_btnStopAutoMv_clicked);
 }
 
@@ -168,9 +161,6 @@ ChessBoard::~ChessBoard() {
         }
     delete this->btnAIMv;
     delete this->console;
-    if(this->socket){
-        this->socket->bye();
-    }
 }
 
 void ChessBoard::setActivatedPlayer(Player* _activatedPlayer) {
@@ -393,12 +383,6 @@ void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
         }
         s = s.left(s.size()-1);
         this->activatedPlayer->lstMove=loadChessPosition(s);
-        // 本地点击，即服务器上不执行下列操作
-        if(socket){
-            qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
-            socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
-            this->serverPermission=false;
-        }
     }
     // 服务器点击
     if(path){
@@ -454,9 +438,7 @@ void ChessBoard::chooseChess(Marble* chess) {
 void ChessBoard::nextTurn() {
     resTime = initResTime;
 
-    if(!socket){
-        this->timeoutTimer->start(clockT);
-    }
+    this->timeoutTimer->start(clockT);
     if(!activatedPlayer){
         activatedPlayerID=0;
         activatedPlayer=players.front();
@@ -492,13 +474,10 @@ void ChessBoard::nextTurn() {
             data+=getID(this->winnerRank[i]->spawn);
         }
         this->timeoutTimer->stop();
-        if(!socket && this->initLocalFlag.size()>0){
+        if(this->initLocalFlag.size()>0){
             this->showRank(data);
         }
-        else if(!socket){
-            this->parentWindow->setWindowTitle("服务端棋盘 本局游戏已结束");
-            this->labelInfo->setText("");
-        }
+        this->labelInfo->setText("");
         emit endgame(data);
         return ;
     }
@@ -524,19 +503,7 @@ void ChessBoard::updateLabelInfo() {
     }
     QString waitInfo="不是你的轮次，请等待\n";
     if(activatedPlayer){
-        if(this->socket){
-            if(activatedPlayer->flag==3){
-                if(serverPermission){
-                    waitInfo="你的轮次，服务端正在等待你下棋\n";
-                }
-                else{
-                    waitInfo="你的轮次，正在等待服务端允许你下棋\n";
-                }
-            }
-        }
-        else{
-             waitInfo="你的轮次，正在等待你下棋\n";
-         }
+         waitInfo="你的轮次，正在等待你下棋\n";
     }
     labelInfo->setText(tr("当前行棋方为\n") +
                        (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") +"\n"+
@@ -590,7 +557,158 @@ Player *ChessBoard::getPlayerByID(QString ID)
     return nullptr;
 }
 
-void ChessBoard::nertworkProcess(NetworkData data)
+QVector<AlgoPlayer> ChessBoard::AIDataProducer(){
+    int i=this->activatedPlayerID;
+    QVector<AlgoPlayer> vec;
+    do{
+        vec.push_back(this->players[i]->toAlgoPlayer());
+        do{
+            i++;
+            if(i>=playerNum) i=0;
+        }while(this->players[i]->flag&4);
+    }while(i!=this->activatedPlayerID);
+    return vec;
+}
+
+bool ChessBoard::checkAct(QString ID)
+{
+    if(ID!="" && ID!=getID(this->activatedPlayer->spawn)){
+        qDebug()<<"activatedPlayer 不一致，"<<"本地为"<<getID(this->activatedPlayer->spawn)<<" 服务端为"<<ID;
+        return false;
+    }
+    return true;
+}
+
+void ChessBoard::onConsole()
+{
+    if(this->console->isVisible()){
+        this->console->hide();
+    }
+    else{
+        this->console->show();
+    }
+}
+
+bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v) {
+    for (auto player : chessBoard->players) {
+        for (auto chess : player->chesses) {
+            if (u != chess->chessPosition && v != chess->chessPosition && mid != chess->chessPosition && isCollinear(u, chess->chessPosition, v)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ChessBoard::on_btnRandomMove_clicked() {
+    this->randomMove();
+}
+
+void ChessBoard::on_btnAutoMv_clicked() {
+    // 每200ms移动一次
+    this->timer->start(200);
+}
+
+void ChessBoard::on_btnStopAutoMv_clicked() {
+    this->timer->stop();
+}
+
+SocketChessBoard::SocketChessBoard(Widget *_parentWindow, int _player_num, QVector<pss> *playerInfo, std::map<QString, bool> *localFlag, NetworkSocket *_socket)
+    :ChessBoard(_parentWindow,_player_num,playerInfo,localFlag), socket(_socket){
+    serverPermission=false;
+    connect(this->socket,&NetworkSocket::receive,this,&SocketChessBoard::nertworkProcess);
+    disconnect(this,&ChessBoard::overtime,this,&ChessBoard::timeout);
+}
+
+SocketChessBoard::~SocketChessBoard()
+{
+    delete this->socket;
+}
+
+void SocketChessBoard::nextTurn() {
+    resTime = initResTime;
+
+    this->timeoutTimer->start(clockT);
+    if(!activatedPlayer){
+        activatedPlayerID=0;
+        activatedPlayer=players.front();
+        activatedPlayer->setActivated(true);
+        updateLabelInfo();
+        return ;
+    }
+    hintPlayer->clear();
+
+    if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
+        activatedPlayer->flag=4;
+        qDebug()<<activatedPlayer->name<<" wins.\n";
+        emit victory(this->activatedPlayer->name);
+        this->winnerRank.push_back(this->activatedPlayer);
+    }
+
+    this->setNextActivatedPlayer();
+
+    if(static_cast<int>(this->winnerRank.size()+this->outer.size())==this->playerNum-1){
+        activatedPlayer->flag=4;
+        this->activatedPlayer->setActivated(false);
+        qDebug()<<activatedPlayer->name<<" wins.\n";
+        emit victory(this->activatedPlayer->name);
+
+        qDebug()<<"game end";
+
+        QString data;
+        this->winnerRank.push_back(this->activatedPlayer);
+        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
+        for(int i=0;i<playerNum;i++){
+            if(i>0) data+=" ";
+            data+=getID(this->winnerRank[i]->spawn);
+        }
+        this->timeoutTimer->stop();
+        emit endgame(data);
+        return ;
+    }
+
+    updateLabelInfo();
+}
+
+void SocketChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
+    // 获取路径，按要求格式保存在 s 中
+    if(selectedChess==nullptr) selectedChess=this->activatedPlayer->getChess(path->front());
+    // 传统点击
+    if(dest){
+        QString s;
+        std::stack<ChessPosition> S;
+        Marble* now = dest;
+        while (now != selectedChess) {
+            S.push(now->chessPosition);
+            now = now->from;
+        }
+        S.push(selectedChess->chessPosition);
+        while(!S.empty()){
+            int x=S.top().first,y=S.top().second;
+            S.pop();
+            s=s+QString::number(x)+" "+QString::number(y)+" ";
+        }
+        s = s.left(s.size()-1);
+        this->activatedPlayer->lstMove=loadChessPosition(s);
+        qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
+        socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
+        this->serverPermission=false;
+    }
+    // 服务器点击
+    if(path){
+        this->activatedPlayer->lstMove=*path;
+    }
+
+    unshowHint();
+    this->stepNum++;
+    selectedChess->moveToWithPath(dest,path);
+    selectedChess = nullptr;
+    updateLabelInfo();
+
+    nextTurn();
+}
+
+void SocketChessBoard::nertworkProcess(NetworkData data)
 {
     OPCODE &op=data.op;
     QString &data1=data.data1,&data2=data.data2;
@@ -641,67 +759,25 @@ void ChessBoard::nertworkProcess(NetworkData data)
     }
 }
 
-QVector<AlgoPlayer> ChessBoard::AIDataProducer(){
-    int i=this->activatedPlayerID;
-    QVector<AlgoPlayer> vec;
-    do{
-        vec.push_back(this->players[i]->toAlgoPlayer());
-        do{
-            i++;
-            if(i>=playerNum) i=0;
-        }while(this->players[i]->flag&4);
-    }while(i!=this->activatedPlayerID);
-    return vec;
-}
-
-int ChessBoard::serverMoveProcess(QString data1,QString data2)
-{
-    qDebug()<<getID(this->activatedPlayer->spawn);
-    if(getID(this->activatedPlayer->spawn)!=data1) return -1;
-    QVector<ChessPosition> vec;
-    loadChessPosition(vec,data2);
-    return moveA2BWithPath(&vec);
-}
-
-bool ChessBoard::checkAct(QString ID)
-{
-    if(ID!="" && ID!=getID(this->activatedPlayer->spawn)){
-        qDebug()<<"activatedPlayer 不一致，"<<"本地为"<<getID(this->activatedPlayer->spawn)<<" 服务端为"<<ID;
-        return false;
+void SocketChessBoard::updateLabelInfo() {
+    if(gameResult.length()){
+        labelInfo->setText(gameResult);
+        return ;
     }
-    return true;
-}
-
-void ChessBoard::onConsole()
-{
-    if(this->console->isVisible()){
-        this->console->hide();
-    }
-    else{
-        this->console->show();
-    }
-}
-
-bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v) {
-    for (auto player : chessBoard->players) {
-        for (auto chess : player->chesses) {
-            if (u != chess->chessPosition && v != chess->chessPosition && mid != chess->chessPosition && isCollinear(u, chess->chessPosition, v)) {
-                return true;
+    QString waitInfo="不是你的轮次，请等待\n";
+    if(activatedPlayer){
+         if(activatedPlayer->flag==3){
+            if(serverPermission){
+                waitInfo="你的轮次，服务端正在等待你下棋\n";
+            }
+            else{
+                waitInfo="你的轮次，正在等待服务端允许你下棋\n";
             }
         }
     }
-    return false;
-}
-
-void ChessBoard::on_btnRandomMove_clicked() {
-    this->randomMove();
-}
-
-void ChessBoard::on_btnAutoMv_clicked() {
-    // 每200ms移动一次
-    this->timer->start(200);
-}
-
-void ChessBoard::on_btnStopAutoMv_clicked() {
-    this->timer->stop();
+    labelInfo->setText(tr("当前行棋方为\n") +
+                       (this->activatedPlayer?getColorName(activatedPlayer->color)+":"+this->activatedPlayer->name:"None") +"\n"+
+                       waitInfo+
+                       (this->resTime>0.0?tr("剩余思考时间 ")+QString::number(this->resTime)+tr("s"):tr("思考时间超时"))+
+                       tr("\n已走步数 ") + QString::number(this->stepNum));
 }

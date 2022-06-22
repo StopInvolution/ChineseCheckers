@@ -27,6 +27,7 @@ private:
     Room *findRoom(QString &);
     static bool invalidName(QString &name);
     Ui::ServerWidget *ui;
+    int moveQuery(ChessBoard* chessBoard, QString data1, QString data2);
 
 private slots:
     int receiveData(QTcpSocket *client, NetworkData data);

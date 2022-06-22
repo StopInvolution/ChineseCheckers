@@ -13,40 +13,91 @@ class Player : public QObject {
     ~Player();
     ChessBoard* parentChessBoard;
 
+    /**
+     * @brief toAlgoPlayer 提取对AI算法有用的信息用于传输
+     * @return 见 AlgoPlayer
+     */
     AlgoPlayer toAlgoPlayer();
-    // 玩家名
+
+    /**
+     * @brief name 玩家的名字
+     */
     QString name;
 
+    /**
+     * @brief lstMove 上次的移动路径
+     */
     QVector<ChessPosition> lstMove;
+
+    /**
+     * @brief replay 重播上次移动
+     */
     void replay();
 
-    // 棋子数和棋子颜色(泛颜色)，color=color::hint
-    int chessNum, color;
+    /**
+     * @brief chessNum 棋子数
+     */
+    int chessNum;
 
-    // 棋子的起点和终点
-    int spawn, target;
+    /**
+     * @brief color 棋子颜色，或类别序号
+     * @note 0 表示提示棋子
+     */
+    int color;
 
-    // 00:服务器玩家，本局不移动 01:服务器玩家，本局移动 10:本地玩家，本局不移动 11:本地玩家，本局移动 100:跳过(已结束或犯规)
+    /**
+     * @brief spawn 起点位置编号
+     */
+    int spawn;
+
+    /**
+     * @brief spawn 终点位置编号
+     */
+    int target;
+
+    /**
+     * @brief flag 00:服务器玩家，本局不移动 01:服务器玩家，本局移动 10:本地玩家，本局不移动 11:本地玩家，本局移动 100:跳过(已结束或犯规)
+     */
     unsigned int flag;
 
-    // 棋子
+    /**
+     * @brief chesses 拥有的棋子
+     */
     QVector<Marble*> chesses;
 
+    /**
+     * @brief getChess 通过坐标获得棋子指针
+     * @param p 坐标
+     * @return 棋子指针
+     */
     Marble* getChess(ChessPosition p);
     Marble* getChess(int x,int y);
+
+    /**
+     * @brief checkWin 判断是否获胜
+     * @return 是否获胜
+     */
     bool checkWin();
 
-    // 绑定父节点
+    /**
+     * @brief addTo 绑定到父棋盘上
+     * @param _parentChessBoard 父棋盘
+     */
     void addTo(ChessBoard* _parentChessBoard = 0);
 
     void setActivated(bool flag);
 
-    // delete chess，主要是为了 hintPlayer 准备的，hintPlayer 经常需要删掉自己所有棋子
+    /**
+     * @brief clear delete自己所有的棋子
+     */
     void clear();
 
     virtual bool isReady() const;
     virtual QTcpSocket* getSocket() const;
 
+    /**
+     * @brief agent_algorithm 当前使用的AI算法
+     */
     Agent_algorithm *agent_algorithm;
 };
 

@@ -1,6 +1,7 @@
 #include "serverwidget.h"
 #include "ui_serverwidget.h"
 #include "util.h"
+#include "networkUtil.h"
 
 ServerWidget::ServerWidget(QWidget *parent) :
     QWidget(parent),
@@ -27,7 +28,12 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::ROOM_NOT_RUNNING), ""));
             break;
         }
+<<<<<<< HEAD
         result = room->w->chessBoard->serverMoveProcess(data.data1, data.data2);
+=======
+        result = moveQuery(room->w->chessBoard,data.data1, data.data2);
+       //Debug()<<"Why    "<<result; q
+>>>>>>> refs/remotes/origin/master
         switch(result) {
         case 1:
             for(auto i:room->players) {
@@ -150,6 +156,15 @@ bool ServerWidget::invalidName(QString &name)
         if (!isalnum(i) && i != '_')
              return true;
     return false;
+}
+
+int ServerWidget::moveQuery(ChessBoard* chessBoard, QString data1, QString data2)
+{
+    qDebug()<<"Try to move, the activatedPlayer is"<<getID(chessBoard->activatedPlayer->spawn);
+    if(getID(chessBoard->activatedPlayer->spawn)!=data1) return -1;
+    QVector<ChessPosition> vec;
+    loadChessPosition(vec,data2);
+    return chessBoard->moveA2BWithPath(&vec);
 }
 
 Room* ServerWidget::findRoom (QString &roomName)

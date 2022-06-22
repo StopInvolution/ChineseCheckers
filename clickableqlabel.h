@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QLabel>
 #include "widget.h"
-
+/**
+ * @brief 可点击的QLabel，可以发送 clicked() 信号
+ */
 class ClickableQLabel:public QLabel
 {
     Q_OBJECT
