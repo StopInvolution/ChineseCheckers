@@ -25,13 +25,13 @@ public:
 
 private:
     Ui::mul_initwidget *ui;
-
-    /* currently it's fixed. */
     QString username;
     NetworkSocket* socket;
 
 private:
-    /**/
+    /**
+     * @brief return if the username contains num/alpha/underscore and no longer than 20
+    */
     static bool isValidID(QString *);
 private slots:
     void debug();
@@ -43,11 +43,21 @@ private slots:
     void on_pushButtonSettings_clicked();
     void setConnected();
     QAbstractSocket::SocketError setDisconnected(QAbstractSocket::SocketError error);
-
+    /**
+     * @brief called when new data received
+     * @param data : from the internet
+     */
     void receive(NetworkData data);
 
 public:
 signals:
+    /**
+     * @brief emit to enter waiting room
+     * @param roomID
+     * @param sck = socket
+     * @param roomState
+     * @param username
+     */
     void enterRoom(QString roomID, NetworkSocket* sck, NetworkData roomState, QString username);
     void backToTitle();
 };

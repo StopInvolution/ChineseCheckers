@@ -60,6 +60,9 @@ void Room::changeGameState() {
         }
         w->setChessBoard(CB::SERVER, players.size(), &Vec, &m, 0);
         this->w->show();
+    }else{
+        assert(w != nullptr);
+        w->close();
     }
 }
 
@@ -72,9 +75,8 @@ void Room::removePlayer(int index) {
 }
 
 void Room::removePlayer(ServerPlayer *player) {
-    for (auto i = players.begin(); i != players.end(); ++i) {
-        if (*i == player) {
-            players.erase(i);
+    for (qsizetype i = 0; i < players.size(); ++i) {
+        if (players[i] == player) {
             return;
         }
     }
@@ -84,7 +86,6 @@ Room::~Room()
 {
     delete w;
     for(auto i:players) {
-        ServerPlayer* p = (ServerPlayer*)(void*)i;
-        delete p;
+        delete i;
     }
 }
