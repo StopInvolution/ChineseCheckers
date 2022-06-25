@@ -59,7 +59,7 @@ void WaitingRoom::receive(NetworkData data)
         std::map<QString,bool> flags;
         flags[username] = true;
         disconnect(socket, &NetworkSocket::receive, this, &WaitingRoom::receive);
-        emit start(playerNum, &Vec, &flags, socket);
+        emit start(CB::CLIENT, playerNum, &Vec, &flags, socket);
         return;
     };
     try {

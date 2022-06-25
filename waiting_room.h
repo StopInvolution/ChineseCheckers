@@ -37,7 +37,7 @@ public:
     explicit WaitingRoom(QWidget *parent = nullptr);
     ~WaitingRoom();
 signals:
-    void start(int number, QVector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket *_socket);
+    void start(int kind, int number, QVector<std::pair<QString,QString>>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket *_socket);
 
 public slots:
     /**

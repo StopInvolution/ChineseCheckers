@@ -40,7 +40,8 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 if(i->getSocket() == client) continue;
                 server->send(i->getSocket(), data);
             }
-            startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
+            room->w->chessBoard->nextTurn();
+//            startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
             break;
         case -1:
         case 0:
@@ -131,7 +132,8 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 connect(room->w->chessBoard, &ChessBoard::endgame, this, &ServerWidget::endGame);
                 connect(room->w->chessBoard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
                 connect(room->w->chessBoard, &ChessBoard::startTurn, this,&ServerWidget::startTurn);
-                server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "A", QString::number(time(NULL))));
+                this->startTurn("A");
+
             }
         }
         break;
@@ -244,7 +246,8 @@ void ServerWidget::overtime(QString data) {
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data, "-1"));
     }
-    startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
+    room->w->chessBoard->nextTurn();
+//    startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
 }
 
 void ServerWidget::endGame(QString data)

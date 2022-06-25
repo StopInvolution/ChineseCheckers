@@ -33,7 +33,7 @@ protected:
 };
 
 /**
- * @brief 棋盘，承载了所有跳棋游戏逻辑
+ * @brief 本地棋盘，承载了所有跳棋游戏逻辑，是基类棋盘
  * @note 不包含重新设置玩家数量和重开的逻辑
  */
 class ChessBoard:public QObject
@@ -56,7 +56,7 @@ public:
     double resTime,tick;
     bool god;
     bool movePermission;
-    bool onAgent;
+    bool onAgent,onSingleAgent;
     QString gameResult;
 
     AgentThread *agT;
@@ -119,7 +119,7 @@ public:
     /**
      * @brief 对当前行动玩家执行超时判负，包括移除棋子和标记
      */
-    void timeout();
+    virtual void timeout();
 
     /**
      * @brief 展示排名，形式是提示框
@@ -268,7 +268,17 @@ public:
 };
 
 /**
- * @brief The SocketChessBoard class 是带 Socket 的 ChessBoard，可以处理网络指令
+ * @brief The ServerChessBoard class 是服务器棋盘，不自动执行 NextTurn，但 NextTurn 会发送信号，接受且只接受网络传输协议类型的行棋指令
+ */
+class ServerChessBoard: public ChessBoard{
+    using ChessBoard::ChessBoard;
+    virtual void moveChess(Marble* dest,QVector<ChessPosition> *path) override;
+    virtual void timeout() override;
+    virtual void nextTurn() override;
+};
+
+/**
+ * @brief The SocketChessBoard class 是带 Socket 的服务端棋盘，接受且只接受网络传输协议类型的行棋指令
  */
 class SocketChessBoard: public ChessBoard{
 public:
@@ -283,9 +293,9 @@ public:
     void nertworkProcess(NetworkData data);
 
     // 以下是重写
-    virtual void moveChess(Marble* dest,QVector<ChessPosition> *path);
-    virtual void nextTurn();
-    virtual void updateLabelInfo();
+    virtual void moveChess(Marble* dest,QVector<ChessPosition> *path) override;
+    virtual void nextTurn() override;
+    virtual void updateLabelInfo() override;
 };
 
 /**
