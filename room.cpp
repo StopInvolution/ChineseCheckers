@@ -58,7 +58,7 @@ void Room::changeGameState() {
             QString s=getID(board::playerSpawn[players.size()][i]);
             Vec.push_back(std::make_pair(players[i]->name, s));
         }
-        w->setChessBoard(players.size(), &Vec, &m, 0);
+        w->setChessBoard(CB::SERVER, players.size(), &Vec, &m, 0);
         this->w->show();
     }else{
         assert(w != nullptr);
