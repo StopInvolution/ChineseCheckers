@@ -49,9 +49,9 @@ Widget::~Widget()
     delete chessBoard;
 }
 
-void Widget::initChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::initChessBoard(int kind,int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 {
-    this->setChessBoard(newPlayerNum,playerInfo,localFlag,_socket);
+    this->setChessBoard(kind,newPlayerNum,playerInfo,localFlag,_socket);
     this->show();
 }
 
@@ -69,18 +69,24 @@ void Widget::closeEvent(QCloseEvent *event){
     }
 }
 
-void Widget::setChessBoard(int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
+void Widget::setChessBoard(int kind,int newPlayerNum,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag, NetworkSocket* _socket)
 {
     if(this->chessBoard){
         delete this->chessBoard;
         this->chessBoard=nullptr;
     }
     playerNum = newPlayerNum;
-    if(_socket){
-        chessBoard = new SocketChessBoard(this,playerNum,playerInfo,localFlag,_socket);
-    }
-    else{
+
+    switch(kind){
+    case CB::LOCAL:
         chessBoard = new ChessBoard(this,playerNum,playerInfo,localFlag);
+        break;
+    case CB::CLIENT:
+        chessBoard = new SocketChessBoard(this,playerNum,playerInfo,localFlag,_socket);
+        break;
+    case CB::SERVER:
+        chessBoard = new ServerChessBoard(this,playerNum,playerInfo,localFlag);
+        break;
     }
 
     chessBoard->show();
@@ -97,6 +103,6 @@ void Widget::on_btnSetPlayerNum_clicked()
             playerInfo.push_back(std::make_pair(name,getID(board::playerSpawn[t][i])));
             localFlag.insert(std::make_pair(name,true));
         }
-        setChessBoard(t,&playerInfo,&localFlag,nullptr);
+        setChessBoard(CB::LOCAL, t,&playerInfo,&localFlag,nullptr);
     }
 }

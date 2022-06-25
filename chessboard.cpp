@@ -20,7 +20,7 @@
 #include "clientwidget.h"
 
 ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* playerInfo, std::map<QString,bool>* localFlag)
-    : parentWindow(_parentWindow),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30),initResTime(Network::resTime),initAgentCD(100),god(false), movePermission(true),onAgent(false), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
+    : parentWindow(_parentWindow),rotateAngle(0),playerNum(_player_num),stepNum(0),clockT(30),initResTime(Network::resTime),initAgentCD(100),god(false), movePermission(true),onAgent(false), onSingleAgent(false), gameResult(""), activatedPlayerID(0),activatedPlayer(nullptr),selectedChess(nullptr) {
     if(playerInfo) initPlayerInfo=*playerInfo;
     if(localFlag) initLocalFlag=*localFlag;
 
@@ -120,6 +120,8 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     btnAIMv->setCursor(Qt::PointingHandCursor);
     connect(this->btnAIMv, &QPushButton::clicked, this, [&](){
         if(!this->onAgent){
+            this->onAgent=true;
+            this->onSingleAgent=true;
             agent_move();
         }
     });
@@ -149,7 +151,10 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
         if(this->onAgent){
             this->moveA2B(agT->res.first,agT->res.second);
             this->agentCD=clock();
-            qDebug()<<"Thread test";
+            if(this->onSingleAgent){
+                this->onSingleAgent=false;
+                this->onAgent=false;
+            }
         }
         else{
             qDebug()<<"onAgent = false";
@@ -383,28 +388,22 @@ QString ChessBoard::getActID()
 void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
     // 获取路径，按要求格式保存在 s 中
     if(selectedChess==nullptr) selectedChess=this->activatedPlayer->getChess(path->front());
-    // 传统点击
-    if(dest){
-        QString s;
-        std::stack<ChessPosition> S;
-        Marble* now = dest;
-        while (now != selectedChess) {
-            S.push(now->chessPosition);
-            now = now->from;
-        }
-        S.push(selectedChess->chessPosition);
-        while(!S.empty()){
-            int x=S.top().first,y=S.top().second;
-            S.pop();
-            s=s+QString::number(x)+" "+QString::number(y)+" ";
-        }
-        s = s.left(s.size()-1);
-        this->activatedPlayer->lstMove=loadChessPosition(s);
+
+    QString s;
+    std::stack<ChessPosition> S;
+    Marble* now = dest;
+    while (now != selectedChess) {
+        S.push(now->chessPosition);
+        now = now->from;
     }
-    // 服务器点击
-    if(path){
-        this->activatedPlayer->lstMove=*path;
+    S.push(selectedChess->chessPosition);
+    while(!S.empty()){
+        int x=S.top().first,y=S.top().second;
+        S.pop();
+        s=s+QString::number(x)+" "+QString::number(y)+" ";
     }
+    s = s.left(s.size()-1);
+    this->activatedPlayer->lstMove=loadChessPosition(s);
 
     unshowHint();
     this->stepNum++;
@@ -417,10 +416,6 @@ void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
 
 void ChessBoard::timeout()
 {
-    if(!activatedPlayer){
-        qDebug()<<"超时判负炸了";
-        return ;
-    }
     activatedPlayer->flag=5;
     activatedPlayer->clear();
     selectedChess=nullptr;
@@ -463,13 +458,14 @@ void ChessBoard::nextTurn() {
         updateLabelInfo();
         return ;
     }
+
     hintPlayer->clear();
 
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
-        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
+//        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
         this->winnerRank.push_back(this->activatedPlayer);
     }
 
@@ -823,4 +819,77 @@ void AgentThread::run()
 {
     this->res = algo(data);
     qDebug()<<"agentThread test";
+}
+
+void ServerChessBoard::moveChess(Marble *dest, QVector<ChessPosition> *path)
+{
+    // 获取路径，按要求格式保存在 s 中
+    if(selectedChess==nullptr) selectedChess=this->activatedPlayer->getChess(path->front());
+    this->activatedPlayer->lstMove=*path;
+    unshowHint();
+    this->stepNum++;
+    selectedChess->moveToWithPath(dest,path);
+    selectedChess = nullptr;
+    updateLabelInfo();
+}
+
+void ServerChessBoard::timeout()
+{
+    activatedPlayer->flag=5;
+    activatedPlayer->clear();
+    selectedChess=nullptr;
+}
+
+void ServerChessBoard::nextTurn()
+{
+    resTime = initResTime;
+
+    this->timeoutTimer->start(clockT);
+    if(!activatedPlayer){
+        activatedPlayerID=0;
+        activatedPlayer=players.front();
+        activatedPlayer->setActivated(true);
+        updateLabelInfo();
+        return ;
+    }
+
+    hintPlayer->clear();
+
+    if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
+        activatedPlayer->flag=4;
+        qDebug()<<activatedPlayer->name<<" wins.\n";
+        emit victory(this->activatedPlayer->name);
+//        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
+        this->winnerRank.push_back(this->activatedPlayer);
+    }
+
+    this->setNextActivatedPlayer();
+
+    if(static_cast<int>(this->winnerRank.size()+this->outer.size())==this->playerNum-1){
+        activatedPlayer->flag=4;
+        this->activatedPlayer->setActivated(false);
+        qDebug()<<activatedPlayer->name<<" wins.\n";
+        emit victory(this->activatedPlayer->name);
+
+        qDebug()<<"game end";
+
+        QString data;
+        this->winnerRank.push_back(this->activatedPlayer);
+        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
+        for(int i=0;i<playerNum;i++){
+            if(i>0) data+=" ";
+            data+=getID(this->winnerRank[i]->spawn);
+        }
+        this->timeoutTimer->stop();
+        if(this->initLocalFlag.size()>0){
+            this->showRank(data);
+        }
+        this->labelInfo->setText("");
+        emit endgame(data);
+        return ;
+    }
+
+    emit startTurn(getID(this->activatedPlayer->spawn));
+    updateLabelInfo();
+    emit onMyTurn();
 }

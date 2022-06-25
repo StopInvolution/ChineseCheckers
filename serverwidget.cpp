@@ -36,6 +36,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 if(i->getSocket() == client) continue;
                 server->send(i->getSocket(), data);
             }
+            room->w->chessBoard->nextTurn();
             startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
             break;
         case -1:
@@ -240,6 +241,7 @@ void ServerWidget::overtime(QString data) {
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data, "-1"));
     }
+    room->w->chessBoard->nextTurn();
     startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
 }
 

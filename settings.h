@@ -10,6 +10,12 @@ typedef std::pair<int,int> ChessPosition;
 typedef std::pair<QString,QString> pss;
 typedef std::pair<ChessPosition,ChessPosition> pcc;
 
+namespace CB{
+    const int LOCAL=0;
+    const int SERVER=1;
+    const int CLIENT=2;
+}
+
 namespace color{
 const int hint = 0;
 const int red = 1;
