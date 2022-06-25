@@ -11,7 +11,6 @@ ServerWidget::ServerWidget(QWidget *parent) :
     this->server = new NetworkServer(this);
 
     connect(this->server, &NetworkServer::receive, this, &ServerWidget::receiveData);
-    //
 }
 
 int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
@@ -29,6 +28,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             break;
         }
         result = moveQuery(room->w->chessBoard,data.data1, data.data2);
+        if(roomList.size() == 0) return 0;
         //qDebug()<<"MoveQuery" << result;
         switch(result) {
         case 1:
@@ -37,22 +37,19 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 server->send(i->getSocket(), data);
             }
             room->w->chessBoard->nextTurn();
-//            startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
             break;
         case -1:
         case 0:
-            ErrorCode = (result == 0)?"INVALID_MOVE":"OUTTURN_MOVE";
+            ErrorCode = (result == 0)?convertToQStr(ERRCODE::INVALID_MOVE):convertToQStr(ERRCODE::OUTTURN_MOVE);
             server->send(client, NetworkData(OPCODE::ERROR_OP, ErrorCode, ""));
             break;
-        default:
-            qDebug() << "ERROR at server widget";
         }
         break;
 
     case OPCODE::JOIN_ROOM_OP:
         this->ui->textBrowser->append("receive: JOIN_ROOM_OP");
         if(invalidName(data.data2)) {   //check if username is absloutly unacceptable.
-            server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "invalid username. Please use another one"));
+            server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_JOIN), "Invalid username. Please use another one"));
             return 0;
         }
         room = findRoom(data.data1);
@@ -64,7 +61,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
         for(auto i:room->players) { //Look for a duplicate username
             if(i->name == data.data2) {
                 flag = true;
-                server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "Duplicate username."));
+                server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_JOIN), "Duplicate username."));
                 break;
             }
         }
@@ -85,7 +82,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 break;
             }
         }
-        if(room == nullptr) server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_REQ", "room name not found"));
+        if(room == nullptr) server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_REQ), "room name not found"));
         flag = false;
         for(auto i:room->players) {
             if(i->name == data.data2) {
@@ -97,7 +94,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 break;
             }
         }
-        if(!flag) server->send(client, NetworkData(OPCODE::ERROR_OP, "NOT_IN_ROOM", ""));
+        if(!flag) server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::NOT_IN_ROOM), ""));
         break;
     case OPCODE::PLAYER_READY_OP:
         this->ui->textBrowser->append("receive: PLAYER_READY_OP");
@@ -167,8 +164,6 @@ int ServerWidget::moveQuery(ChessBoard* chessBoard, QString data1, QString data2
 
 Room* ServerWidget::findRoom (QString &roomName)
 {
-    // future plan: using a better search algorithm. Maybe a hash will work.
-    // anyway, there's no need optimizing it currently...
     for (auto i:roomList) {
         if(i->RoomID() == roomName)
         {
@@ -253,7 +248,7 @@ void ServerWidget::endGame(QString data)
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::END_GAME_OP, data, ""));
     }
-    //delete room;
+    delete room;
     roomList.pop_back();
 }
 
