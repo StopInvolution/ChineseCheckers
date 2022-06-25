@@ -119,7 +119,7 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
     btnAIMv->setText("AIMv");
     btnAIMv->setCursor(Qt::PointingHandCursor);
     connect(this->btnAIMv, &QPushButton::clicked, this, [&](){
-        if(!this->onAgent){
+        if(!this->onAgent && this->movePermission){
             this->onAgent=true;
             this->onSingleAgent=true;
             agent_move();
