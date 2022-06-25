@@ -28,12 +28,8 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::ROOM_NOT_RUNNING), ""));
             break;
         }
-<<<<<<< HEAD
-        result = room->w->chessBoard->serverMoveProcess(data.data1, data.data2);
-=======
         result = moveQuery(room->w->chessBoard,data.data1, data.data2);
-       //Debug()<<"Why    "<<result; q
->>>>>>> refs/remotes/origin/master
+        //qDebug()<<"MoveQuery" << result;
         switch(result) {
         case 1:
             for(auto i:room->players) {
