@@ -708,7 +708,7 @@ void SocketChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
         }
         s = s.left(s.size()-1);
         this->activatedPlayer->lstMove=loadChessPosition(s);
-        qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
+        qDebug()<<"客户端尝试发送 MOVE_OP "<<getID(this->activatedPlayer->spawn)<<" "<<s;
         socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
         this->movePermission=false;
     }
@@ -768,6 +768,7 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
     }
     case OPCODE::END_GAME_OP:{
         this->on_btnStopAutoMv_clicked();
+        qDebug()<<"服务器发送终止信号"<<" "<<data1;
         showRank(data1);
         break;
     }
