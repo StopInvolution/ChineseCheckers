@@ -253,20 +253,7 @@ int MoveValue (ChessPosition begin, ChessPosition end, int target) {
     return DistValue(begin,target) - DistValue(end,target);
 }
 
-struct moveStruct { //记录一步移动的struct
-    int beginNo; //moved chess' number in pst[]
-    ChessPosition begin; //begin position
-    ChessPosition end; //end position
-    int target; //target area
-    int value_dist; //move value (only dist)
-    bool operator< (const moveStruct right) const {
-        //if (target != right.target) //error
-        //    while(1);
-        //if (value != right.value)
-            return value_dist < right.value_dist;
-        //return DistValue(begin,target) < DistValue(right.begin, right.target); //落后的追上
-    };
-};
+struct moveStruct;
 
 void executeMove (moveStruct &move, QVector<AlgoPlayer> &vec, int (&map)[17][17], int NowPlayer) {
     vec[NowPlayer].pst[move.beginNo] = move.end;
@@ -312,21 +299,6 @@ pcc calculateGreedy(QVector<AlgoPlayer> vec){
     }
 
     int vecSize = vec.size();
-    /*//归一化，使vec[0].spawn = 4, vec[0].target = 1
-    int alpha = vec[0].spawn - 4; //alpha * pi/3 :所有棋子逆时针旋转角度
-    if (alpha < 0)
-        alpha += 6;
-    for (int i = 0;i < vecSize;i++) {
-        vec[i].spawn = vec[i].spawn - alpha;
-        if (vec[i].spawn <= 0)
-            vec[i].spawn += 6;
-        vec[i].target = vec[i].target - alpha;
-        if (vec[i].target <= 0)
-            vec[i].target += 6;
-        for (int j = 0;j < 10;j++) {
-            vec[i].pst[j] = rotateCounterclockwise(vec[i].pst[j], alpha);
-        }
-    }*/
     //printvec(vec);
 
     //map初始化
@@ -413,8 +385,6 @@ pcc calculateGreedy(QVector<AlgoPlayer> vec){
     std::cout << " best.value: " << best.value_dist;
 
     std::cout << std::endl;
-    //rotate back
-    //return pcc(rotateCounterclockwise(vec[0].pst[best.beginNo],6 - alpha), rotateCounterclockwise(best.end, 6 - alpha));
     return pcc(vec[0].pst[best.beginNo],best.end);
 }
 
@@ -542,59 +512,6 @@ int minimaxDfs(QVector<AlgoPlayer> &vec, int (&map)[17][17], bool (&vis)[17][17]
             if (hasWon(vec,NowPlayer))
                 tmpValue = -INF;
             else if (depth == MinimaxDepth) {
-                /*{memset(vis,0,sizeof(vis)); //calculatePotential(), TOO SLOW
-                std::queue<moveStruct> q2;
-                std::queue<moveStruct> moveCandidate2;
-
-                //搜索行棋路线，现在玩家为vec[0]
-                for (int i = 0;i < 10;i++) { //vec[0].pst[i]
-                    for (int j = 0;j < 6;j++) { //6个方向移动
-                        ChessPosition to = MoveTo(vec[0].pst[i],j);
-                        if (!isWithinBoundary(to))
-                            continue;
-                        if (MapValue(to, map) == EMPTY) { //move simply
-                            moveStruct tmp = {i, vec[0].pst[i], to, vec[0].target, MoveValue(vec[0].pst[i],to,vec[0].target)};
-                            moveCandidate2.push(tmp);
-                            if (tmp.value_dist > potentialValue[tmp.beginNo])
-                                potentialValue[tmp.beginNo] = tmp.value_dist;
-                        }
-                        else if (MapValue(to,map) > 0) { //occupied
-                            ChessPosition jumpto = jumpOver(vec[0].pst[i],to);
-                            if (!isWithinBoundary(jumpto))
-                                continue;
-                            if (MapValue(jumpto,map) == EMPTY) { //jump
-                                moveStruct tmp = {i, vec[0].pst[i], jumpto, vec[0].target, MoveValue(vec[0].pst[i],jumpto,vec[0].target)};
-                                vis[MapX(jumpto)][MapY(jumpto)][i] = true;
-                                q2.push(tmp);
-                            }
-                        }
-                    }
-                }
-                while (!q2.empty()) {
-                    moveStruct now = q2.front();
-                    q2.pop();
-                    moveCandidate2.push(now);
-                    if (now.value_dist > potentialValue[now.beginNo])
-                        potentialValue[now.beginNo] = now.value_dist;
-                    for (int j = 0;j < 6;j++) {
-                        ChessPosition to = MoveTo(now.end,j), jumpto = jumpOver(now.end,to);
-                        if (!isWithinBoundary(to))
-                            continue;
-                        if (!isWithinBoundary(jumpto))
-                            continue;
-                        if (!vis[MapX(jumpto)][MapY(jumpto)][now.beginNo] && MapValue(to,map) > 0 && MapValue(jumpto,map) == EMPTY) {
-                            moveStruct tmp = {now.beginNo, now.begin, jumpto, vec[0].target, MoveValue(vec[0].pst[now.beginNo],jumpto,vec[0].target)};
-                            vis[MapX(jumpto)][MapY(jumpto)][now.beginNo] = true;
-                            q2.push(tmp);
-                        }
-                    }
-                }
-                std::sort(potentialValue,potentialValue + 10);
-                int j = 1;
-                for (int i = 0;i < POTENTIALCOUNT;i++) {
-                    totalPotential += j * potentialValue[i];
-                    j *= POTENTIALDECAY;
-                }}*/
                 totalPotential = potentialCache;
                 tmpValue = nodeValue - now.value_dist + (oldBack - calculateBack(vec[0])) * RATEOFBACK[situation] + totalPotential * RATEOFPOTENTIAL[situation];
             }
@@ -677,7 +594,6 @@ pcc calculateMinimax(QVector<AlgoPlayer> vec, int referenceMinimaxDepth){ // ALP
     while (!q.empty()) {
         moveStruct now = q.front();
         q.pop();
-        //std::cout << now.begin.first << "," << now.begin.second << " -> " << now.end.first << "," << now.end.second << std::endl;
         if (now.value_dist >= 0 || !IGNORERETREAT)
             moveCandidate.push(now);
         if (now.value_dist > potentialValue[now.beginNo])
@@ -715,7 +631,6 @@ pcc calculateMinimax(QVector<AlgoPlayer> vec, int referenceMinimaxDepth){ // ALP
         moveCandidate.pop();
         executeMove(now,vec,map,0);
         int minimaxValue = minimaxDfs(vec,map,vis,1,now.value_dist,calculateBack(vec[0]),totalPotential,Situation,-INF,INF,MinimaxDepth);
-        //std::cout << "after dfs" << std::endl;
         if (minimaxValue > maxValue) {
             maxValue = minimaxValue;
             maxMove = now;
@@ -749,8 +664,6 @@ pcc calculateMinimax(QVector<AlgoPlayer> vec, int referenceMinimaxDepth){ // ALP
     end = clock();
     std::cout << ", time = " << end - begin << "ms" << std::endl << std::endl;
 
-    //std::cout << maxMove.begin.first << "," << maxMove.begin.second << " -> ";
-    //std::cout << maxMove.end.first << "," << maxMove.end.second << std::endl;
     return pcc(maxMove.begin,maxMove.end);
 }
 
