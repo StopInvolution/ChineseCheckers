@@ -60,7 +60,7 @@ void Widget::closeEvent(QCloseEvent *event){
         WindowAddress::mainWindow->show();
         this->chessBoard->gameResult="stop";
         if(this->socket){
-//            this->socket->bye();
+            //this->socket->bye();
         }
         this->hide();
     }

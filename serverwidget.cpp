@@ -196,7 +196,8 @@ void ServerWidget::__receiveCommand()
             write("kick指令格式：kick <username>\n<username>应当仅包含数字/字母/下划线且长度不超过20");
             return;
         }
-        auto name = list[1];bool flag = false;
+        auto name = list[1];
+        bool flag = false;
         for(auto i:roomList[0]->players) {
             if(i->name == name) {
                 flag = true;
