@@ -84,6 +84,9 @@ const int pst[]={4,-8,3,-7,4,-7,2,-6,3,-6,4,-6,1,-5,2,-5,3,-5,4,-5,-4,-4,-3,-4,-
 
 }//namespace Board
 
+/**
+ * @note change with ini file
+ */
 namespace Network {
 extern int port;
 extern QString ip[];

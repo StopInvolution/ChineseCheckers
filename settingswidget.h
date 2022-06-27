@@ -25,6 +25,10 @@ private:
     QLineEdit* edits[4];
     Ui::SettingsWidget *ui;
 private slots:
+    /**
+     * @brief save settings
+     * @note will discard all changes
+     */
     void saveSettings();
 };
 
