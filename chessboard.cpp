@@ -138,7 +138,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
         if(resTime<=0){
             resTime=0;
             this->timeoutTimer->stop();
-            outer.push_back(this->activatedPlayer);
             emit overtime(getActID());
         } updateLabelInfo();});
 
@@ -416,6 +415,7 @@ void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
 
 void ChessBoard::timeout()
 {
+    this->outer.push_back(activatedPlayer);
     activatedPlayer->flag=5;
     activatedPlayer->clear();
     selectedChess=nullptr;
@@ -427,9 +427,12 @@ void ChessBoard::showRank(QString data)
 {
     QStringList rk = data.split(" ");
     QString output="";
+    qDebug()<<rk.size();
     for(int i=0;i<rk.size();i++){
+        Player* player=getPlayerByID(rk[i]);
+        QString name=player?(player->name):rk[i];
         if(i>0) output+="\n";
-        output+="No."+QString::number(i+1)+": "+getPlayerByID(rk[i])->name;
+        output+="No."+QString::number(i+1)+": "+name;
     }
     this->parentWindow->setWindowTitle("已与服务器断开，请关闭此窗口");
     gameResult=output;
@@ -675,12 +678,13 @@ void SocketChessBoard::nextTurn() {
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);
-        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
-        for(int i=0;i<playerNum;i++){
-            if(i>0) data+=" ";
-            data+=getID(this->winnerRank[i]->spawn);
-        }
+//        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
+//        for(int i=0;i<playerNum;i++){
+//            if(i>0) data+=" ";
+//            data+=getID(this->winnerRank[i]->spawn);
+//        }
         this->timeoutTimer->stop();
+        this->btnStopAutoMv->click();
         emit endgame(data);
         return ;
     }
@@ -751,8 +755,8 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
                 break;
             }
         }
-        QDateTime time1 = QDateTime::currentDateTime();   //获取当前时间
-        int timeT = time1.toSecsSinceEpoch(),timeServer=data2.toInt();
+//        QDateTime time1 = QDateTime::currentDateTime();   //获取当前时间
+        int timeT = time(NULL),timeServer=data2.toInt();
         resTime=timeT+Network::resTime-timeServer;
         this->timeoutTimer->start(clockT);
         updateLabelInfo();
@@ -769,6 +773,10 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
     case OPCODE::END_GAME_OP:{
         this->on_btnStopAutoMv_clicked();
         qDebug()<<"服务器发送终止信号"<<" "<<data1;
+        this->timeoutTimer->stop();
+        this->btnStopAutoMv->click();
+        this->labelInfo->setText("");
+        this->updateLabelInfo();
         showRank(data1);
         break;
     }
