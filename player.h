@@ -11,6 +11,10 @@ class Player : public QObject {
    public:
     Player(int _color = 1, int _spawn = 1, int _target = 4, unsigned int _flag=2, QString _name = "张三", int _chessNum = 10);
     ~Player();
+
+    /**
+     * @brief parentChessBoard 是父棋盘
+     */
     ChessBoard* parentChessBoard;
 
     /**
@@ -85,6 +89,10 @@ class Player : public QObject {
      */
     void addTo(ChessBoard* _parentChessBoard = 0);
 
+    /**
+     * @brief setActivated 改变激活状态，改变棋子的悬浮手势
+     * @param flag 是否激活
+     */
     void setActivated(bool flag);
 
     /**

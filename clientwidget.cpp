@@ -5,6 +5,7 @@
 #include <QString>
 #include <player.h>
 #include <agent.h>
+#include "widget.h"
 #include <networkdata.h>
 #include <QString>
 

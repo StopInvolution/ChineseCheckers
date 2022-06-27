@@ -5,6 +5,9 @@
 #include <QVector>
 #include <QMutex>
 
+/**
+ * @brief The MVector class 是线程安全的Vector容器
+ */
 template <class T>
 class MVector:QVector<T>,QMutex
 {

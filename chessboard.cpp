@@ -466,9 +466,8 @@ void ChessBoard::nextTurn() {
 
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
-        qDebug()<<activatedPlayer->name<<" wins.\n";
+        qDebug()<<"local ChessBoard: "<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
-//        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
         this->winnerRank.push_back(this->activatedPlayer);
     }
 
@@ -480,7 +479,7 @@ void ChessBoard::nextTurn() {
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
 
-        qDebug()<<"game end";
+        qDebug()<<"local ChessBoard: "<<"game end";
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);
@@ -866,9 +865,8 @@ void ServerChessBoard::nextTurn()
 
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
-        qDebug()<<activatedPlayer->name<<" wins.\n";
+        qDebug()<<"server ChessBoard: "<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
-//        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
         this->winnerRank.push_back(this->activatedPlayer);
     }
 
@@ -880,7 +878,7 @@ void ServerChessBoard::nextTurn()
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
 
-        qDebug()<<"game end";
+        qDebug()<<"server ChessBoard: "<<"game end";
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);
