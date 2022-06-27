@@ -172,6 +172,7 @@ static const int dist[7][17][17] = {
      {-1,-1,-1,-1,17,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}}
 };
 
+
 static const int INF = 2147483647;
 static const int PRUNED = 998244353;
 static const int MINNODE = -1, MAXNODE = 1;

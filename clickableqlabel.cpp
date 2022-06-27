@@ -9,5 +9,5 @@ QLabel(_parentWindow){
 void ClickableQLabel::mousePressEvent(QMouseEvent *event)
 {
     emit clicked();
-    QLabel::mousePressEvent(event);
+//    QLabel::mousePressEvent(event);
 }
