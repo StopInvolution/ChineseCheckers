@@ -180,7 +180,7 @@ static const int MINNODE = -1, MAXNODE = 1;
 static int MinimaxDepthLimit = 5;
 static const int MINIMAXDEPTHFORPRE = 3;
 static const bool IGNORERETREAT = true;
-static const int TIMELIMIT = 14000; //ms
+static const int TIMELIMIT = 13000; //ms
 
 static const double RATEOFBACK[3] = {0,2,4}; //落后棋子优先
 
