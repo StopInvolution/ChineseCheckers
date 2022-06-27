@@ -735,6 +735,7 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
     QString &data1=data.data1,&data2=data.data2;
     switch(op){
     case OPCODE::MOVE_OP:{
+        this->selectedChess=nullptr;
         checkAct(data1);
         if(data2=="-1"){
             this->timeout();
@@ -843,6 +844,7 @@ void ServerChessBoard::moveChess(Marble *dest, QVector<ChessPosition> *path)
 
 void ServerChessBoard::timeout()
 {
+    this->outer.push_back(activatedPlayer);
     activatedPlayer->flag=5;
     activatedPlayer->clear();
     selectedChess=nullptr;
