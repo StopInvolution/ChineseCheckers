@@ -7,6 +7,9 @@
 #include "qtcpsocket.h"
 
 class ChessBoard;
+/**
+ * @brief The Player class 玩家类，管理棋子并存储姓名、方位等必要信息
+ */
 class Player : public QObject {
    public:
     Player(int _color = 1, int _spawn = 1, int _target = 4, unsigned int _flag=2, QString _name = "张三", int _chessNum = 10);

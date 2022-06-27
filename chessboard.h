@@ -302,12 +302,6 @@ public:
      */
     void randomMove();
 
-    void on_btnRandomMove_clicked();
-    void on_btnAutoMv_clicked();
-    void on_btnStopAutoMv_clicked();
-    void on_btnSetPlayerNum_clicked();
-    void onConsole();
-
     /**
      * @brief 为当前行动玩家走一步AI
      */
@@ -393,6 +387,13 @@ public:
      * @param data 是排名信息，用空格隔开的位置编号
      */
     void endgame(QString data);
+
+protected:
+    void on_btnRandomMove_clicked();
+    void on_btnAutoMv_clicked();
+    void on_btnStopAutoMv_clicked();
+    void on_btnSetPlayerNum_clicked();
+    void onConsole();
 };
 
 /**

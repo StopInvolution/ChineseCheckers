@@ -7,6 +7,9 @@
 class Widget;
 class ChessBoard;
 class Player;
+/**
+ * @brief The Marble class 棋子类，继承自QLabel，可以点击和移动。
+ */
 class Marble:public ClickableQLabel
 {
     Q_OBJECT

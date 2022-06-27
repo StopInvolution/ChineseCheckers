@@ -18,6 +18,10 @@ namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
 class ChessBoard;
+
+/**
+ * @brief The Widget class 是棋盘的显示窗口
+ */
 class Widget : public QWidget
 {
     Q_OBJECT
