@@ -13,7 +13,7 @@
 #include "widget.h"
 
 Marble::Marble(Widget* _parentWindow, int _x, int _y, int _color)
-    : QLabel(_parentWindow), chessX(_x), chessY(_y), chessColor(_color), chessPosition(_x, _y) {
+    : ClickableQLabel(_parentWindow), chessX(_x), chessY(_y), chessColor(_color), chessPosition(_x, _y) {
     connect(this, SIGNAL(clicked()), this, SLOT(On_Clicked()));
     QPixmap pix = QPixmap(QString(":/images/")+getColorName(chessColor)+QString("_marble.png"));
     setPixmap(pix);
@@ -128,7 +128,7 @@ bool Marble::isCollinearWith(const Marble& rhs) const {
 
 void Marble::On_Clicked() {
     // 只有本地当局能点击
-    if ((this->parentPlayer->flag==3 && this->parentPlayer->parentChessBoard->serverPermission) || this->parentPlayer->parentChessBoard->god) {
+    if ((this->parentPlayer->flag==3 && this->parentPlayer->parentChessBoard->movePermission && !this->parentPlayer->parentChessBoard->onAgent) || this->parentPlayer->parentChessBoard->god || this->chessColor!=color::hint) {
         qDebug() <<this->chessPosition<<" "<<this->chessColor<<" "<< "I'm clicked";
         // 两种棋子对应不同的回调
         if (chessColor == color::hint) {
@@ -139,8 +139,8 @@ void Marble::On_Clicked() {
     }
 }
 
-void Marble::mousePressEvent(QMouseEvent* event) {
-    emit clicked();
-    Q_UNUSED(event);
-    //    QLabel::mousePressEvent(event);
-}
+//void Marble::mousePressEvent(QMouseEvent* event) {
+//    emit clicked();
+//    Q_UNUSED(event);
+//    //    QLabel::mousePressEvent(event);
+//}

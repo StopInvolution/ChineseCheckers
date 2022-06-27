@@ -1,16 +1,25 @@
 #ifndef MARBLE_H
 #define MARBLE_H
 #include <QLabel>
+#include "clickableqlabel.h"
 #include "settings.h"
 
 class Widget;
 class ChessBoard;
 class Player;
-class Marble : public QLabel {
+/**
+ * @brief The Marble class 棋子类，继承自QLabel，可以点击和移动。
+ */
+class Marble:public ClickableQLabel
+{
     Q_OBJECT
    public:
     Marble(Widget* _parentWindow = 0, int _x = 0, int _y = 0, int _color = 1);
     ~Marble();
+
+    /**
+     * @brief parentPlayer 是父玩家
+     */
     Player* parentPlayer;
 
     /**
@@ -18,7 +27,24 @@ class Marble : public QLabel {
      */
     Marble* from;
 
-    int chessX, chessY, chessColor;
+    /**
+     * @brief chessX 是棋盘横坐标
+     */
+    int chessX;
+
+    /**
+     * @brief chessY 是棋盘纵坐标
+     */
+    int chessY;
+
+    /**
+     * @brief chessColor 是棋子颜色
+     */
+    int chessColor;
+
+    /**
+     * @brief chessPosition 棋盘坐标(xy)
+     */
     ChessPosition chessPosition;
 
     /**
@@ -64,12 +90,6 @@ class Marble : public QLabel {
 
    public slots:
     void On_Clicked();
-
-   signals:
-    void clicked();
-
-   protected:
-    void mousePressEvent(QMouseEvent* event);
 };
 
 #endif  // MARBLE_H

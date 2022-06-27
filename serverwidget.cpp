@@ -11,7 +11,6 @@ ServerWidget::ServerWidget(QWidget *parent) :
     this->server = new NetworkServer(this);
 
     connect(this->server, &NetworkServer::receive, this, &ServerWidget::receiveData);
-    //
 }
 
 int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
@@ -29,29 +28,28 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
             break;
         }
         result = moveQuery(room->w->chessBoard,data.data1, data.data2);
-       //Debug()<<"Why    "<<result; q
+        if(roomList.size() == 0) return 0;
+        //qDebug()<<"MoveQuery" << result;
         switch(result) {
         case 1:
             for(auto i:room->players) {
                 if(i->getSocket() == client) continue;
                 server->send(i->getSocket(), data);
             }
-            startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
+            room->w->chessBoard->nextTurn();
             break;
         case -1:
         case 0:
-            ErrorCode = (result == 0)?"INVALID_MOVE":"OUTTURN_MOVE";
+            ErrorCode = (result == 0)?convertToQStr(ERRCODE::INVALID_MOVE):convertToQStr(ERRCODE::OUTTURN_MOVE);
             server->send(client, NetworkData(OPCODE::ERROR_OP, ErrorCode, ""));
             break;
-        default:
-            qDebug() << "ERROR at server widget";
         }
         break;
 
     case OPCODE::JOIN_ROOM_OP:
         this->ui->textBrowser->append("receive: JOIN_ROOM_OP");
         if(invalidName(data.data2)) {   //check if username is absloutly unacceptable.
-            server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "invalid username. Please use another one"));
+            server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_JOIN), "Invalid username. Please use another one"));
             return 0;
         }
         room = findRoom(data.data1);
@@ -63,7 +61,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
         for(auto i:room->players) { //Look for a duplicate username
             if(i->name == data.data2) {
                 flag = true;
-                server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_JOIN", "Duplicate username."));
+                server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_JOIN), "Duplicate username."));
                 break;
             }
         }
@@ -84,7 +82,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 break;
             }
         }
-        if(room == nullptr) server->send(client, NetworkData(OPCODE::ERROR_OP, "INVALID_REQ", "room name not found"));
+        if(room == nullptr) server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::INVALID_REQ), "room name not found"));
         flag = false;
         for(auto i:room->players) {
             if(i->name == data.data2) {
@@ -96,7 +94,7 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 break;
             }
         }
-        if(!flag) server->send(client, NetworkData(OPCODE::ERROR_OP, "NOT_IN_ROOM", ""));
+        if(!flag) server->send(client, NetworkData(OPCODE::ERROR_OP, convertToQStr(ERRCODE::NOT_IN_ROOM), ""));
         break;
     case OPCODE::PLAYER_READY_OP:
         this->ui->textBrowser->append("receive: PLAYER_READY_OP");
@@ -127,7 +125,8 @@ int ServerWidget::receiveData(QTcpSocket *client, NetworkData data) {
                 connect(room->w->chessBoard, &ChessBoard::endgame, this, &ServerWidget::endGame);
                 connect(room->w->chessBoard, &ChessBoard::victory, this, &ServerWidget::sendVictory);
                 connect(room->w->chessBoard, &ChessBoard::startTurn, this,&ServerWidget::startTurn);
-                server->send(room->players[0]->getSocket(), NetworkData(OPCODE::START_TURN_OP, "A", QString::number(time(NULL))));
+                this->startTurn("A");
+
             }
         }
         break;
@@ -165,8 +164,6 @@ int ServerWidget::moveQuery(ChessBoard* chessBoard, QString data1, QString data2
 
 Room* ServerWidget::findRoom (QString &roomName)
 {
-    // future plan: using a better search algorithm. Maybe a hash will work.
-    // anyway, there's no need optimizing it currently...
     for (auto i:roomList) {
         if(i->RoomID() == roomName)
         {
@@ -199,7 +196,8 @@ void ServerWidget::__receiveCommand()
             write("kick指令格式：kick <username>\n<username>应当仅包含数字/字母/下划线且长度不超过20");
             return;
         }
-        auto name = list[1];bool flag = false;
+        auto name = list[1];
+        bool flag = false;
         for(auto i:roomList[0]->players) {
             if(i->name == name) {
                 flag = true;
@@ -240,7 +238,8 @@ void ServerWidget::overtime(QString data) {
     for(auto i:room->players) {
         server->send(i->getSocket(), NetworkData(OPCODE::MOVE_OP, data, "-1"));
     }
-    startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
+    room->w->chessBoard->nextTurn();
+//    startTurn(getID(room->w->chessBoard->activatedPlayer->spawn));
 }
 
 void ServerWidget::endGame(QString data)

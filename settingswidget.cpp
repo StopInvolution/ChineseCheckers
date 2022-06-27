@@ -72,7 +72,7 @@ void SettingsWidget::saveSettings()
         Network::serverPort = y;
     }
 
-    QSettings *settings = new QSettings("../savings/net.ini");
+    QSettings *settings = new QSettings("Checkers");
 
     settings->beginGroup("CLIENT");
     settings->setValue("IP", Network::ip[0]+"."+Network::ip[1]+"."+Network::ip[2]+"."+Network::ip[3]);

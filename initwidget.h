@@ -9,6 +9,9 @@ namespace Ui {
 class initWidget;
 }
 
+/**
+ * @brief The initWidget class 是本地模式的欢迎界面
+ */
 class initWidget : public QWidget
 {
     Q_OBJECT
@@ -18,7 +21,7 @@ public:
     ~initWidget();
 
     signals:
-    void start(int playerNum,QVector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
+    void start(int kind,int playerNum,QVector<pss>* playerInfo,std::map<QString,bool>* localFlag, NetworkSocket* _socket);
     void startOnline(int playerNum);
     void backToTitle();
 

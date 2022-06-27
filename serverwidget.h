@@ -23,6 +23,7 @@ public:
     ~ServerWidget();
 
 private:
+
     void write(std::string);
     Room *findRoom(QString &);
     static bool invalidName(QString &name);
@@ -30,11 +31,25 @@ private:
     int moveQuery(ChessBoard* chessBoard, QString data1, QString data2);
 
 private slots:
+    /**
+     * @arg client : source of the message.
+     *      data   : the message itself.
+     */
     int receiveData(QTcpSocket *client, NetworkData data);
     void __receiveCommand();
 public slots:
+    /**
+     * @brief when players get overtimed, send essential message and continue the game.
+     */
     void overtime(QString c);
+    /**
+     * @brief bring an end to the game and delete the room.
+     */
     void endGame(QString data);
+    /**
+     * @brief send Victory message to the player
+     * @param name:player's name
+     */
     void sendVictory(QString name);
     void startTurn(QString name);
 };
