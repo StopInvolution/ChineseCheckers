@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['send_0',['send',['../class_client_widget.html#ae6a64d4ca0439431420123e8a31a64a2',1,'ClientWidget::send()'],['../class_network_server.html#a336788beadd6d0b314c806ccc3912da0',1,'NetworkServer::send()'],['../class_network_socket.html#a43c91f731c2bd66a36ae265c53759a12',1,'NetworkSocket::send()']]],
+  ['sendvictory_1',['sendVictory',['../class_server_widget.html#aa603777c8a8b9093f350449cacee8410',1,'ServerWidget']]],
+  ['serverplayer_2',['ServerPlayer',['../class_server_player.html#acd0af18ec3b23162d6e292b657123e8b',1,'ServerPlayer::ServerPlayer(QString Name)'],['../class_server_player.html#aeff767f25f135c3db4555cc7833bcb36',1,'ServerPlayer::ServerPlayer(QString Name, QTcpSocket *socket)'],['../class_server_player.html#a8c9ca5343fb6f23e0b946df2da0f6562',1,'ServerPlayer::ServerPlayer(int _color=1, int _spawn=0, int _target=3, unsigned int _flag=2, QString _name=&quot;张三&quot;, int _chessNum=10, bool isready=0)']]],
+  ['serverwidget_3',['ServerWidget',['../class_server_widget.html#a055969872c7a0b50d1ad4ab14ef1906f',1,'ServerWidget']]],
+  ['set_4',['set',['../class_agent_thread.html#a0807a8d18c5829c1fe6110da43dd1ca5',1,'AgentThread']]],
+  ['setactivated_5',['setActivated',['../class_player.html#a2a5e9a1d49851b9c26785240e4a6cf28',1,'Player']]],
+  ['setactivatedplayer_6',['setActivatedPlayer',['../class_chess_board.html#a28709863d89abd0eb758f58b1a54e8b9',1,'ChessBoard']]],
+  ['setchessboard_7',['setChessBoard',['../class_widget.html#aecc3e590de88fba769e16e9da1e294dc',1,'Widget']]],
+  ['setnextactivatedplayer_8',['setNextActivatedPlayer',['../class_chess_board.html#ad02fb201965046b89bd841f73043d5e7',1,'ChessBoard']]],
+  ['settingswidget_9',['SettingsWidget',['../class_settings_widget.html#ad6b264d0455806fd3761a7f0e7b75dfd',1,'SettingsWidget']]],
+  ['show_10',['show',['../class_chess_board.html#a86c833bfc5325d7b2590885d06e62c3b',1,'ChessBoard']]],
+  ['showhint_11',['showHint',['../class_chess_board.html#a21d06829104841f48917781a267b5dd9',1,'ChessBoard']]],
+  ['showrank_12',['showRank',['../class_chess_board.html#a22d790220fd3cf3da987794b1a232085',1,'ChessBoard']]],
+  ['size_13',['size',['../class_m_vector.html#ae6c9f8065135364fb3c04c7e882bcb9b',1,'MVector::size()'],['../class_network_server.html#a944dff2b88b39505ca0de87bad9e4066',1,'NetworkServer::size()']]],
+  ['socketchessboard_14',['SocketChessBoard',['../class_socket_chess_board.html#a0f4e44d3d57a0ce287feb201646f4dd1',1,'SocketChessBoard']]],
+  ['start_15',['start',['../classinit_widget.html#ae17c9724d3bfb8915f70db0f93402acb',1,'initWidget::start()'],['../class_waiting_room.html#aca1711dd7284f4642319305f2ef33c33',1,'WaitingRoom::start()']]],
+  ['startmultiple_16',['startMultiple',['../class_main_window.html#acbbeed32bf695f4109856be22b8cf42d',1,'MainWindow']]],
+  ['startonline_17',['startOnline',['../classinit_widget.html#ab60b5774e6602debeb0d58e014921676',1,'initWidget']]],
+  ['startserver_18',['startServer',['../class_main_window.html#af085c240c01e01f8df48b5a39450de3e',1,'MainWindow']]],
+  ['startsetting_19',['startSetting',['../class_main_window.html#a3750f83ce712c2e59332670d42b63e37',1,'MainWindow']]],
+  ['startsingle_20',['startSingle',['../class_main_window.html#ae909c04fce76715b4574db3ecbcfa288',1,'MainWindow']]],
+  ['startturn_21',['startTurn',['../class_chess_board.html#af91c6471308eecbc82d689888c65194e',1,'ChessBoard::startTurn()'],['../class_server_widget.html#a99ef05d0c473b1c09330eb899cb8b54d',1,'ServerWidget::startTurn()']]]
+];

@@ -138,7 +138,6 @@ ChessBoard::ChessBoard(Widget* _parentWindow, int _player_num,QVector<pss>* play
         if(resTime<=0){
             resTime=0;
             this->timeoutTimer->stop();
-            outer.push_back(this->activatedPlayer);
             emit overtime(getActID());
         } updateLabelInfo();});
 
@@ -416,6 +415,7 @@ void ChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
 
 void ChessBoard::timeout()
 {
+    this->outer.push_back(activatedPlayer);
     activatedPlayer->flag=5;
     activatedPlayer->clear();
     selectedChess=nullptr;
@@ -427,9 +427,12 @@ void ChessBoard::showRank(QString data)
 {
     QStringList rk = data.split(" ");
     QString output="";
+    qDebug()<<rk.size();
     for(int i=0;i<rk.size();i++){
+        Player* player=getPlayerByID(rk[i]);
+        QString name=player?(player->name):rk[i];
         if(i>0) output+="\n";
-        output+="No."+QString::number(i+1)+": "+getPlayerByID(rk[i])->name;
+        output+="No."+QString::number(i+1)+": "+name;
     }
     this->parentWindow->setWindowTitle("已与服务器断开，请关闭此窗口");
     gameResult=output;
@@ -463,9 +466,8 @@ void ChessBoard::nextTurn() {
 
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
-        qDebug()<<activatedPlayer->name<<" wins.\n";
+        qDebug()<<"local ChessBoard: "<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
-//        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
         this->winnerRank.push_back(this->activatedPlayer);
     }
 
@@ -477,7 +479,7 @@ void ChessBoard::nextTurn() {
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
 
-        qDebug()<<"game end";
+        qDebug()<<"local ChessBoard: "<<"game end";
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);
@@ -675,12 +677,13 @@ void SocketChessBoard::nextTurn() {
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);
-        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
-        for(int i=0;i<playerNum;i++){
-            if(i>0) data+=" ";
-            data+=getID(this->winnerRank[i]->spawn);
-        }
+//        std::copy(outer.begin(),outer.end(),std::inserter(winnerRank,winnerRank.begin()));
+//        for(int i=0;i<playerNum;i++){
+//            if(i>0) data+=" ";
+//            data+=getID(this->winnerRank[i]->spawn);
+//        }
         this->timeoutTimer->stop();
+        this->btnStopAutoMv->click();
         emit endgame(data);
         return ;
     }
@@ -708,7 +711,7 @@ void SocketChessBoard::moveChess(Marble* dest,QVector<ChessPosition> *path) {
         }
         s = s.left(s.size()-1);
         this->activatedPlayer->lstMove=loadChessPosition(s);
-        qDebug()<<"ChessBoard 客户端尝试发送 MOVE_OP";
+        qDebug()<<"客户端尝试发送 MOVE_OP "<<getID(this->activatedPlayer->spawn)<<" "<<s;
         socket->send(NetworkData(OPCODE::MOVE_OP,getID(this->activatedPlayer->spawn),s));
         this->movePermission=false;
     }
@@ -751,8 +754,8 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
                 break;
             }
         }
-        QDateTime time1 = QDateTime::currentDateTime();   //获取当前时间
-        int timeT = time1.toSecsSinceEpoch(),timeServer=data2.toInt();
+//        QDateTime time1 = QDateTime::currentDateTime();   //获取当前时间
+        int timeT = time(NULL),timeServer=data2.toInt();
         resTime=timeT+Network::resTime-timeServer;
         this->timeoutTimer->start(clockT);
         updateLabelInfo();
@@ -768,6 +771,11 @@ void SocketChessBoard::nertworkProcess(NetworkData data)
     }
     case OPCODE::END_GAME_OP:{
         this->on_btnStopAutoMv_clicked();
+        qDebug()<<"服务器发送终止信号"<<" "<<data1;
+        this->timeoutTimer->stop();
+        this->btnStopAutoMv->click();
+        this->labelInfo->setText("");
+        this->updateLabelInfo();
         showRank(data1);
         break;
     }
@@ -857,9 +865,8 @@ void ServerChessBoard::nextTurn()
 
     if(!(activatedPlayer->flag&4) && activatedPlayer->checkWin()){
         activatedPlayer->flag=4;
-        qDebug()<<activatedPlayer->name<<" wins.\n";
+        qDebug()<<"server ChessBoard: "<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
-//        qDebug()<<"太奇怪了"<<this->activatedPlayer<<this->activatedPlayer->name;
         this->winnerRank.push_back(this->activatedPlayer);
     }
 
@@ -871,7 +878,7 @@ void ServerChessBoard::nextTurn()
         qDebug()<<activatedPlayer->name<<" wins.\n";
         emit victory(this->activatedPlayer->name);
 
-        qDebug()<<"game end";
+        qDebug()<<"server ChessBoard: "<<"game end";
 
         QString data;
         this->winnerRank.push_back(this->activatedPlayer);

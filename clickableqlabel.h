@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include <QLabel>
-#include "widget.h"
+
+class Widget;
 /**
  * @brief 可点击的QLabel，可以发送 clicked() 信号
  */

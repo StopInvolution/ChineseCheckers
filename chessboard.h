@@ -20,13 +20,30 @@ class Marble;
 class Widget;
 class ClientWidget;
 
+/**
+ * @brief The AgentThread class 是托管线程类，一般由棋盘创建，并绑定结束事件从而调用计算结果。
+ */
 class AgentThread:public QThread{
 public:
+    /**
+     * @brief algo 是托管算法
+     */
     Agent_algorithm *algo;
+    /**
+     * @brief data 是托管数据，可以由棋盘的 AIDataProducer() 方法生成
+     */
     QVector<AlgoPlayer> data;
+    /**
+     * @brief res 是运算结果，即行棋起点和终点
+     */
     pcc res;
     AgentThread();
     AgentThread(Agent_algorithm _algo,QVector<AlgoPlayer> _data);
+    /**
+     * @brief set 加载托管算法和数据
+     * @param _algo 托管算法
+     * @param _data 托管数据
+     */
     void set(Agent_algorithm _algo,QVector<AlgoPlayer> _data);
 protected:
     void run() override;
@@ -42,30 +59,136 @@ class ChessBoard:public QObject
 public:
     ChessBoard(Widget *_parentWindow = 0, int _player_num=6,QVector<pss>* playerInfo=nullptr,std::map<QString,bool>* localFlag=nullptr);
     virtual ~ChessBoard();
+    /**
+     * @brief parentWindow 是父显示窗口指针
+     */
     Widget *parentWindow;
 
+    /**
+     * @brief console 是控制台指针
+     */
     ClientWidget *console;
-    int rotateAngle;
-    int playerNum;
-    int stepNum;
-    QTimer *timeoutTimer= new QTimer;
-    int clockT;
-    const double initResTime;
-    const clock_t initAgentCD;
-    clock_t agentCD;
-    double resTime,tick;
-    bool god;
-    bool movePermission;
-    bool onAgent,onSingleAgent;
-    QString gameResult;
 
+    /**
+     * @brief agT 是托管线程
+     */
     AgentThread *agT;
 
-    // 当前行棋方
+    /**
+     * @brief labelInfo 是信息显示面板
+     */
+    QLabel *labelInfo;
+
+    /**
+     * @brief btnRandomMove 是随机移动按钮
+     */
+    QPushButton *btnRandomMove;
+
+    /**
+     * @brief btnAutoMv 是开启托管按钮
+     */
+    QPushButton *btnAutoMv;
+
+    /**
+     * @brief btnStopAutoMv 是关闭托管按钮
+     */
+    QPushButton *btnStopAutoMv;
+
+    /**
+     * @brief btnAIMv 是使用一步托管按钮
+     */
+    QPushButton *btnAIMv;
+
+    /**
+     * @brief btnConsole 是打开控制台按钮
+     */
+    QPushButton *btnConsole;
+
+    /**
+     * @brief rotateAngle 是旋转角度
+     */
+    int rotateAngle;
+
+    /**
+     * @brief playerNum 是玩家人数
+     */
+    int playerNum;
+
+    /**
+     * @brief stepNum 是当前总步数
+     */
+    int stepNum;
+
+    /**
+     * @brief timeoutTimer 是超时事件计时器，用于更新倒计时并在超时时发出信号
+     */
+    QTimer *timeoutTimer= new QTimer;
+
+    /**
+     * @brief clockT 是超时计时器更新倒计时的周期
+     */
+    int clockT;
+
+    /**
+     * @brief initResTime 是倒计时总时长
+     */
+    const double initResTime;
+
+    /**
+     * @brief resTime 是本次倒计时所剩时间
+     */
+    double resTime;
+
+    /**
+     * @brief initAgentCD 是托管的 CD 时间，以ms记
+     * @note 用于优化显示效果，避免本地游戏时瞬间结束游戏
+     */
+    const clock_t initAgentCD;
+
+    /**
+     * @brief agentCD 是上次使用托管的时间，以ms记
+     */
+    clock_t agentCD;
+
+    /**
+     * @brief god 是是否开启上帝模式
+     */
+    bool god;
+
+    /**
+     * @brief movePermission 是目前是否拥有移动棋子的权限
+     */
+    bool movePermission;
+
+    /**
+     * @brief onAgent 是是否处于托管状态
+     */
+    bool onAgent;
+
+    /**
+     * @brief onSingleAgent 是是否处于单步托管状态
+     * @note 若是单步托管，会在行棋后自动解除 onAgent 和 onSingleAgent
+     */
+    bool onSingleAgent;
+
+    /**
+     * @brief gameResult 保存游戏结果排行榜，同时兼具判断游戏是否结束的功能，空则还在进行游戏
+     */
+    QString gameResult;
+
+    /**
+     * @brief activatedPlayerID 是当前行棋玩家序号
+     */
     int activatedPlayerID;
+
+    /**
+     * @brief activatedPlayer 是当前行棋玩家指针
+     */
     Player *activatedPlayer;
 
-    // 选取后待移动的子
+    /**
+     * @brief selectedChess 是选取后待移动的棋子
+     */
     Marble *selectedChess;
 
     /**
@@ -73,18 +196,25 @@ public:
      */
     bool occupiedPst[2*board::indexBoundary+1][2*board::indexBoundary+1];
 
-    // 玩家
+    /**
+     * @brief players 是所有游戏玩家
+     */
     QVector<Player*> players;
-    QVector<Player*> winnerRank;
-    QVector<Player*> outer;
 
-    // hint 抽象成一个玩家
+    /**
+     * @brief hintPlayer 是管理提示棋子的玩家
+     */
     Player * hintPlayer;
 
     /**
-     * @brief labelInfo 是信息显示面板
+     * @brief winnerRank 是胜利者列表
      */
-    QLabel *labelInfo;
+    QVector<Player*> winnerRank;
+
+    /**
+     * @brief outer 是出局者列表
+     */
+    QVector<Player*> outer;
 
     /**
      * @brief 计算 selectedChess 可落子的位置，生成到 hintPlayer->hintChess
@@ -172,14 +302,6 @@ public:
      */
     void randomMove();
 
-    QPushButton *btnRandomMove,*btnAutoMv,*btnStopAutoMv,*btnAIMv,*btnConsole;
-
-    void on_btnRandomMove_clicked();
-    void on_btnAutoMv_clicked();
-    void on_btnStopAutoMv_clicked();
-    void on_btnSetPlayerNum_clicked();
-    void onConsole();
-
     /**
      * @brief 为当前行动玩家走一步AI
      */
@@ -265,6 +387,13 @@ public:
      * @param data 是排名信息，用空格隔开的位置编号
      */
     void endgame(QString data);
+
+protected:
+    void on_btnRandomMove_clicked();
+    void on_btnAutoMv_clicked();
+    void on_btnStopAutoMv_clicked();
+    void on_btnSetPlayerNum_clicked();
+    void onConsole();
 };
 
 /**
@@ -272,7 +401,17 @@ public:
  */
 class ServerChessBoard: public ChessBoard{
     using ChessBoard::ChessBoard;
+
+    /**
+     * @brief moveChess 通过且只通过路径来移动棋子，同时不自动调用 nextTurn
+     * @param dest 应该填空，但为了接口一致性我们保留
+     * @param path 是路径
+     */
     virtual void moveChess(Marble* dest,QVector<ChessPosition> *path) override;
+
+    /**
+     * @brief timeout 同moveChess不自动调用 nextTurn
+     */
     virtual void timeout() override;
     virtual void nextTurn() override;
 };
@@ -292,7 +431,6 @@ public:
      */
     void nertworkProcess(NetworkData data);
 
-    // 以下是重写
     virtual void moveChess(Marble* dest,QVector<ChessPosition> *path) override;
     virtual void nextTurn() override;
     virtual void updateLabelInfo() override;
@@ -304,7 +442,7 @@ public:
  * @param u 第一个棋子
  * @param mid 第二个棋子
  * @param v 第三个棋子
- * @return 是否有
+ * @return 是否有别的棋子
  */
 bool isAnyChessBetween(ChessBoard* chessBoard, ChessPosition u, ChessPosition mid, ChessPosition v);
 #endif // CHESSBOARD_H

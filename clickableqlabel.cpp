@@ -1,5 +1,5 @@
 #include "clickableqlabel.h"
-
+#include "widget.h"
 
 ClickableQLabel::ClickableQLabel(Widget *_parentWindow):
 QLabel(_parentWindow){

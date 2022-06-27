@@ -1,0 +1,25 @@
+var class_player =
+[
+    [ "Player", "class_player.html#a147721b08da8a76d05a7f64bd4d57d5f", null ],
+    [ "~Player", "class_player.html#a749d2c00e1fe0f5c2746f7505a58c062", null ],
+    [ "addTo", "class_player.html#a19cb750ac62a5692c2766ef63546dfaf", null ],
+    [ "checkWin", "class_player.html#a061c2da8502e3a1e1ba73d095033b0e6", null ],
+    [ "clear", "class_player.html#af1dda5581f5f56c61bac0cf07a300bdd", null ],
+    [ "getChess", "class_player.html#acd81a4360e9a4e05a0b094eb852a2e5e", null ],
+    [ "getChess", "class_player.html#ac95ddca242b456dd12cd19ff0cf96cce", null ],
+    [ "getSocket", "class_player.html#a2c99c917d4f7407be3d6e285c521a8df", null ],
+    [ "isReady", "class_player.html#a3ebec48c559466b68a6f65fa884ab957", null ],
+    [ "replay", "class_player.html#a72ed26328bc5225e0ddd37c5dc7ec18b", null ],
+    [ "setActivated", "class_player.html#a2a5e9a1d49851b9c26785240e4a6cf28", null ],
+    [ "toAlgoPlayer", "class_player.html#af4598f91e471a83b8ac5c5365a3956a2", null ],
+    [ "agent_algorithm", "class_player.html#a47b15f361f8f004e973e9f134f57fbd9", null ],
+    [ "chesses", "class_player.html#a6b26b918d19a35a0b58ddb1b8fd93b34", null ],
+    [ "chessNum", "class_player.html#a377cfb76bcc74f59fb24842d9eb72fb5", null ],
+    [ "color", "class_player.html#a7ca188c79b4388ec54783b611f151a5d", null ],
+    [ "flag", "class_player.html#a0c87a570af51f0f72db26ada40ac0a75", null ],
+    [ "lstMove", "class_player.html#af46ac8c00a5c1ee2cd8ccd39b03b8882", null ],
+    [ "name", "class_player.html#ac41b72814d9c41222dac999bc874280b", null ],
+    [ "parentChessBoard", "class_player.html#a1210399c70ef2b4a5f9571bb74b01281", null ],
+    [ "spawn", "class_player.html#a40bb2df6ac0aedf912189c4f39d6f090", null ],
+    [ "target", "class_player.html#a38d98d9576708ed7a623f8f21241668c", null ]
+];

@@ -1,0 +1,27 @@
+var annotated_dup =
+[
+    [ "AgentThread", "class_agent_thread.html", "class_agent_thread" ],
+    [ "AlgoPlayer", "class_algo_player.html", "class_algo_player" ],
+    [ "ChessBoard", "class_chess_board.html", "class_chess_board" ],
+    [ "ClickableQLabel", "class_clickable_q_label.html", "class_clickable_q_label" ],
+    [ "ClientWidget", "class_client_widget.html", "class_client_widget" ],
+    [ "initWidget", "classinit_widget.html", "classinit_widget" ],
+    [ "InvalidMessage", "class_invalid_message.html", "class_invalid_message" ],
+    [ "MainWindow", "class_main_window.html", "class_main_window" ],
+    [ "Marble", "class_marble.html", "class_marble" ],
+    [ "moveStruct", "structmove_struct.html", "structmove_struct" ],
+    [ "mul_initwidget", "classmul__initwidget.html", "classmul__initwidget" ],
+    [ "MVector", "class_m_vector.html", "class_m_vector" ],
+    [ "NetworkData", "class_network_data.html", "class_network_data" ],
+    [ "NetworkServer", "class_network_server.html", "class_network_server" ],
+    [ "NetworkSocket", "class_network_socket.html", "class_network_socket" ],
+    [ "Player", "class_player.html", "class_player" ],
+    [ "Room", "class_room.html", "class_room" ],
+    [ "ServerChessBoard", "class_server_chess_board.html", null ],
+    [ "ServerPlayer", "class_server_player.html", "class_server_player" ],
+    [ "ServerWidget", "class_server_widget.html", "class_server_widget" ],
+    [ "SettingsWidget", "class_settings_widget.html", "class_settings_widget" ],
+    [ "SocketChessBoard", "class_socket_chess_board.html", "class_socket_chess_board" ],
+    [ "WaitingRoom", "class_waiting_room.html", "class_waiting_room" ],
+    [ "Widget", "class_widget.html", "class_widget" ]
+];

@@ -102,8 +102,17 @@ QString getID(int x);
  */
 bool valid_check(int);
 
+/**
+ * @brief rotateCounterclockwise 顺时针旋转变换一个棋盘坐标
+ * @param begin 输入坐标
+ * @param alpha 顺时针角度，以30度为一个单位
+ * @return 输出坐标
+ */
 ChessPosition rotateCounterclockwise (ChessPosition begin, int alpha);
 
+/**
+ * @brief mod6Add mod6意义下的非负加法，即取值范围在[1,6]
+ */
 int mod6Add(int x,int t);
 
 QString convertToQStr(ERRCODE err);

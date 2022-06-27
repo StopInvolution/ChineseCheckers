@@ -9,6 +9,9 @@ namespace Ui {
 class initWidget;
 }
 
+/**
+ * @brief The initWidget class 是本地模式的欢迎界面
+ */
 class initWidget : public QWidget
 {
     Q_OBJECT
