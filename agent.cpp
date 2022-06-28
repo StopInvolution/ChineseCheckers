@@ -656,14 +656,12 @@ pcc calculateMinimax(QVector<AlgoPlayer> vec, int referenceMinimaxDepth){ // ALP
             depthChange = -2;
         if (unsearchedCandidateCount >= 2 || depthChange < 0) {
             MinimaxDepth += (int)depthChange;
-            if (MinimaxDepth >= 7)
-                MinimaxDepth = 6;
         }
         std::cout << ", newMinimaxDepth = " << MinimaxDepth << std::endl;
         last = present;
     }
     if (referenceMinimaxDepth == MinimaxDepthLimit)
-        MinimaxDepthLimit = MinimaxDepth;
+        MinimaxDepthLimit = MinimaxDepth - 1;
 
     std::cout << "total dfsNode = " << dfsNode;
     end = clock();
